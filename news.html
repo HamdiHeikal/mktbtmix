@@ -1,1 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>آخر الأخبار</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Cairo',sans-serif;
+}
+
+body{
+
+background:#f2f4f8;
+
+}
+
+header{
+
+background:#dc2626;
+color:white;
+padding:20px;
+text-align:center;
+font-size:30px;
+font-weight:bold;
+
+}
+
+.container{
+
+width:95%;
+max-width:900px;
+margin:auto;
+padding:25px;
+
+}
+
+.search{
+
+width:100%;
+padding:18px;
+font-size:20px;
+border-radius:12px;
+border:2px solid #ccc;
+outline:none;
+
+}
+
+.count{
+
+margin:20px 0;
+font-size:18px;
+color:#666;
+
+}
+
+.item{
+
+background:white;
+padding:18px;
+border-radius:15px;
+margin-bottom:18px;
+box-shadow:0 5px 15px rgba(0,0,0,.12);
+
+}
+
+.item h3{
+
+color:#16a34a;
+margin-bottom:8px;
+
+}
+
+.back{
+
+display:block;
+width:220px;
+margin:30px auto;
+text-align:center;
+background:#2563eb;
+color:white;
+text-decoration:none;
+padding:15px;
+border-radius:12px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+📰 الآن نتائج الثانوية العامة
+
+</header>
+
+<div class="container">
+
+<input
+class="search"
+id="search"
+type="text"
+placeholder="اكتب رقم الجلوس أو الاسم..."
+onkeyup="searchData()">
+
+<div class="count" id="count"></div>
+
+<div id="results"></div>
+
+<a class="back" href="index.html">
+
+🏠 العودة للرئيسية
+
+</a>
+
+</div>
+
+<script>
+
+const data=[
+
+{
+seat:"2001970",
+name:"احمد محمود السيد عبدالجواد السيد",
+total:"290",
+status:"ناجح دور أول"
+},
+
+{
+seat:"2001971",
+name:"بلال وحيد طلعت عبدالله عباس",
+total:"287",
+status:"ناجح دور أول"
+},
+
+{
+seat:"2001972",
+name:"حسام محمد ذكي مبروك عبدالله",
+total:"179.5",
+status:"ناجح دور أول"
+},
+
+{
+seat:"2001973",
+name:"عبدالحليم حسين سعد عبدالحليم علي",
+total:"240",
+status:"ناجح دور أول"
+},
+
+{
+seat:"2001974",
+name:"عبدالرحمن شعبان حسين عبدالجليل عبدالكريم",
+total:"222",
+status:"ناجح دور أول"
+}
+
+];
+
+function normalize(txt){
+
+return txt
+.toLowerCase()
+.replace(/[أإآ]/g,"ا")
+.replace(/ة/g,"ه")
+.replace(/ى/g,"ي");
+
+}
+
+function searchData(){
+
+let q=normalize(document.getElementById("search").value);
+
+let html="";
+
+let found=0;
+
+data.forEach(s=>{
+
+let all=normalize(
+
+s.seat+" "+s.name+" "+s.total+" "+s.status
+
+);
+
+if(all.includes(q)){
+
+found++;
+
+html+=`
+
+<div class="item">
+
+<h3>${s.name}</h3>
+
+<b>رقم الجلوس :</b> ${s.seat}<br>
+
+<b>المجموع :</b> ${s.total}<br>
+
+<b>الحالة :</b> ${s.status}
+
+</div>
+
+`;
+
+}
+
+});
+
+document.getElementById("results").innerHTML=html;
+
+document.getElementById("count").innerHTML=
+
+"عدد النتائج : "+found;
+
+}
+
+searchData();
+
+</script>
+
+</body>
+
+</html>
