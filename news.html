@@ -131,44 +131,34 @@ onkeyup="searchData()">
 
 <script>
 
-const data=[
+let data=[];
 
-{
-seat:"2001970",
-name:"احمد محمود السيد عبدالجواد السيد",
-total:"290",
-status:"ناجح دور أول"
-},
+fetch("result.csv")
+.then(response => response.text())
+.then(text => {
 
-{
-seat:"2001971",
-name:"بلال وحيد طلعت عبدالله عباس",
-total:"287",
-status:"ناجح دور أول"
-},
+    const rows = text.trim().split("\n");
 
-{
-seat:"2001972",
-name:"حسام محمد ذكي مبروك عبدالله",
-total:"179.5",
-status:"ناجح دور أول"
-},
+    rows.shift();   // حذف عنوان الأعمدة
 
-{
-seat:"2001973",
-name:"عبدالحليم حسين سعد عبدالحليم علي",
-total:"240",
-status:"ناجح دور أول"
-},
+    rows.forEach(row => {
 
-{
-seat:"2001974",
-name:"عبدالرحمن شعبان حسين عبدالجليل عبدالكريم",
-total:"222",
-status:"ناجح دور أول"
-}
+        const cols = row.split(",");
 
-];
+        data.push({
+
+            seat: cols[0],
+            name: cols[1],
+            total: cols[2],
+            status: cols[3]
+
+        });
+
+    });
+
+    searchData();
+
+});
 
 function normalize(txt){
 
