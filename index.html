@@ -104,6 +104,17 @@ p{
 </style>
 
 <script>
+
+function toggleWifiBox() {
+    let box = document.getElementById("wifiBox");
+    if (box.style.display === "none") {
+        box.style.display = "block";
+    } else {
+        box.style.display = "none";
+    }
+}
+
+    
 function wifi(){
     // بيانات الشبكة (اسم الشبكة ونوع التشفير وكلمة المرور)
     let wifiData = "WIFI:S:MKTBTMIX;T:WPA;P:123456789;;";
@@ -133,15 +144,22 @@ function copyPhone(){
 <h1>MKTBT MIX</h1>
 <p>مرحباً بك ❤️</p>
 
-<button class="btn wifi" onclick="wifi()">
+<button class="btn wifi" onclick="toggleWifiBox()">
 📶 الاتصال بشبكة Wi-Fi
 </button>
 
-<!-- صندوق ظهور الباركود عند الضغط على الزر -->
+<!-- صندوق ظهور الباركود الثابت -->
+<div id="wifiBox" style="display: none; margin-top: 15px; padding: 15px; background: #f1f5f9; border-radius: 12px;">
+    <p style="margin: 0 0 10px 0; font-size: 14px; color: #333;">امسح الكود بالكاميرا للاتصال الفوري:</p>
+    <!-- استبدل wifi-qr.png باسم صورة الباركود الخاصة بك -->
+    <img src="wifi-qr.png" alt="WiFi QR Code" style="width: 200px; height: 200px; display: block; margin: 0 auto;">
+</div>
+    
+<!-- صندوق ظهور الباركود عند الضغط على الزر 
 <div id="wifiBox">
     <p style="margin: 0; font-size: 14px; color: #333;">وجه كاميرا هاتفك للباركود لاتصال سريع:</p>
     <img id="wifiQR" src="" alt="WiFi QR Code">
-</div>
+</div>-->
 
 <a class="btn news" href="news.html">
 📰 آخر الأخبار
