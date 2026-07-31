@@ -349,54 +349,19 @@ p{
 
 
 
-function showWifi(){
-
-
-
-    navigator.clipboard.writeText(
-
-`اسم الشبكة : MKTBTMIX
-
-كلمة المرور : 123456789`);
-
-
-
-    alert("تم نسخ بيانات شبكة Wi-Fi");
-
-
-
-}
-
 function wifi(){
-
-
-
+    navigator.clipboard.writeText(
+        `اسم الشبكة : MKTBTMIX
+        كلمة المرور : 123456789`);
+    alert("تم نسخ بيانات شبكة Wi-Fi");
+    
     let wifiData =
-
-    "WIFI:S:MKTBTMIX;T:WPA;P:123456789;;";
-
-
-
-
-
+        "WIFI:S:MKTBTMIX;T:WPA;P:123456789;;";
     let qr =
-
-    "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="
-
-    + encodeURIComponent(wifiData);
-
-
-
-
-
+        "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="
+        + encodeURIComponent(wifiData);
     document.getElementById("wifiQR").src = qr;
-
-
-
     document.getElementById("wifiBox").style.display="block";
-
-
-
 }
 
 
@@ -444,6 +409,9 @@ function copyPhone(){
     📶 الاتصال بشبكة Wi-Fi
 </button>
 
+<div id="wifiBox" style="display:none; text-align:center; margin-top:15px;">
+    <img id="wifiQR" alt="QR Code" style="max-width:200px; border-radius:10px;">
+</div>
 
 <a class="btn news" href="news.html">
     📰 آخر الأخبار
