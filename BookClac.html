@@ -1,1 +1,446 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب طلبيات الكتب الخارجية | مكتبةمكس_MKTBTmix</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+        body{
+            background: #dde3eb;
+            color: #333;
+        }
+        header{
+            background: #16a34a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,.2);
+        }
+        .container{
+            width: 95%;
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px 0;
+        }
+        .main-banner{
+            background: #fff;
+            border-radius: 18px;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #16a34a;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,.12);
+            line-height: 1.8;
+        }
+        .cards-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            scroll-snap-type: x mandatory;
+        }
+        .grade-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 20px;
+            min-width: 300px;
+            flex: 0 0 320px;
+            scroll-snap-align: start;
+            box-shadow: 0 10px 25px rgba(0,0,0,.12);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .grade-card h3 {
+            color: #16a34a;
+            font-size: 22px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ccf0d8;
+            padding-bottom: 8px;
+        }
+        .book-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 16px;
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .book-item label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .book-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #16a34a;
+        }
+        .price-tag {
+            font-size: 14px;
+            color: #555;
+            white-space: nowrap;
+        }
+        .disabled-book {
+            color: #999;
+            font-size: 14px;
+        }
+        .summary-card {
+            background: #ccf0d8;
+            border-radius: 18px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,.12);
+            text-align: center;
+        }
+        .summary-card h3 {
+            color: #16a34a;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        .totals-box {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .total-box-item {
+            background: #fff;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,.05);
+        }
+        .total-box-item span {
+            color: #16a34a;
+        }
+        .footer-note {
+            font-size: 16px;
+            font-weight: bold;
+            color: #d97706;
+            margin-bottom: 20px;
+        }
+        .whatsapp-btn {
+            display: inline-block;
+            background: #25D366;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: bold;
+            transition: .25s;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+        }
+        .whatsapp-btn:hover {
+            transform: scale(1.05);
+        }
+        .back{
+            display: block;
+            width: 240px;
+            margin: 20px auto 0;
+            text-align: center;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
 
+    <header>
+        مكتبةمكس_MKTBTmix - حاسبة طلبيات الكتب الخارجية
+    </header>
+
+    <div class="container">
+        
+        <div class="main-banner">
+            عروض وتخفيضات مكتبة مكس (شارع الأوبرج)<br>
+            خصم 15% على جميع الكتب الخارجية لكافة المراحل الدراسية!
+        </div>
+
+        <div class="cards-container">
+            
+            <!-- مرحلة كي جي (KG) -->
+            <div class="grade-card">
+                <div>
+                    <h3>مرحلة كي جي (KG)</h3>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="المعاصر إنجليزي كي جي 1" data-price="125" data-discounted="106.25">
+                            <span>المعاصر إنجليزي كي جي 1</span>
+                        </label>
+                        <span class="price-tag">125 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="المعاصر ماس كي جي 1" data-price="205" data-discounted="174.25">
+                            <span>المعاصر ماس كي جي 1</span>
+                        </label>
+                        <span class="price-tag">205 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="المعاصر إنجليزي كي جي 2" data-price="125" data-discounted="106.25">
+                            <span>المعاصر إنجليزي كي جي 2</span>
+                        </label>
+                        <span class="price-tag">125 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="المعاصر ماس كي جي 2" data-price="210" data-discounted="178.50">
+                            <span>المعاصر ماس كي جي 2</span>
+                        </label>
+                        <span class="price-tag">210 ج</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الصف الثالث الإعدادي -->
+            <div class="grade-card">
+                <div>
+                    <h3>الثلاث الإعدادي</h3>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="أضواء عربي تالتة إعدادي" data-price="215" data-discounted="182.75">
+                            <span>أضواء عربي تالتة إعدادي</span>
+                        </label>
+                        <span class="price-tag">182.75 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <span style="flex:1;">أضواء إنجليزي تالتة إعدادي</span>
+                        <span class="disabled-book">ما نزلش</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="بيت باي بيت إنجليزي تالتة إعدادي" data-price="150" data-discounted="127.50">
+                            <span>بيت باي بيت إنجليزي تالتة إعدادي</span>
+                        </label>
+                        <span class="price-tag">127.50 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <span style="flex:1;">المعاصر إنجليزي تالتة إعدادي</span>
+                        <span class="disabled-book">ما نزلش</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="جيم الاضواء انجليزي تالتة إعدادي" data-price="199" data-discounted="170">
+                            <span>جيم الاضواء انجليزي</span>
+                        </label>
+                        <span class="price-tag">170 ج</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الثانوية العامة (أولى ثانوي) -->
+            <div class="grade-card">
+                <div>
+                    <h3>أولى ثانوي</h3>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="انجليزي جيم الاضواء أولى ثانوي" data-price="275" data-discounted="233.75">
+                            <span>انجليزي جيم الاضواء</span>
+                        </label>
+                        <span class="price-tag">233.75 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="عربي الأضواء أولى ثانوي" data-price="239" data-discounted="203.10">
+                            <span>عربي الأضواء</span>
+                        </label>
+                        <span class="price-tag">203.10 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="امتحان تاريخ اولى ثانوي" data-price="174" data-discounted="148">
+                            <span>امتحان تاريخ اولى ثانوي</span>
+                        </label>
+                        <span class="price-tag">148 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="امتحان فلسفه اولى ثانوي" data-price="185" data-discounted="157.25">
+                            <span>امتحان فلسفه اولى ثانوي</span>
+                        </label>
+                        <span class="price-tag">157.25 ج</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الثانوية العامة (تالتة ثانوي) -->
+            <div class="grade-card">
+                <div>
+                    <h3>تالتة ثانوي</h3>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="إمتحان جغرافيا (شرح) تالتة ثانوي" data-price="185.30" data-discounted="157.51">
+                            <span>إمتحان جغرافيا (شرح)</span>
+                        </label>
+                        <span class="price-tag">157.51 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="إمتحان تاريخ (شرح) تالتة ثانوي" data-price="225.25" data-discounted="191.46">
+                            <span>إمتحان تاريخ (شرح)</span>
+                        </label>
+                        <span class="price-tag">191.46 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="إمتحان كيمياء (شرح) تالتة ثانوي" data-price="242.25" data-discounted="205.91">
+                            <span>إمتحان كيمياء (شرح)</span>
+                        </label>
+                        <span class="price-tag">205.91 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="إمتحان أحياء (شرح) تالتة ثانوي" data-price="182.75" data-discounted="155.34">
+                            <span>إمتحان أحياء (شرح)</span>
+                        </label>
+                        <span class="price-tag">155.34 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="الإمتحان فيزياء (شرح) تالتة ثانوي" data-price="195.50" data-discounted="166.18">
+                            <span>الإمتحان فيزياء (شرح)</span>
+                        </label>
+                        <span class="price-tag">166.18 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="المعاصر إحصاء (أدبي) تالتة ثانوي" data-price="169.15" data-discounted="143.78">
+                            <span>المعاصر إحصاء (أدبي)</span>
+                        </label>
+                        <span class="price-tag">143.78 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="المعاصر رياضة بحتة تالتة ثانوي" data-price="378.25" data-discounted="321.51">
+                            <span>المعاصر رياضة بحتة</span>
+                        </label>
+                        <span class="price-tag">321.51 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="المعاصر رياضة تطبيقية تالتة ثانوي" data-price="340.00" data-discounted="289.00">
+                            <span>المعاصر رياضة تطبيقية</span>
+                        </label>
+                        <span class="price-tag">289.00 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="إمتحان أحياء (أسئلة) تالتة ثانوي" data-price="254.15" data-discounted="216.03">
+                            <span>إمتحان أحياء (أسئلة)</span>
+                        </label>
+                        <span class="price-tag">216.03 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="إمتحان فيزياء (أسئلة) تالتة ثانوي" data-price="276.25" data-discounted="234.81">
+                            <span>إمتحان فيزياء (أسئلة)</span>
+                        </label>
+                        <span class="price-tag">234.81 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="إمتحان عربي (شرح) تالتة ثانوي" data-price="278" data-discounted="237">
+                            <span>إمتحان عربي (شرح)</span>
+                        </label>
+                        <span class="price-tag">237 ج</span>
+                    </div>
+                    <div class="book-item">
+                        <label>
+                            <input type="checkbox" class="book-chk" data-name="إمتحان عربي (أسئلة) تالتة ثانوي" data-price="405" data-discounted="345">
+                            <span>إمتحان عربي (أسئلة)</span>
+                        </label>
+                        <span class="price-tag">345 ج</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- الخاتمة وملخص الحساب -->
+        <div class="summary-card">
+            <h3>ملخص الطلبية</h3>
+            <div class="totals-box">
+                <div class="total-box-item">
+                    إجمالي السعر قبل الخصم: <span id="totalBefore">0.00</span> جنيه
+                </div>
+                <div class="total-box-item">
+                    إجمالي السعر بعد الخصم: <span id="totalAfter">0.00</span> جنيه
+                </div>
+            </div>
+            <div class="footer-note">
+                متاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!
+            </div>
+            <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank">
+                💬 إرسال الطلبية إلى الواتس آب
+            </a>
+        </div>
+
+        <a class="back" href="offers.html">
+            🏠 العودة للعروض
+        </a>
+
+    </div>
+
+    <script>
+        const checkboxes = document.querySelectorAll('.book-chk');
+        const totalBeforeEl = document.getElementById('totalBefore');
+        const totalAfterEl = document.getElementById('totalAfter');
+        const whatsappSendBtn = document.getElementById('whatsappSend');
+
+        function updateTotals() {
+            let totalBefore = 0;
+            let totalAfter = 0;
+            let selectedBooks = [];
+
+            checkboxes.forEach(chk => {
+                if (chk.checked) {
+                    totalBefore += parseFloat(chk.dataset.price);
+                    totalAfter += parseFloat(chk.dataset.discounted);
+                    selectedBooks.push(chk.dataset.name + " (" + chk.dataset.discounted + " جنيه)");
+                }
+            });
+
+            totalBeforeEl.textContent = totalBefore.toFixed(2);
+            totalAfterEl.textContent = totalAfter.toFixed(2);
+
+            let message = "مرحباً، أرغب في حجز الكتب التالية من مكتبةمكس_MKTBTmix:%0A";
+            selectedBooks.forEach((book, index) => {
+                message += (index + 1) + "- " + book + "%0A";
+            });
+            message += "%0Aإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
+            message += "%0Aإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
+            message += "%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
+
+            whatsappSendBtn.href = "https://wa.me/201093393975?text=" + message;
+        }
+
+        checkboxes.forEach(chk => {
+            chk.addEventListener('change', updateTotals);
+        });
+    </script>
+</body>
+</html>
