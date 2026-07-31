@@ -53,6 +53,19 @@
       font-size:20px;
       line-height:2;
       }
+      .cards-container {
+          display: flex;
+          gap: 20px;
+          overflow-x: auto;
+          padding-bottom: 15px;
+          scroll-snap-type: x mandatory;
+      }
+      .cards-container .card2 {
+          min-width: 280px;
+          flex: 0 0 auto;
+          scroll-snap-align: start;
+          margin-bottom: 0;
+      }
       .notice{
       margin-top:20px;
       color:#d97706;
@@ -100,77 +113,80 @@
     </header>
     
     <div class="container">
-        <div class="card">
+      <div class="card">
+          <!-- استبدل محتوى قسم "عروض الكراسات" بهذا الهيكل لتفعيل السكرول الأفقي -->
           <h2>📒 عروض الكراسات</h2>
-          <div class="card2">
-            <p>
-            <b>حصريًا لأول مرة...</b>
-            <br>
-            كراسات ديزني الكبيرة لوكس  
-            <br>
-            ورق فاخر
-            <br>
-            المقاس 22.5 × 16 سم
-            <br>
-            80 ورقة
-            هنبيعها بسعر
-            60 ورقة
-            <br><br>
-            قطاعي : <b>15 جنيه</b>
-            <br>
-            جملة : <b>13.5 جنيه</b>
-            <br>
-            دستة 8 قطع : <b>80 جنيه</b> (متوفر منه: مسطر / إنجليزي)
-            <br><br>
-            <img src="80.png" alt="كراسات 80 ورقة" style="max-width:100%; border-radius:10px;">
-            </p>
-          </div>
-
-          <div class="card2">
-            <p>
-            كشكول 40 ديزنى الكبير اللوكس
-            <br>
-            ورق فاخر
-            <br>
-            المقاس 22.5 × 16 سم
-            <br>
-            دستة 10 قطع : <b>80 جنيه</b> (متوفر منه: مسطر / إنجليزي / مربعات / 9 سطور)
-            <br><br>
-            <img src="40.png" alt="كشكول 40" style="max-width:100%; border-radius:10px;">
-            </p>
-          </div>
-
-          <div class="card2">
-            <p>
-            كشكول 60 ديزنى الكبير اللوكس
-            <br>
-            ورق فاخر
-            <br>
-            المقاس 22.5 × 16 سم
-            <br>
-            دستة 8 قطع : <b>80 جنيه</b> (متوفر منه: مسطر / إنجليزي / مربعات / 9 سطور)
-            <br><br>
-            <img src="60.png" alt="كشكول 60" style="max-width:100%; border-radius:10px;">
-            </p>
-          </div>
-
-          <div class="card2">
-            <p>
-            كراسه 28 لوكس
-            <br>
-            ورق فاخر
-            <br>
-            المقاس 20 × 15 سم
-            <br>
-            دستة 20 قطة : <b>55 جنيه فقط بدلا من 60 جنيه</b> (متوفر منه: مسطر / إنجليزي / مربعات / 9 سطور)
-            <br><br>
-            <img src="28.png" alt="كراسة 28" style="max-width:100%; border-radius:10px;">
-            </p>
+          <div class="cards-container">
+              <div class="card2">
+                  <p>
+                  <b>حصريًا لأول مرة...</b>
+                  <br>
+                  كراسات ديزني الكبيرة لوكس  
+                  <br>
+                  ورق فاخر
+                  <br>
+                  المقاس 22.5 × 16 سم
+                  <br>
+                  80 ورقة
+                  هنبيعها بسعر
+                  60 ورقة
+                  <br><br>
+                  قطاعي : <b>15 جنيه</b>
+                  <br>
+                  جملة : <b>13.5 جنيه</b>
+                  <br>
+                  دستة 8 قطع : <b>80 جنيه</b> (متوفر منه: مسطر / إنجليزي)
+                  <br><br>
+                  <img src="80.png" alt="كراسات 80 ورقة" style="max-width:100%; border-radius:10px;">
+                  </p>
+              </div>
+          
+              <div class="card2">
+                  <p>
+                  كشكول 40 ديزنى الكبير اللوكس
+                  <br>
+                  ورق فاخر
+                  <br>
+                  المقاس 22.5 × 16 سم
+                  <br>
+                  دستة 10 قطع : <b>80 جنيه</b> (متوفر منه: مسطر / إنجليزي / مربعات / 9 سطور)
+                  <br><br>
+                  <img src="40.png" alt="كشكول 40" style="max-width:100%; border-radius:10px;">
+                  </p>
+              </div>
+          
+              <div class="card2">
+                  <p>
+                  كشكول 60 ديزنى الكبير اللوكس
+                  <br>
+                  ورق فاخر
+                  <br>
+                  المقاس 22.5 × 16 سم
+                  <br>
+                  دستة 8 قطع : <b>80 جنيه</b> (متوفر منه: مسطر / إنجليزي / مربعات / 9 سطور)
+                  <br><br>
+                  <img src="60.png" alt="كشكول 60" style="max-width:100%; border-radius:10px;">
+                  </p>
+              </div>
+          
+              <div class="card2">
+                  <p>
+                  كراسه 28 لوكس
+                  <br>
+                  ورق فاخر
+                  <br>
+                  المقاس 20 × 15 سم
+                  <br>
+                  دستة 20 قطة : <b>55 جنيه فقط بدلا من 60 جنيه</b> (متوفر منه: مسطر / إنجليزي / مربعات / 9 سطور)
+                  <br><br>
+                  <img src="28.png" alt="كراسة 28" style="max-width:100%; border-radius:10px;">
+                  </p>
+              </div>
           </div>
           <div class="notice">
             🎉 وانتظروا المفاجآت الأخرى
           </div>
-        </div>
+      </div>
       
       <div class="card">
         <h2>📚 الكتب الخارجية بخصم 15%</h2>
