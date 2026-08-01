@@ -427,7 +427,11 @@
                 window.print();
             });
         });
-        
+        function scrollCard(btn, amount) {
+            // تحريك حاوية الكروت الكبيرة أفقياً عند الضغط على سهم الصف الدراسي
+            const container = document.getElementById('cardsContainer');
+            container.scrollBy({ left: amount, behavior: 'smooth' });
+        }
         function processExcelData(rows) {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = "";
@@ -458,7 +462,14 @@
                 let cardDiv = document.createElement('div');
                 cardDiv.className = 'grade-card';
         
-                let innerContent = `<div><h3>${grade}</h3>`;
+                // تعديل العنوان ليصبح بجواره سهم التنقل الخاص به
+                let innerContent = `
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #ccf0d8; padding-bottom: 8px;">
+                            <h3 style="margin: 0; border: none; padding: 0;">${grade}</h3>
+                            <button type="button" class="card-scroll-btn" onclick="scrollCard(this, 250)" style="background: #16a34a; color: white; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.15);">&lt;</button>
+                        </div>
+                `;
         
                 gradesData[grade].forEach(book => {
                     if (book.price === "ما نزلش" || !book.price) {
