@@ -293,6 +293,10 @@
 
         /* تنسيق خاص لصفحة الطباعة الفاتورة الاحترافية */
         @media print {
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
             body * {
                 visibility: hidden;
             }
@@ -305,7 +309,7 @@
                 top: 0;
                 width: 100%;
                 background: white;
-                padding: 15px;
+                padding: 10px;
                 direction: rtl;
                 font-family: 'Cairo', sans-serif;
                 color: #000;
