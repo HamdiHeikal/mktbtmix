@@ -302,7 +302,7 @@
             </div>
             <button class="scroll-btn scroll-left" id="scrollLeft">&gt;</button>
         </div>
-
+        <a href="#" id="printInvoice" class="whatsapp-btn" style="background:#2563eb;">🖨️ طباعة فاتورة</a>
         <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>  
     </div>
 
@@ -400,7 +400,8 @@
             const deliveryDetails = document.getElementById('deliveryDetails');
             const clientAddress = document.getElementById('clientAddress');
             const clientPhone = document.getElementById('clientPhone');
-        
+            const printBtn = document.getElementById("printInvoice");
+            
             deliveryCheckbox.addEventListener('change', function() {
                 if (this.checked) {
                     deliveryDetails.style.display = 'flex';
@@ -466,7 +467,126 @@
             checkboxes.forEach(chk => {
                 chk.addEventListener('change', updateTotals);
             });
+            printBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                printInvoice();
+            });
         }
+        
+        function printInvoice() {
+                const now = new Date();
+                const date = now.toLocaleDateString('ar-EG');
+                const time = now.toLocaleTimeString('ar-EG', {hour: '2-digit', minute: '2-digit'});
+                let message = "";
+                const grades = {};
+            
+                document.querySelectorAll(".book-chk").forEach(chk => {
+                    if (!chk.checked) return;
+                    if (!grades[chk.dataset.grade])
+                        grades[chk.dataset.grade] = [];
+                    grades[chk.dataset.grade].push(chk.dataset.name + " (" + chk.dataset.discounted + " جنيه)");
+                });
+            
+                for (let grade in grades) {
+                    message += "<b>" + grade + "</b><br>";
+                    grades[grade].forEach((book, i) => {
+                        message += (i + 1) + "- " + book + "<br>";
+                    });
+                    message += "<br>";
+                }
+            
+                const totalBefore = document.getElementById("totalBefore").textContent;
+                const totalAfter = document.getElementById("totalAfter").textContent;
+                message += "<hr>" +
+                    "إجمالى السعر قبل الخصم : <b>" + totalBefore + "</b> جنيه<br>" +
+                    "إجمالى السعر بعد الخصم : <b>" + totalAfter + "</b> جنيه";
+            
+                if (document.getElementById("deliveryCheckbox").checked) {
+                    message +=
+                        "<br><b>طلب توصيل</b><br>" +
+                        "العنوان : " +
+                        (document.getElementById("clientAddress").value || "لم يكتب") +
+                        "<br>" +
+                        "التليفون : " +
+                        (document.getElementById("clientPhone").value || "لم يكتب");
+                }
+            
+                const win = window.open("", "_blank");
+                win.document.write(`
+                    <!DOCTYPE html>
+                    <html dir="rtl">
+                        <head>
+                            <meta charset="utf-8">
+                            <title>فاتورة</title>
+                            <style>
+                                body{
+                                    font-family:Cairo,sans-serif;
+                                    padding:25px;
+                                    direction:rtl;
+                                    line-height:2;
+                                }
+                                .logo{
+                                    text-align:center;
+                                }
+                                .logo img{
+                                    width:120px;
+                                }
+                                .header{
+                                    display:flex;
+                                    justify-content:space-between;
+                                    margin-top:15px;
+                                    font-size:15px;
+                                }
+                                
+                                .content{
+                                    margin-top:20px;
+                                    font-size:18px;
+                                }
+                                
+                                hr{
+                                    margin:15px 0;
+                                }
+                                
+                                @media print{
+                                    button{
+                                        display:none;
+                                    }
+                                }
+                            
+                            </style>
+                        </head>
+                        
+                        <body>
+                            <div class="logo">
+                                <img src="logo.png">
+                            </div>
+                            <div class="header">
+                                <div>
+                                    ${time}<br>
+                                    ${date}
+                                </div>
+                                <div style="text-align:left">
+                                    مكتبة مكس<br>
+                                    ش الأوبرج - المنصورة<br>
+                                    01093393975
+                                </div>
+                            </div>
+                            <div class="content">
+                                ${message}
+                            </div>
+                            
+                            <script>
+                                window.onload=function(){
+                                    window.print();
+                                    window.onafterprint=function(){
+                                        window.close();
+                                    }
+                                }
+                            </script>
+                        </body>
+                    </html>
+                 `);
+            }
     </script>
 </body>
 </html>
