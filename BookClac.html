@@ -44,17 +44,62 @@
             box-shadow: 0 10px 25px rgba(0,0,0,.12);
             line-height: 1.8;
         }
+        /* حاوية السلايدر مع الأسهم */
+        .slider-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
         .cards-container {
             display: flex;
             gap: 20px;
             overflow-x: auto;
             padding-top: 15px;      
             padding-bottom: 15px;
+            scroll-behavior: smooth;
             scroll-snap-type: x mandatory;
             transform: rotateX(180deg);
+            width: 100%;
+        }
+        .cards-container::-webkit-scrollbar {
+            height: 10px;
+        }
+        .cards-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
         }
         .cards-container > * {
             transform: rotateX(180deg);
+        }
+        /* تصميم أزرار التمرير (الأسهم) */
+        .scroll-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(22, 163, 74, 0.85);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: 0.2s;
+        }
+        .scroll-btn:hover {
+            background: #16a34a;
+            transform: translateY(-50%) scale(1.1);
+        }
+        .scroll-left {
+            left: -20px;
+        }
+        .scroll-right {
+            right: -20px;
         }
         .grade-card {
             background: #fff;
@@ -157,7 +202,6 @@
             height: 18px;
             accent-color: #d97706;
         }
-        /* تنسيق حقول العنوان ورقم التليفون */
         #deliveryDetails {
             margin-top: 15px;
             display: flex;
@@ -220,14 +264,13 @@
 
         <div class="summary-card">
             <div class="summary-flex-container">
-                
                 <div class="totals-box">
                     <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank">
                         💬 إرسال الطلبية إلى الواتس آب
                     </a>
                     <div class="total-box-item">
-                        إجمالي السعر قبل الخصم: <span id="totalBefore">0.00</span> جنيه
-                        (إجمالي السعر بعد الخصم: <span id="totalAfter">0.00</span> جنيه)
+                        الإجمالي قبل الخصم: <span id="totalBefore">0.00</span> جنيه
+                        (بعد الخصم: <span id="totalAfter">0.00</span> جنيه)
                     </div>
                 </div>
             </div>
@@ -237,7 +280,6 @@
                     <input type="checkbox" id="deliveryCheckbox">
                     متاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!
                 </label>
-                <!-- السطر الجديد المربعان (العنوان والتليفون) ويظهران فقط عند تفعيل الشيك بوكس -->
                 <div id="deliveryDetails" style="display: none;">
                     <input type="text" id="clientAddress" class="delivery-input" placeholder="اكتب عنوانك بالتفصيل هنا...">
                     <input type="text" id="clientPhone" class="delivery-input" placeholder="اكتب رقم التليفون هنا...">
@@ -245,8 +287,13 @@
             </div>
         </div>
 
-        <div class="cards-container" id="cardsContainer">
-            <!-- سيتم تعبئة المراحل والكتب تلقائياً من ملف الأكسيل -->
+        <!-- حاوية الكروت مع أزرار الأسهم للتنقل -->
+        <div class="slider-wrapper">
+            <button class="scroll-btn scroll-right" id="scrollRight">&gt;</button>
+            <div class="cards-container" id="cardsContainer">
+                <!-- سيتم تعبئة المراحل والكتب تلقائياً من ملف الأكسيل -->
+            </div>
+            <button class="scroll-btn scroll-left" id="scrollLeft">&lt;</button>
         </div>
 
         <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>  
@@ -267,6 +314,15 @@
                     processExcelData(rows);
                 })
                 .catch(error => console.error("خطأ في قراءة ملف الأكسيل:", error));
+            
+            // تفعيل أزرار التمرير (الأسهم)
+            const container = document.getElementById('cardsContainer');
+            document.getElementById('scrollRight').addEventListener('click', () => {
+                container.scrollBy({ left: 340, behavior: 'smooth' });
+            });
+            document.getElementById('scrollLeft').addEventListener('click', () => {
+                container.scrollBy({ left: -340, behavior: 'smooth' });
+            });
         });
         
         function processExcelData(rows) {
@@ -338,7 +394,6 @@
             const clientAddress = document.getElementById('clientAddress');
             const clientPhone = document.getElementById('clientPhone');
         
-            // إظهار/إخفاء حقول العنوان والتليفون عند الضغط على شيك بوكس التوصيل
             deliveryCheckbox.addEventListener('change', function() {
                 if (this.checked) {
                     deliveryDetails.style.display = 'flex';
@@ -350,7 +405,6 @@
                 updateTotals();
             });
 
-            // تحديث رسالة الواتساب عند الكتابة في خانات العنوان أو الهاتف
             clientAddress.addEventListener('input', updateTotals);
             clientPhone.addEventListener('input', updateTotals);
         
@@ -387,7 +441,6 @@
                 message += "%0Aإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
                 message += "%0Aإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
 
-                // إضافة تفاصيل التوصيل للرسالة إذا تم اختيار التوصيل
                 if (deliveryCheckbox.checked) {
                     message += "%0A%0A🚚 *طلب توصيل للمنزل*:";
                     message += "%0A📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
