@@ -48,8 +48,17 @@
             display: flex;
             gap: 20px;
             overflow-x: auto;
+            padding-top: 15px;      /* مسافة من الأعلى ليظهر شريط التمرير بشكل مريح */
             padding-bottom: 15px;
             scroll-snap-type: x mandatory;
+            
+            /* جعل شريط التمرير يظهر في الأعلى */
+            transform: rotateX(180deg);
+        }
+        
+        /* عكس انعكاس البطاقات لتعود بشكل طبيعي للقراءة بالعربية */
+        .cards-container > * {
+            transform: rotateX(180deg);
         }
         .grade-card {
             background: #fff;
