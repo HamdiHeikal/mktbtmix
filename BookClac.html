@@ -146,6 +146,36 @@
             color: #d97706;
             margin-top: 15px;
         }
+        .footer-note label {
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-note input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #d97706;
+        }
+        /* تنسيق حقول العنوان ورقم التليفون */
+        #deliveryDetails {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .delivery-input {
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #d97706;
+            font-size: 15px;
+            width: 280px;
+            outline: none;
+            background: #fff;
+            font-family: 'Cairo', sans-serif;
+        }
         .whatsapp-btn {
             display: inline-block;
             background: #25D366;
@@ -194,19 +224,30 @@
 
         <div class="summary-card">
             <div class="summary-flex-container">
+                <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank">
+                    💬 إرسال الطلبية إلى الواتس آب
+                </a>
+                
                 <div class="totals-box">
-                    <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank">
-                        💬 إرسال الطلبية إلى الواتس آب
-                    </a>
+                    <div class="total-box-item">
+                        إجمالي السعر بعد الخصم: <span id="totalAfter">0.00</span> جنيه
+                    </div>
                     <div class="total-box-item">
                         إجمالي السعر قبل الخصم: <span id="totalBefore">0.00</span> جنيه
-                          بعد الخصم: <span id="totalAfter">0.00</span> جنيه
                     </div>
                 </div>
             </div>
         
             <div class="footer-note">
-                متاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!
+                <label>
+                    <input type="checkbox" id="deliveryCheckbox">
+                    متاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!
+                </label>
+                <!-- السطر الجديد المربعان (العنوان والتليفون) ويظهران فقط عند تفعيل الشيك بوكس -->
+                <div id="deliveryDetails" style="display: none;">
+                    <input type="text" id="clientAddress" class="delivery-input" placeholder="اكتب عنوانك بالتفصيل هنا...">
+                    <input type="text" id="clientPhone" class="delivery-input" placeholder="اكتب رقم التليفون هنا...">
+                </div>
             </div>
         </div>
 
@@ -298,6 +339,26 @@
             const totalBeforeEl = document.getElementById('totalBefore');
             const totalAfterEl = document.getElementById('totalAfter');
             const whatsappSendBtn = document.getElementById('whatsappSend');
+            const deliveryCheckbox = document.getElementById('deliveryCheckbox');
+            const deliveryDetails = document.getElementById('deliveryDetails');
+            const clientAddress = document.getElementById('clientAddress');
+            const clientPhone = document.getElementById('clientPhone');
+        
+            // إظهار/إخفاء حقول العنوان والتليفون عند الضغط على شيك بوكس التوصيل
+            deliveryCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    deliveryDetails.style.display = 'flex';
+                } else {
+                    deliveryDetails.style.display = 'none';
+                    clientAddress.value = '';
+                    clientPhone.value = '';
+                }
+                updateTotals();
+            });
+
+            // تحديث رسالة الواتساب عند الكتابة في خانات العنوان أو الهاتف
+            clientAddress.addEventListener('input', updateTotals);
+            clientPhone.addEventListener('input', updateTotals);
         
             function updateTotals() {
                 let totalBefore = 0;
@@ -331,7 +392,15 @@
 
                 message += "%0Aإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
                 message += "%0Aإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
-                message += "%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
+
+                // إضافة تفاصيل التوصيل للرسالة إذا تم اختيار التوصيل
+                if (deliveryCheckbox.checked) {
+                    message += "%0A%0A🚚 *طلب توصيل للمنزل*:";
+                    message += "%0A📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
+                    message += "%0A📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
+                }
+
+                message += "%0A%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
         
                 whatsappSendBtn.href = "https://wa.me/201093393975?text=" + message;
             }
