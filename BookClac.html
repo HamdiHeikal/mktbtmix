@@ -32,12 +32,23 @@
             margin: auto;
             padding: 20px 0;
         }
+        .main-banner{
+            background: #fff;
+            border-radius: 18px;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #16a34a;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,.12);
+            line-height: 1.8;
+        }
         /* حاوية السلايدر مع الأسهم */
         .slider-wrapper {
             position: relative;
             display: flex;
             align-items: center;
-            margin-bottom: 25px;
         }
         .cards-container {
             display: flex;
@@ -47,7 +58,7 @@
             padding-bottom: 15px;
             scroll-behavior: smooth;
             scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
+            -webkit-overflow-scrolling: touch; /* لتحسين نعومة السحب على الأجهزة الذكية وبطئها الطبيعي */
             transform: rotateX(180deg);
             width: 100%;
         }
@@ -61,9 +72,10 @@
         .cards-container > * {
             transform: rotateX(180deg);
         }
+        /* تصميم أزرار التمرير (الأسهم) - تم نقلها للأعلى قريبة من أسماء الصفوف */
         .scroll-btn {
             position: absolute;
-            top: 35px;
+            top: 35px; /* رفعناها للأعلى لتكون قريبة من عنوان الصف الدراسي */
             background: rgba(22, 163, 74, 0.85);
             color: white;
             border: none;
@@ -96,7 +108,7 @@
             min-width: 300px;
             flex: 0 0 320px;
             scroll-snap-align: start;
-            scroll-snap-stop: always;
+            scroll-snap-stop: always; /* تجبر السحب على الانتقال كارت بكارت ببطء وتوازن */
             box-shadow: 0 10px 25px rgba(0,0,0,.12);
             display: flex;
             flex-direction: column;
@@ -120,6 +132,7 @@
             border-radius: 10px;
             transition: background-color 0.25s ease, transform 0.15s ease;
         }
+        /* التنسيق عند اختيار الكتاب (تظليل بلون خفيف وحلو) */
         .book-item.selected-book {
             background: #c9f5d5;
             border: 1px solid #bbf7d0;
@@ -149,7 +162,7 @@
             background: #ccf0d8;
             border-radius: 18px;
             padding: 25px;
-            margin-top: 20px;
+            margin-top: 30px;
             box-shadow: 0 10px 25px rgba(0,0,0,.12);
             text-align: center;
         }
@@ -167,8 +180,6 @@
             gap: 15px;
             flex-wrap: wrap;
             direction: rtl;
-            justify-content: center;
-            align-items: center;
         }
         .total-box-item {
             background: #fff;
@@ -204,6 +215,7 @@
             justify-content: center;
             gap: 15px;
             flex-wrap: wrap;
+            animation: fadeIn 0.3s ease-in-out;
         }
         .delivery-input {
             padding: 10px 15px;
@@ -257,15 +269,6 @@
 
     <div class="container">
 
-        <!-- حاوية الكروت مع أزرار الأسهم للتنقل (تم نقلها للأعلى لتظهر أولاً) -->
-        <div class="slider-wrapper">
-            <button class="scroll-btn scroll-right" id="scrollRight">&lt;</button>
-            <div class="cards-container" id="cardsContainer">
-                <div class="grade-card" style="text-align:center; padding: 40px;">جاري تحميل الكتب...</div>
-            </div>
-            <button class="scroll-btn scroll-left" id="scrollLeft">&gt;</button>
-        </div>
-
         <div class="summary-card">
             <div class="summary-flex-container">
                 <div class="totals-box">
@@ -273,7 +276,7 @@
                         💬 إرسال الطلبية إلى الواتس آب
                     </a>
                     <div class="total-box-item">
-                        الإجمالي : <span id="totalBefore">0.00</span> جنيه
+                        الإجمالي قبل الخصم: <span id="totalBefore">0.00</span> جنيه
                         (بعد الخصم: <span id="totalAfter">0.00</span> جنيه)
                     </div>
                 </div>
@@ -291,9 +294,15 @@
             </div>
         </div>
 
-        <div style="text-align: center; margin-top: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-            <a href="#" id="printInvoice" class="whatsapp-btn" style="background:#2563eb;">🖨️ طباعة فاتورة</a>
+        <!-- حاوية الكروت مع أزرار الأسهم للتنقل -->
+        <div class="slider-wrapper">
+            <button class="scroll-btn scroll-right" id="scrollRight">&lt;</button>
+            <div class="cards-container" id="cardsContainer">
+                <!-- سيتم تعبئة المراحل والكتب تلقائياً من ملف الأكسيل -->
+            </div>
+            <button class="scroll-btn scroll-left" id="scrollLeft">&gt;</button>
         </div>
+
         <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>  
     </div>
 
@@ -302,10 +311,7 @@
             const excelFilePath = "BookClac.xlsx";
         
             fetch(excelFilePath)
-                .then(response => {
-                    if (!response.ok) throw new Error("فشل في تحميل ملف الأكسيل");
-                    return response.arrayBuffer();
-                })
+                .then(response => response.arrayBuffer())
                 .then(data => {
                     const workbook = XLSX.read(data, { type: 'array' });
                     const firstSheetName = workbook.SheetNames[0];
@@ -314,10 +320,7 @@
                     
                     processExcelData(rows);
                 })
-                .catch(error => {
-                    console.error("خطأ في قراءة ملف الأكسيل:", error);
-                    document.getElementById('cardsContainer').innerHTML = '<div class="grade-card" style="text-align:center; color:red; width:100%;">عذراً، حدث خطأ أثناء تحميل ملف الكتب. تأكد من وجود الملف BookClac.xlsx</div>';
-                });
+                .catch(error => console.error("خطأ في قراءة ملف الأكسيل:", error));
         
             // تفعيل أزرار التمرير (الأسهم)
             const container = document.getElementById('cardsContainer');
@@ -397,8 +400,7 @@
             const deliveryDetails = document.getElementById('deliveryDetails');
             const clientAddress = document.getElementById('clientAddress');
             const clientPhone = document.getElementById('clientPhone');
-            const printBtn = document.getElementById("printInvoice");
-            
+        
             deliveryCheckbox.addEventListener('change', function() {
                 if (this.checked) {
                     deliveryDetails.style.display = 'flex';
@@ -464,120 +466,6 @@
             checkboxes.forEach(chk => {
                 chk.addEventListener('change', updateTotals);
             });
-            
-            printBtn.addEventListener("click", function (e) {
-                e.preventDefault();
-                printInvoice();
-            });
-        }
-        
-        function printInvoice() {
-            const now = new Date();
-            const date = now.toLocaleDateString('ar-EG');
-            const time = now.toLocaleTimeString('ar-EG', {hour: '2-digit', minute: '2-digit'});
-            let message = "";
-            const grades = {};
-        
-            document.querySelectorAll(".book-chk").forEach(chk => {
-                if (!chk.checked) return;
-                if (!grades[chk.dataset.grade])
-                    grades[chk.dataset.grade] = [];
-                grades[chk.dataset.grade].push(chk.dataset.name + " (" + chk.dataset.discounted + " جنيه)");
-            });
-        
-            for (let grade in grades) {
-                message += "<b>" + grade + "</b><br>";
-                grades[grade].forEach((book, i) => {
-                    message += (i + 1) + "- " + book + "<br>";
-                });
-                message += "<br>";
-            }
-        
-            const totalBefore = document.getElementById("totalBefore").textContent;
-            const totalAfter = document.getElementById("totalAfter").textContent;
-            message += "<hr>" +
-                "إجمالى السعر قبل الخصم : <b>" + totalBefore + "</b> جنيه<br>" +
-                "إجمالى السعر بعد الخصم : <b>" + totalAfter + "</b> جنيه";
-        
-            if (document.getElementById("deliveryCheckbox").checked) {
-                message +=
-                    "<br><b>طلب توصيل</b><br>" +
-                    "العنوان : " +
-                    (document.getElementById("clientAddress").value || "لم يكتب") +
-                    "<br>" +
-                    "التليفون : " +
-                    (document.getElementById("clientPhone").value || "لم يكتب");
-            }
-        
-            const win = window.open("", "_blank");
-            win.document.write(`
-                <!DOCTYPE html>
-                <html dir="rtl">
-                    <head>
-                        <meta charset="utf-8">
-                        <title>فاتورة</title>
-                        <style>
-                            body{
-                                font-family:Cairo,sans-serif;
-                                padding:25px;
-                                direction:rtl;
-                                line-height:2;
-                            }
-                            .logo{
-                                text-align:center;
-                            }
-                            .logo img{
-                                width:120px;
-                            }
-                            .header{
-                                display:flex;
-                                justify-content:space-between;
-                                margin-top:15px;
-                                font-size:15px;
-                            }
-                            .content{
-                                margin-top:20px;
-                                font-size:18px;
-                            }
-                            hr{
-                                margin:15px 0;
-                            }
-                            @media print{
-                                button{
-                                    display:none;
-                                }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="logo">
-                            <img src="logo.png">
-                        </div>
-                        <div class="header">
-                            <div>
-                                ${time}<br>
-                                ${date}
-                            </div>
-                            <div style="text-align:left">
-                                مكتبة مكس<br>
-                                ش الأوبرج - المنصورة<br>
-                                01093393975
-                            </div>
-                        </div>
-                        <div class="content">
-                            ${message}
-                        </div>
-                        <script>
-                            window.onload=function(){
-                                window.print();
-                                window.onafterprint=function(){
-                                    window.close();
-                                }
-                            }
-                        </script>
-                    </body>
-                </html>
-             `);
         }
     </script>
 </body>
