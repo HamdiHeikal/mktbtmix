@@ -220,18 +220,14 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // مسار ملف الأكسيل المرفق بالمشروع
             const excelFilePath = "BookClac.xlsx";
         
             fetch(excelFilePath)
                 .then(response => response.arrayBuffer())
                 .then(data => {
                     const workbook = XLSX.read(data, { type: 'array' });
-                    // قراءة الشيت الأول
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    
-                    // تحويل البيانات إلى مصفوفة من الصفوف
                     const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     
                     processExcelData(rows);
@@ -245,13 +241,12 @@
         
             let gradesData = {};
         
-            // نبدأ من الصف الثاني (index 1) لتخطي عناوين الأعمدة
             for (let i = 1; i < rows.length; i++) {
                 let row = rows[i];
-                let grade = row[0];       // العمود A: الصف الدراسي
-                let bookName = row[1];    // العمود B: الكتاب
-                let priceBefore = row[2]; // العمود C: سعر الكتاب
-                let priceAfter = row[3];  // العمود D: سعر الخصم
+                let grade = row[0];       
+                let bookName = row[1];    
+                let priceBefore = row[2]; 
+                let priceAfter = row[3];  
         
                 if (!grade || !bookName) continue;
         
@@ -266,7 +261,6 @@
                 });
             }
         
-            // بناء واجهة البطاقات بناءً على البيانات المستخرجة
             for (let grade in gradesData) {
                 let cardDiv = document.createElement('div');
                 cardDiv.className = 'grade-card';
@@ -297,7 +291,6 @@
                 container.appendChild(cardDiv);
             }
         
-            // تفعيل مستشعرات الأحداث للحسابات بعد توليد العناصر بنجاح
             initCalculator();
         }
         
@@ -316,6 +309,7 @@
                     if (chk.checked) {
                         totalBefore += parseFloat(chk.dataset.price) || 0;
                         totalAfter += parseFloat(chk.dataset.discounted) || 0;
+                        // تم إزالة الشرطة وجعل العرض مباشراً
                         selectedBooks.push(chk.dataset.name + " (" + chk.dataset.discounted + " جنيه)");
                     }
                 });
@@ -325,7 +319,7 @@
         
                 let message = "مرحباً، أرغب في حجز الكتب التالية من مكتبةمكس_MKTBTmix:%0A%0A";
                 selectedBooks.forEach((book, index) => {
-                    // هنا تم وضع رقم المسلسل بدلاً من الشرطة، وكل كتاب في سطر مستقل تماماً
+                    // كل كتاب في سطر مستقل مع رقمه المسلسل دون رموز جانبية مزعجة
                     message += (index + 1) + ". " + book + "%0A";
                 });
                 message += "%0Aإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
