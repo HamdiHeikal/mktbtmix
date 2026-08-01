@@ -300,7 +300,12 @@
             <button class="scroll-btn scroll-left" id="scrollLeft">&gt;</button>
         </div>
 
-        <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>  
+        <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>
+        <button class="back" id="printInvoiceBtn"
+                style="background:#16a34a;display:inline-block;width:auto;margin-right:10px;">
+            🖨️ طباعة فاتورة
+        </button>
+        
     </div>
 
     <script>
@@ -456,7 +461,9 @@
                 }
 
                 message += "%0A%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
-        
+                document.getElementById("printInvoiceBtn").onclick=function(){
+                    printInvoice(message);
+                };        
                 whatsappSendBtn.href = "https://wa.me/201093393975?text=" + message;
             }
         
@@ -464,6 +471,93 @@
                 chk.addEventListener('change', updateTotals);
             });
         }
+        
+        function printInvoice(message){
+        
+            const now=new Date();
+        
+            const date=
+                now.toLocaleDateString('ar-EG')+
+                " "+
+                now.toLocaleTimeString('ar-EG',{
+                    hour:'2-digit',
+                    minute:'2-digit'
+                });
+        
+            document.getElementById("invoiceHeader").innerHTML=
+                date+
+                " &nbsp;&nbsp;&nbsp; مكتبة مكس - ش الأوبرج - 01093393975";
+        
+            document.getElementById("invoiceText").textContent=
+                decodeURIComponent(message);
+        
+            const w=window.open("","","width=800,height=900");
+        
+            w.document.write(`
+            <html dir="rtl">
+            <head>
+                <title>فاتورة</title>
+        
+                <style>
+        
+                    body{
+                        font-family:Cairo,sans-serif;
+                        padding:25px;
+                        direction:rtl;
+                    }
+        
+                    img{
+                        width:120px;
+                    }
+        
+                    pre{
+                        white-space:pre-wrap;
+                        font-size:18px;
+                        line-height:1.8;
+                    }
+        
+                </style>
+        
+            </head>
+        
+            <body>
+        
+                ${document.getElementById("invoiceArea").innerHTML}
+        
+            </body>
+        
+            </html>
+            `);
+        
+            w.document.close();
+        
+            w.focus();
+        
+            setTimeout(()=>{
+                w.print();
+                w.close();
+            },300);
+        
+        }
+        
+        
     </script>
+<div id="invoiceArea" style="display:none">
+    <div style="text-align:center">
+        <img src="logo.png" style="width:120px;margin-bottom:10px;">
+        <div id="invoiceHeader"
+             style="font-weight:bold;font-size:18px;margin-bottom:15px;">
+        </div>
+    </div>
+    <pre id="invoiceText"
+         style="
+            font-family:'Cairo',sans-serif;
+            font-size:18px;
+            white-space:pre-wrap;
+            line-height:1.8;
+         ">
+    </pre>
+</div>
+    
 </body>
 </html>
