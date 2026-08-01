@@ -48,15 +48,11 @@
             display: flex;
             gap: 20px;
             overflow-x: auto;
-            padding-top: 15px;      /* مسافة من الأعلى ليظهر شريط التمرير بشكل مريح */
+            padding-top: 15px;      
             padding-bottom: 15px;
             scroll-snap-type: x mandatory;
-            
-            /* جعل شريط التمرير يظهر في الأعلى */
             transform: rotateX(180deg);
         }
-        
-        /* عكس انعكاس البطاقات لتعود بشكل طبيعي للقراءة بالعربية */
         .cards-container > * {
             transform: rotateX(180deg);
         }
@@ -118,23 +114,26 @@
             box-shadow: 0 10px 25px rgba(0,0,0,.12);
             text-align: center;
         }
-        .summary-card h3 {
-            color: #16a34a;
-            font-size: 24px;
-            margin-bottom: 15px;
+        .summary-flex-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            direction: ltr;
         }
         .totals-box {
             display: flex;
-            justify-content: center;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            direction: rtl;
         }
         .total-box-item {
             background: #fff;
-            padding: 15px 25px;
+            padding: 15px 20px;
             border-radius: 12px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             box-shadow: 0 4px 10px rgba(0,0,0,.05);
         }
@@ -145,19 +144,21 @@
             font-size: 16px;
             font-weight: bold;
             color: #d97706;
-            margin-bottom: 20px;
+            margin-top: 15px;
         }
         .whatsapp-btn {
             display: inline-block;
             background: #25D366;
             color: white;
-            padding: 15px 30px;
+            padding: 15px 25px;
             text-decoration: none;
             border-radius: 12px;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             transition: .25s;
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            white-space: nowrap;
+            direction: rtl;
         }
         .whatsapp-btn:hover {
             transform: scale(1.05);
@@ -179,29 +180,24 @@
 <body>
 
     <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 15px 20px;">
-        <!-- زر العودة على اليمين -->
         <a class="back" href="offers.html" style="margin: 0; width: auto; padding: 8px 15px; font-size: 16px; order: 1;"> 🏠 العودة </a>
-        <!-- النص المرن في المنتصف -->
         <div style="flex: 1; text-align: center; font-size: clamp(14px, 2.5vw, 22px); font-weight: bold; order: 2; white-space: nowrap;">
             (بكل سهولة) اختار ⬅️ انزل تحت شوف الاجمالى ⬅️ ارسل طلبيتك للواتس
         </div>
     </header>
-    
 
     <div class="container">
-            
+        
         <div class="main-banner">
             خصم 15% على جميع الكتب الخارجية من أول كتاب
         </div>
+
         <div class="summary-card">
-            <!-- تم إزالة عنوان "ملخص الطلبية" وإبقاء العناصر بجانب بعضها -->
             <div class="summary-flex-container">
-                <!-- زر الواتساب -->
                 <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank">
                     💬 إرسال الطلبية إلى الواتس آب
                 </a>
                 
-                <!-- مربعات الإجمالي بجانب بعضها -->
                 <div class="totals-box">
                     <div class="total-box-item">
                         إجمالي السعر بعد الخصم: <span id="totalAfter">0.00</span> جنيه
@@ -221,8 +217,7 @@
             <!-- سيتم تعبئة المراحل والكتب تلقائياً من ملف الأكسيل -->
         </div>
 
-        
-        <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a> 
+        <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>  
     </div>
 
     <script>
@@ -285,7 +280,7 @@
                         innerContent += `
                             <div class="book-item">
                                 <label>
-                                    <input type="checkbox" class="book-chk" data-name="${book.name}" data-price="${book.price}" data-discounted="${book.discounted}">
+                                    <input type="checkbox" class="book-chk" data-grade="${grade}" data-name="${book.name}" data-price="${book.price}" data-discounted="${book.discounted}">
                                     <span>${book.name}</span>
                                 </label>
                                 <span class="price-tag">${book.discounted} ج</span>
@@ -310,25 +305,33 @@
             function updateTotals() {
                 let totalBefore = 0;
                 let totalAfter = 0;
-                let selectedBooks = [];
+                let groupedBooks = {};
         
                 checkboxes.forEach(chk => {
                     if (chk.checked) {
                         totalBefore += parseFloat(chk.dataset.price) || 0;
                         totalAfter += parseFloat(chk.dataset.discounted) || 0;
-                        // تم إزالة الشرطة وجعل العرض مباشراً
-                        selectedBooks.push(chk.dataset.name + " (" + chk.dataset.discounted + " جنيه)");
+                        
+                        let grade = chk.dataset.grade;
+                        if (!groupedBooks[grade]) {
+                            groupedBooks[grade] = [];
+                        }
+                        groupedBooks[grade].push(chk.dataset.name + " (" + chk.dataset.discounted + " جنيه)");
                     }
                 });
         
                 totalBeforeEl.textContent = totalBefore.toFixed(2);
                 totalAfterEl.textContent = totalAfter.toFixed(2);
         
-                let message = "مرحباً، أرغب في حجز الكتب التالية من مكتبةمكس_MKTBTmix:%0A%0A";
-                selectedBooks.forEach((book, index) => {
-                    // كل كتاب في سطر مستقل مع رقمه المسلسل دون رموز جانبية مزعجة
-                    message += (index + 1) + ". " + book + "%0A";
-                });
+                let message = "مرحباً، أرغب في حجز الكتب التالية من مكتبةمكس_MKTBTmix:%0A";
+                
+                for (let grade in groupedBooks) {
+                    message += "%0A📌 *" + grade + "*:%0A";
+                    groupedBooks[grade].forEach((book, index) => {
+                        message += (index + 1) + "- " + book + "%0A";
+                    });
+                }
+
                 message += "%0Aإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
                 message += "%0Aإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
                 message += "%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
