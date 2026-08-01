@@ -178,39 +178,50 @@
 </head>
 <body>
 
-    <header>
-        مكتبةمكس_MKTBTmix - حاسبة طلبيات الكتب الخارجية
+    <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 15px 20px;">
+        <!-- زر العودة على اليمين -->
+        <a class="back" href="offers.html" style="margin: 0; width: auto; padding: 8px 15px; font-size: 16px; order: 1;"> 🏠 العودة </a>
+        <!-- النص المرن في المنتصف -->
+        <div style="flex: 1; text-align: center; font-size: clamp(14px, 2.5vw, 22px); font-weight: bold; order: 2; white-space: nowrap;">
+            (بكل سهولة) اختار ⬅️ انزل تحت شوف الاجمالى ⬅️ ارسل طلبيتك للواتس
+        </div>
     </header>
+    
 
     <div class="container">
             
         <div class="main-banner">
             خصم 15% على جميع الكتب الخارجية من أول كتاب
-            <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a> 
+        </div>
+        <div class="summary-card">
+            <!-- تم إزالة عنوان "ملخص الطلبية" وإبقاء العناصر بجانب بعضها -->
+            <div class="summary-flex-container">
+                <!-- زر الواتساب -->
+                <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank">
+                    💬 إرسال الطلبية إلى الواتس آب
+                </a>
+                
+                <!-- مربعات الإجمالي بجانب بعضها -->
+                <div class="totals-box">
+                    <div class="total-box-item">
+                        إجمالي السعر بعد الخصم: <span id="totalAfter">0.00</span> جنيه
+                    </div>
+                    <div class="total-box-item">
+                        إجمالي السعر قبل الخصم: <span id="totalBefore">0.00</span> جنيه
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer-note">
+                متاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!
+            </div>
         </div>
 
         <div class="cards-container" id="cardsContainer">
             <!-- سيتم تعبئة المراحل والكتب تلقائياً من ملف الأكسيل -->
         </div>
 
-        <!-- الخاتمة وملخص الحساب -->
-        <div class="summary-card">
-            <h3>ملخص الطلبية</h3>
-            <div class="totals-box">
-                <div class="total-box-item">
-                    إجمالي السعر قبل الخصم: <span id="totalBefore">0.00</span> جنيه
-                </div>
-                <div class="total-box-item">
-                    إجمالي السعر بعد الخصم: <span id="totalAfter">0.00</span> جنيه
-                </div>
-            </div>
-            <div class="footer-note">
-                متاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!
-            </div>
-            <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank">
-                💬 إرسال الطلبية إلى الواتس آب
-            </a>
-        </div>
+        
         <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a> 
     </div>
 
