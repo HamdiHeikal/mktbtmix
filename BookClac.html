@@ -54,10 +54,11 @@
             display: flex;
             gap: 20px;
             overflow-x: auto;
-            padding-top: 15px;      
+            padding-top: 15px;     
             padding-bottom: 15px;
             scroll-behavior: smooth;
             scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
             transform: rotateX(180deg);
             width: 100%;
         }
@@ -74,15 +75,14 @@
         /* تصميم أزرار التمرير (الأسهم) */
         .scroll-btn {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 35px;
             background: rgba(22, 163, 74, 0.85);
             color: white;
             border: none;
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            font-size: 22px;
+            font-size: 20px;
             cursor: pointer;
             z-index: 10;
             display: flex;
@@ -93,13 +93,13 @@
         }
         .scroll-btn:hover {
             background: #16a34a;
-            transform: translateY(-50%) scale(1.1);
+            transform: scale(1.1);
         }
         .scroll-left {
-            left: -20px;
+            left: 10px;
         }
         .scroll-right {
-            right: -20px;
+            right: 10px;
         }
         .grade-card {
             background: #fff;
@@ -108,6 +108,7 @@
             min-width: 300px;
             flex: 0 0 320px;
             scroll-snap-align: start;
+            scroll-snap-stop: always;
             box-shadow: 0 10px 25px rgba(0,0,0,.12);
             display: flex;
             flex-direction: column;
@@ -131,7 +132,6 @@
             border-radius: 10px;
             transition: background-color 0.25s ease, transform 0.15s ease;
         }
-        /* التنسيق عند اختيار الكتاب (تظليل بلون خفيف وحلو) */
         .book-item.selected-book {
             background: #c9f5d5;
             border: 1px solid #bbf7d0;
@@ -178,6 +178,7 @@
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
+            justify-content: center;
             direction: rtl;
         }
         .total-box-item {
@@ -226,6 +227,13 @@
             background: #fff;
             font-family: 'Cairo', sans-serif;
         }
+        .action-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
         .whatsapp-btn {
             display: inline-block;
             background: #25D366;
@@ -243,6 +251,27 @@
         .whatsapp-btn:hover {
             transform: scale(1.05);
         }
+        .print-btn {
+            display: inline-block;
+            background: #475569;
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: .25s;
+            box-shadow: 0 4px 15px rgba(71, 85, 105, 0.4);
+            white-space: nowrap;
+            direction: rtl;
+            font-family: 'Cairo', sans-serif;
+        }
+        .print-btn:hover {
+            transform: scale(1.05);
+            background: #334155;
+        }
         .back{
             display: block;
             width: 240px;
@@ -255,6 +284,25 @@
             border-radius: 12px;
             font-size: 18px;
         }
+
+        /* تنسيق خاص لصفحة الطباعة */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableInvoice, #printableInvoice * {
+                visibility: visible;
+            }
+            #printableInvoice {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+                padding: 20px;
+                direction: rtl;
+            }
+        }
     </style>
 </head>
 <body>
@@ -262,7 +310,7 @@
     <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 15px 20px;">
         <a class="back" href="offers.html" style="margin: 0; width: auto; padding: 8px 15px; font-size: 16px; order: 1;"> 🏠 العودة </a>
         <div style="flex: 1; text-align: center; font-size: clamp(14px, 2.5vw, 22px); font-weight: bold; order: 2; white-space: nowrap;">
-            اختار المواد ⬅️ شوف الاجمالى ⬅️ ارسل طلبيتك للواتس
+            اختار المواد ⬅️ شوف الاجمالى ⬅️ ارسل طلبيتك للواتس أو اطبعها
         </div>
     </header>
 
@@ -271,9 +319,14 @@
         <div class="summary-card">
             <div class="summary-flex-container">
                 <div class="totals-box">
-                    <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank">
-                        💬 إرسال الطلبية إلى الواتس آب
-                    </a>
+                    <div class="action-btns">
+                        <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank">
+                            💬 إرسال الطلبية إلى الواتس آب
+                        </a>
+                        <button type="button" id="printBtn" class="print-btn">
+                            🖨️ طباعة الفاتورة
+                        </button>
+                    </div>
                     <div class="total-box-item">
                         الإجمالي قبل الخصم: <span id="totalBefore">0.00</span> جنيه
                         (بعد الخصم: <span id="totalAfter">0.00</span> جنيه)
@@ -305,6 +358,29 @@
         <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>  
     </div>
 
+    <!-- قالب الفاتورة المخصصة للطباعة المخفية عن الشاشة العادية -->
+    <div id="printableInvoice" style="display: none;">
+        <div style="text-align: center; border-bottom: 2px solid #16a34a; padding-bottom: 10px; margin-bottom: 15px;">
+            <h2 style="color: #16a34a; font-size: 24px; margin-bottom: 5px;">مكتبةمكس_MKTBTmix</h2>
+            <p style="font-size: 14px; color: #555;">فاتورة حجز الكتب الخارجية</p>
+            <p id="printDate" style="font-size: 12px; color: #777; margin-top: 5px;"></p>
+        </div>
+        <div id="printClientInfo" style="margin-bottom: 15px; font-size: 14px; background: #f8fafc; padding: 10px; border-radius: 8px; display: none;">
+            <p><strong>العنوان:</strong> <span id="printAddressVal"></span></p>
+            <p><strong>التليفون:</strong> <span id="printPhoneVal"></span></p>
+        </div>
+        <div id="printItemsList" style="margin-bottom: 15px; font-size: 14px;">
+            <!-- تفاصيل الكتب المختارة للطباعة -->
+        </div>
+        <div style="border-top: 2px solid #ddd; padding-top: 10px; font-size: 15px; font-weight: bold;">
+            <p>إجمالي السعر قبل الخصم: <span id="printTotalBefore">0.00</span> جنيه</p>
+            <p style="color: #16a34a;">إجمالي السعر بعد الخصم: <span id="printTotalAfter">0.00</span> جنيه</p>
+        </div>
+        <div style="text-align: center; margin-top: 25px; font-size: 13px; color: #555;">
+            <p>متاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!</p>
+        </div>
+    </div>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const excelFilePath = "BookClac.xlsx";
@@ -320,14 +396,17 @@
                     processExcelData(rows);
                 })
                 .catch(error => console.error("خطأ في قراءة ملف الأكسيل:", error));
-            
-            // تفعيل أزرار التمرير (الأسهم)
+        
             const container = document.getElementById('cardsContainer');
             document.getElementById('scrollRight').addEventListener('click', () => {
                 container.scrollBy({ left: 340, behavior: 'smooth' });
             });
             document.getElementById('scrollLeft').addEventListener('click', () => {
                 container.scrollBy({ left: -340, behavior: 'smooth' });
+            });
+
+            document.getElementById('printBtn').addEventListener('click', function() {
+                window.print();
             });
         });
         
@@ -399,6 +478,15 @@
             const deliveryDetails = document.getElementById('deliveryDetails');
             const clientAddress = document.getElementById('clientAddress');
             const clientPhone = document.getElementById('clientPhone');
+
+            // عناصر فاتورة الطباعة
+            const printItemsList = document.getElementById('printItemsList');
+            const printTotalBefore = document.getElementById('printTotalBefore');
+            const printTotalAfter = document.getElementById('printTotalAfter');
+            const printClientInfo = document.getElementById('printClientInfo');
+            const printAddressVal = document.getElementById('printAddressVal');
+            const printPhoneVal = document.getElementById('printPhoneVal');
+            const printDate = document.getElementById('printDate');
         
             deliveryCheckbox.addEventListener('change', function() {
                 if (this.checked) {
@@ -438,6 +526,31 @@
         
                 totalBeforeEl.textContent = totalBefore.toFixed(2);
                 totalAfterEl.textContent = totalAfter.toFixed(2);
+
+                // تحديث بيانات الطباعة أيضاً
+                printTotalBefore.textContent = totalBefore.toFixed(2);
+                printTotalAfter.textContent = totalAfter.toFixed(2);
+
+                let printHtml = "";
+                for (let grade in groupedBooks) {
+                    printHtml += `<div style="margin-bottom: 8px;"><strong>📌 ${grade}:</strong><ul style="margin-right: 20px; margin-top: 3px;">`;
+                    groupedBooks[grade].forEach(book => {
+                        printHtml += `<li>${book}</li>`;
+                    });
+                    printHtml += `</ul></div>`;
+                }
+                printItemsList.innerHTML = printHtml || "<p>لم يتم اختيار أي كتب بعد.</p>";
+
+                if (deliveryCheckbox.checked && (clientAddress.value || clientPhone.value)) {
+                    printClientInfo.style.display = "block";
+                    printAddressVal.textContent = clientAddress.value || "غير متوفر";
+                    printPhoneVal.textContent = clientPhone.value || "غير متوفر";
+                } else {
+                    printClientInfo.style.display = "none";
+                }
+
+                const now = new Date();
+                printDate.textContent = "تاريخ الطباعة: " + now.toLocaleDateString('ar-EG') + " - " + now.toLocaleTimeString('ar-EG');
         
                 let message = "مرحباً، أرغب في حجز الكتب التالية من مكتبةمكس_MKTBTmix:%0A";
                 
