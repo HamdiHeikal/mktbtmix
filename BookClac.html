@@ -323,9 +323,10 @@
                 totalBeforeEl.textContent = totalBefore.toFixed(2);
                 totalAfterEl.textContent = totalAfter.toFixed(2);
         
-                let message = "مرحباً، أرغب في حجز الكتب التالية من مكتبةمكس_MKTBTmix:%0A";
+                let message = "مرحباً، أرغب في حجز الكتب التالية من مكتبةمكس_MKTBTmix:%0A%0A";
                 selectedBooks.forEach((book, index) => {
-                    message += (index + 1) + "- " + book + "%0A";
+                    // هنا تم وضع رقم المسلسل بدلاً من الشرطة، وكل كتاب في سطر مستقل تماماً
+                    message += (index + 1) + ". " + book + "%0A";
                 });
                 message += "%0Aإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
                 message += "%0Aإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
