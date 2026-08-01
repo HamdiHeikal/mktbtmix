@@ -129,6 +129,12 @@
             background: #f8fafc;
             padding: 10px;
             border-radius: 10px;
+            transition: background-color 0.25s ease, transform 0.15s ease;
+        }
+        /* التنسيق عند اختيار الكتاب (تظليل بلون خفيف وحلو) */
+        .book-item.selected-book {
+            background: #e6f4ea;
+            border: 1px solid #bbf7d0;
         }
         .book-item label {
             display: flex;
@@ -414,7 +420,9 @@
                 let groupedBooks = {};
         
                 checkboxes.forEach(chk => {
+                    const bookItemDiv = chk.closest('.book-item');
                     if (chk.checked) {
+                        bookItemDiv.classList.add('selected-book');
                         totalBefore += parseFloat(chk.dataset.price) || 0;
                         totalAfter += parseFloat(chk.dataset.discounted) || 0;
                         
@@ -423,6 +431,8 @@
                             groupedBooks[grade] = [];
                         }
                         groupedBooks[grade].push(chk.dataset.name + " (" + chk.dataset.discounted + " جنيه)");
+                    } else {
+                        bookItemDiv.classList.remove('selected-book');
                     }
                 });
         
