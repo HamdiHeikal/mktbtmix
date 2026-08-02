@@ -123,19 +123,24 @@
         }
         .book-item {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column;
             margin-bottom: 12px;
             font-size: 16px;
             background: #f8fafc;
             padding: 10px;
             border-radius: 10px;
+            gap: 8px;
             transition: background-color 0.25s ease, transform 0.15s ease;
         }
         /* التنسيق عند اختيار الكتاب (تظليل بلون خفيف وحلو) */
         .book-item.selected-book {
             background: #c9f5d5;
             border: 1px solid #bbf7d0;
+        }
+        .book-row-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         .book-item label {
             display: flex;
@@ -153,6 +158,37 @@
             font-size: 14px;
             color: #555;
             white-space: nowrap;
+        }
+        .book-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 5px;
+            border-top: 1px dashed #cbd5e1;
+            padding-top: 6px;
+        }
+        .qty-btn {
+            background: #16a34a;
+            color: white;
+            border: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qty-btn:hover {
+            background: #15803d;
+        }
+        .qty-display {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
         }
         .disabled-book {
             color: #999;
@@ -172,7 +208,6 @@
             align-items: center;
             gap: 15px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
             direction: ltr;
         }
         .totals-box {
@@ -261,7 +296,6 @@
 <body>
 
     <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 15px 20px;">
-        <a class="back" href="offers.html" style="margin: 0; width: auto; padding: 8px 15px; font-size: 16px; order: 1;"> 🏠 العودة </a>
         <div style="flex: 1; text-align: center; font-size: clamp(14px, 2.5vw, 22px); font-weight: bold; order: 2; white-space: nowrap;">
             اختار المواد ⬅️ شوف الاجمالى ⬅️ ارسل طلبيتك للواتس
         </div>
@@ -305,6 +339,14 @@
                 style="background:#16a34a;display:inline-block;width:auto;margin-right:10px;">
             🖨️ طباعة فاتورة
         </button>
+
+        <!-- مربع معاينة نص الرسالة -->
+        <div style="margin-top: 20px; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+            <h4 style="color: #16a34a; margin-bottom: 10px; font-size: 18px;">📄 معاينة نص الرسالة (التي ستُرسل للواتساب والفاتورة):</h4>
+            <div id="messagePreview" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: 'Cairo', sans-serif; font-size: 16px; white-space: pre-wrap; line-height: 1.8; text-align: right;">
+                لم يتم اختيار أي كتب بعد...
+            </div>
+        </div>
         
     </div>
 
@@ -366,21 +408,30 @@
         
                 let innerContent = `<div><h3>${grade}</h3>`;
         
-                gradesData[grade].forEach(book => {
+                gradesData[grade].forEach((book, idx) => {
                     if (book.price === "ما نزلش" || !book.price) {
                         innerContent += `
                             <div class="book-item">
-                                <span style="flex:1;">${book.name}</span>
-                                <span class="disabled-book">ما نزلش</span>
+                                <div class="book-row-top">
+                                    <span style="flex:1;">${book.name}</span>
+                                    <span class="disabled-book">ما نزلش</span>
+                                </div>
                             </div>`;
                     } else {
                         innerContent += `
                             <div class="book-item">
-                                <label>
-                                    <input type="checkbox" class="book-chk" data-grade="${grade}" data-name="${book.name}" data-price="${book.price}" data-discounted="${book.discounted}">
-                                    <span>${book.name}</span>
-                                </label>
-                                <span class="price-tag">${book.discounted} ج</span>
+                                <div class="book-row-top">
+                                    <label>
+                                        <input type="checkbox" class="book-chk" data-grade="${grade}" data-name="${book.name}" data-price="${book.price}" data-discounted="${book.discounted}">
+                                        <span>${book.name}</span>
+                                    </label>
+                                    <span class="price-tag">${book.discounted} ج</span>
+                                </div>
+                                <div class="book-controls">
+                                    <button type="button" class="qty-btn minus-btn">-</button>
+                                    <span class="qty-display">1</span>
+                                    <button type="button" class="qty-btn plus-btn">+</button>
+                                </div>
                             </div>`;
                     }
                 });
@@ -394,7 +445,7 @@
         }
         
         function initCalculator() {
-            const checkboxes = document.querySelectorAll('.book-chk');
+            const bookItems = document.querySelectorAll('.book-item');
             const totalBeforeEl = document.getElementById('totalBefore');
             const totalAfterEl = document.getElementById('totalAfter');
             const whatsappSendBtn = document.getElementById('whatsappSend');
@@ -402,6 +453,7 @@
             const deliveryDetails = document.getElementById('deliveryDetails');
             const clientAddress = document.getElementById('clientAddress');
             const clientPhone = document.getElementById('clientPhone');
+            const messagePreview = document.getElementById('messagePreview');
         
             deliveryCheckbox.addEventListener('change', function() {
                 if (this.checked) {
@@ -417,25 +469,60 @@
             clientAddress.addEventListener('input', updateTotals);
             clientPhone.addEventListener('input', updateTotals);
         
+            bookItems.forEach(item => {
+                const chk = item.querySelector('.book-chk');
+                if (!chk) return;
+                
+                const minusBtn = item.querySelector('.minus-btn');
+                const plusBtn = item.querySelector('.plus-btn');
+                const qtyDisplay = item.querySelector('.qty-display');
+                let qty = 1;
+
+                plusBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    qty++;
+                    qtyDisplay.textContent = qty;
+                    if (chk.checked) updateTotals();
+                });
+
+                minusBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (qty > 1) {
+                        qty--;
+                        qtyDisplay.textContent = qty;
+                        if (chk.checked) updateTotals();
+                    }
+                });
+
+                chk.addEventListener('change', updateTotals);
+                item.datasetQty = () => qty;
+            });
+        
             function updateTotals() {
                 let totalBefore = 0;
                 let totalAfter = 0;
                 let groupedBooks = {};
         
-                checkboxes.forEach(chk => {
-                    const bookItemDiv = chk.closest('.book-item');
+                bookItems.forEach(item => {
+                    const chk = item.querySelector('.book-chk');
+                    if (!chk) return;
+                    
                     if (chk.checked) {
-                        bookItemDiv.classList.add('selected-book');
-                        totalBefore += parseFloat(chk.dataset.price) || 0;
-                        totalAfter += parseFloat(chk.dataset.discounted) || 0;
+                        item.classList.add('selected-book');
+                        let qty = item.datasetQty();
+                        let unitPrice = parseFloat(chk.dataset.price) || 0;
+                        let unitDiscounted = parseFloat(chk.dataset.discounted) || 0;
+
+                        totalBefore += unitPrice * qty;
+                        totalAfter += unitDiscounted * qty;
                         
                         let grade = chk.dataset.grade;
                         if (!groupedBooks[grade]) {
                             groupedBooks[grade] = [];
                         }
-                        groupedBooks[grade].push(chk.dataset.name + " (" + chk.dataset.discounted + " جنيه)");
+                        groupedBooks[grade].push(chk.dataset.name + " (عدد " + qty + " نسخه) (" + (unitDiscounted * qty) + " جنيه)");
                     } else {
-                        bookItemDiv.classList.remove('selected-book');
+                        item.classList.remove('selected-book');
                     }
                 });
         
@@ -443,121 +530,96 @@
                 totalAfterEl.textContent = totalAfter.toFixed(2);
         
                 let message = "📚 *طلب حجز كتب خارجية*%0A";
+                let plainTextMessage = "📚 طلب حجز كتب خارجية\n";
                 
                 for (let grade in groupedBooks) {
                     message += "%0A📌 *" + grade + "*:%0A";
+                    plainTextMessage += "\n📌 " + grade + ":\n";
                     groupedBooks[grade].forEach((book, index) => {
                         message += (index + 1) + "- " + book + "%0A";
+                        plainTextMessage += (index + 1) + "- " + book + "\n";
                     });
                 }
 
                 message += "%0Aإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
                 message += "%0Aإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
 
+                plainTextMessage += "\nإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
+                plainTextMessage += "\nإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
+
                 if (deliveryCheckbox.checked) {
                     message += "%0A%0A🚚 *طلب توصيل للمنزل*:";
                     message += "%0A📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
                     message += "%0A📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
+
+                    plainTextMessage += "\n\n🚚 طلب توصيل للمنزل:";
+                    plainTextMessage += "\n📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
+                    plainTextMessage += "\n📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
                 }
 
                 message += "%0A%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
-                document.getElementById("printInvoiceBtn").onclick=function(){
+                plainTextMessage += "\n\nمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
+
+                // تحديث مربع المعاينة
+                messagePreview.textContent = plainTextMessage;
+
+                document.getElementById("printInvoiceBtn").onclick = function(){
                     printInvoice(message);
                 };        
                 whatsappSendBtn.href = "https://wa.me/201093393975?text=" + message;
             }
-        
-            checkboxes.forEach(chk => {
-                chk.addEventListener('change', updateTotals);
-            });
         }
         
         function printInvoice(message){
+            const now = new Date();
+            const date = now.toLocaleDateString('ar-EG') + " " + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
         
-            const now=new Date();
+            document.getElementById("invoiceHeader").innerHTML = date + " &nbsp;&nbsp;&nbsp; مكتبة مكس - ش الأوبرج - 01093393975";
+            document.getElementById("invoiceText").textContent = decodeURIComponent(message);
         
-            const date=
-                now.toLocaleDateString('ar-EG')+
-                " "+
-                now.toLocaleTimeString('ar-EG',{
-                    hour:'2-digit',
-                    minute:'2-digit'
-                });
-        
-            document.getElementById("invoiceHeader").innerHTML=
-                date+
-                " &nbsp;&nbsp;&nbsp; مكتبة مكس - ش الأوبرج - 01093393975";
-        
-            document.getElementById("invoiceText").textContent=
-                decodeURIComponent(message);
-        
-            const w=window.open("","","width=800,height=900");
-        
+            const w = window.open("", "", "width=800,height=900");
             w.document.write(`
             <html dir="rtl">
             <head>
                 <title>فاتورة</title>
-        
                 <style>
-        
                     body{
                         font-family:Cairo,sans-serif;
                         padding:25px;
                         direction:rtl;
                     }
-        
                     img{
                         width:120px;
                     }
-        
                     pre{
                         white-space:pre-wrap;
                         font-size:18px;
                         line-height:1.8;
                     }
-        
                 </style>
-        
             </head>
-        
             <body>
-        
                 ${document.getElementById("invoiceArea").innerHTML}
-        
             </body>
-        
             </html>
             `);
         
             w.document.close();
-        
             w.focus();
-        
-            setTimeout(()=>{
+            setTimeout(() => {
                 w.print();
                 w.close();
-            },300);
-        
+            }, 300);
         }
-        
-        
     </script>
-<div id="invoiceArea" style="display:none">
-    <div style="text-align:center">
-        <img src="logo.png" style="width:120px;margin-bottom:10px;">
-        <div id="invoiceHeader"
-             style="font-weight:bold;font-size:18px;margin-bottom:15px;">
-        </div>
-    </div>
-    <pre id="invoiceText"
-         style="
-            font-family:'Cairo',sans-serif;
-            font-size:18px;
-            white-space:pre-wrap;
-            line-height:1.8;
-         ">
-    </pre>
-</div>
     
+    <div id="invoiceArea" style="display:none">
+        <div style="text-align:center">
+            <img src="logo.png" style="width:120px;margin-bottom:10px;">
+            <div id="invoiceHeader" style="font-weight:bold;font-size:18px;margin-bottom:15px;"></div>
+        </div>
+        <pre id="invoiceText" style="font-family:'Cairo',sans-serif;font-size:18px;white-space:pre-wrap;line-height:1.8;"></pre>
+    </div>
+
 </body>
 </html>
