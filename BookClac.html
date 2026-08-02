@@ -340,9 +340,17 @@
             🖨️ طباعة فاتورة
         </button>
 
-        <!-- مربع معاينة نص الرسالة -->
+        <!-- مربع معاينة نص الرسالة مع حقل وزر مشاركة الصديق -->
         <div style="margin-top: 20px; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
-            <h4 style="color: #16a34a; margin-bottom: 10px; font-size: 18px;">📄 معاينة نص الرسالة (التي ستُرسل للواتساب والفاتورة):</h4>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                <h4 style="color: #16a34a; font-size: 18px; margin: 0;">📄 معاينة نص الرسالة (التي ستُرسل للواتساب والفاتورة):</h4>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <input type="text" id="friendPhone" placeholder="رقم هاتف الصديق..." style="padding: 6px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; font-family: 'Cairo', sans-serif; width: 160px;">
+                    <a href="#" id="shareFriendBtn" target="_blank" style="background: #25D366; color: white; padding: 6px 14px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; white-space: nowrap; box-shadow: 0 2px 8px rgba(37,211,102,0.3);">
+                        📤 مشاركة للصديق
+                    </a>
+                </div>
+            </div>
             <div id="messagePreview" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: 'Cairo', sans-serif; font-size: 16px; white-space: pre-wrap; line-height: 1.8; text-align: right;">
                 لم يتم اختيار أي كتب بعد...
             </div>
@@ -454,6 +462,8 @@
             const clientAddress = document.getElementById('clientAddress');
             const clientPhone = document.getElementById('clientPhone');
             const messagePreview = document.getElementById('messagePreview');
+            const friendPhoneInput = document.getElementById('friendPhone');
+            const shareFriendBtn = document.getElementById('shareFriendBtn');
         
             deliveryCheckbox.addEventListener('change', function() {
                 if (this.checked) {
@@ -468,6 +478,7 @@
 
             clientAddress.addEventListener('input', updateTotals);
             clientPhone.addEventListener('input', updateTotals);
+            friendPhoneInput.addEventListener('input', updateTotals);
         
             bookItems.forEach(item => {
                 const chk = item.querySelector('.book-chk');
@@ -562,6 +573,14 @@
 
                 // تحديث مربع المعاينة
                 messagePreview.textContent = plainTextMessage;
+
+                // إعداد زر مشاركة الصديق
+                let fPhone = friendPhoneInput.value.trim();
+                if (fPhone) {
+                    shareFriendBtn.href = "https://wa.me/" + fPhone + "?text=" + message;
+                } else {
+                    shareFriendBtn.href = "#";
+                }
 
                 document.getElementById("printInvoiceBtn").onclick = function(){
                     printInvoice(message);
