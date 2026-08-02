@@ -574,8 +574,8 @@
                 // تحديث مربع المعاينة
                 messagePreview.textContent = plainTextMessage;
 
-                // إعداد زر مشاركة الصديق
-                let fPhone = friendPhoneInput.value.trim();
+                // إعداد زر مشاركة الصديق (مع تنظيف الرقم تلقائياً من أي مسافات أو رموز غير صالحة)
+                let fPhone = friendPhoneInput.value.replace(/[^\d+]/g, '').trim();
                 if (fPhone) {
                     shareFriendBtn.href = "https://wa.me/" + fPhone + "?text=" + message;
                 } else {
