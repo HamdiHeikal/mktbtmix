@@ -588,7 +588,8 @@
 
                 messagePreview.textContent = plainTextMessage;
 
-                let fPhone = friendPhoneInput.value.replace(/[^\d+]/g, '').trim();
+                //let fPhone = friendPhoneInput.value.replace(/[^\d+]/g, '').trim();
+                let fPhone = "20" + friendPhoneInput.value.replace(/[^\d+]/g, '').replace(/^0+/, '').trim();
                 if (fPhone) {
                     shareFriendBtn.href = "https://wa.me/" + fPhone + "?text=" + message;
                 } else {
