@@ -58,7 +58,7 @@
             padding-bottom: 15px;
             scroll-behavior: smooth;
             scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch; /* لتحسين نعومة السحب على الأجهزة الذكية وبطئها الطبيعي */
+            -webkit-overflow-scrolling: touch;
             transform: rotateX(180deg);
             width: 100%;
         }
@@ -72,10 +72,10 @@
         .cards-container > * {
             transform: rotateX(180deg);
         }
-        /* تصميم أزرار التمرير (الأسهم) - تم نقلها للأعلى قريبة من أسماء الصفوف */
+        /* تصميم أزرار التمرير (الأسهم) */
         .scroll-btn {
             position: absolute;
-            top: 35px; /* رفعناها للأعلى لتكون قريبة من عنوان الصف الدراسي */
+            top: 35px;
             background: rgba(22, 163, 74, 0.85);
             color: white;
             border: none;
@@ -108,11 +108,21 @@
             min-width: 300px;
             flex: 0 0 320px;
             scroll-snap-align: start;
-            scroll-snap-stop: always; /* تجبر السحب على الانتقال كارت بكارت ببطء وتوازن */
+            scroll-snap-stop: always;
             box-shadow: 0 10px 25px rgba(0,0,0,.12);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            max-height: 520px; /* تحديد ارتفاع للكارت ليظهر شريط تمرير داخلي */
+            overflow-y: auto;  /* السماح بالتمرير داخل الكارت للمواد الكثيرة */
+            position: relative;
+        }
+        /* جعل شريط التمرير داخل الكارت أنيقاً */
+        .grade-card::-webkit-scrollbar {
+            width: 6px;
+        }
+        .grade-card::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
         }
         .grade-card h3 {
             color: #16a34a;
@@ -120,6 +130,10 @@
             margin-bottom: 15px;
             border-bottom: 2px solid #ccf0d8;
             padding-bottom: 8px;
+            position: sticky; /* التثبيت أثناء التمرير */
+            top: -20px;       /* الالتصاق بأعلى الكارت تماماً مع مراعاة الحشو الداخلي */
+            background: #fff; /* خلفية بيضاء لكي لا تظهر المواد من تحت العنوان أثناء السكرول */
+            z-index: 5;
         }
         .book-item {
             display: flex;
@@ -132,7 +146,6 @@
             gap: 8px;
             transition: background-color 0.25s ease, transform 0.15s ease;
         }
-        /* التنسيق عند اختيار الكتاب (تظليل بلون خفيف وحلو) */
         .book-item.selected-book {
             background: #c9f5d5;
             border: 1px solid #bbf7d0;
@@ -148,7 +161,7 @@
             gap: 10px;
             cursor: pointer;
             flex: 1;
-            color: #111827;
+            color: #111827; /* أسود غامق جداً */
             font-weight: 700;
         }
         .book-item input[type="checkbox"] {
@@ -193,7 +206,8 @@
             color: #333;
         }
         .disabled-book {
-            color: #999;
+            color: #111827;
+            font-weight: 700;
             font-size: 14px;
         }
         .summary-card {
@@ -416,14 +430,14 @@
                 let cardDiv = document.createElement('div');
                 cardDiv.className = 'grade-card';
         
-                let innerContent = `<div><h3>${grade}</h3>`;
+                let innerContent = `<h3>${grade}</h3>`;
         
                 gradesData[grade].forEach((book, idx) => {
                     if (book.price === "ما نزلش" || !book.price) {
                         innerContent += `
                             <div class="book-item">
                                 <div class="book-row-top">
-                                    <span style="flex:1;">${book.name}</span>
+                                    <span class="disabled-book" style="flex:1;">${book.name}</span>
                                     <span class="disabled-book">ما نزلش</span>
                                 </div>
                             </div>`;
@@ -446,7 +460,6 @@
                     }
                 });
         
-                innerContent += `</div>`;
                 cardDiv.innerHTML = innerContent;
                 container.appendChild(cardDiv);
             }
@@ -570,13 +583,11 @@
                     plainTextMessage += "\n📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
                 }
 
-                message += "%0A%0A يسعدنا زيارتكم";
-                plainTextMessage += "\n\n يسعدنا زيارتكم";
+                message += "%0A%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
+                plainTextMessage += "\n\nمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
 
-                // تحديث مربع المعاينة
                 messagePreview.textContent = plainTextMessage;
 
-                // إعداد زر مشاركة الصديق (مع تنظيف الرقم تلقائياً من أي مسافات أو رموز غير صالحة)
                 let fPhone = friendPhoneInput.value.replace(/[^\d+]/g, '').trim();
                 if (fPhone) {
                     shareFriendBtn.href = "https://wa.me/" + fPhone + "?text=" + message;
@@ -613,7 +624,7 @@
                         width:120px;
                     }
                     pre{
-                        white-space:pre-wrap;
+                        static-space:pre-wrap;
                         font-size:18px;
                         line-height:1.8;
                     }
