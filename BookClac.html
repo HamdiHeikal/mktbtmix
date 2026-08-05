@@ -593,8 +593,10 @@
                     plainTextMessage += "\n📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
                 }
 
-                message += "%0A%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
-                plainTextMessage += "\n\nمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
+                // النص الجديد المطلوب بدلاً من السطر القديم
+                message += "%0A%0A* موقع خاص بمكتبة مكس فقط%0A1- ادخل على الرابط%0A2- واختار كتبك%0A3- من زر (ارسل للواتس) هتبعت لى طلباتك فورا%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0Aمبرمجه بنفسي%0A* اسهل طريقة فى اختيارك للكتب ومعرفتك بالكتب اللى نزلت واللى منزلتش%0Aمنتظر تجربتكم وتشجيعكم";
+                
+                plainTextMessage += "\n\n* موقع خاص بمكتبة مكس فقط\n1- ادخل على الرابط\n2- واختار كتبك\n3- من زر (ارسل للواتس) هتبعت لى طلباتك فورا\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\nمبرمجه بنفسي\n* اسهل طريقة فى اختيارك للكتب ومعرفتك بالكتب اللى نزلت واللى منزلتش\nمنتظر تجربتكم وتشجيعكم";
 
                 messagePreview.textContent = plainTextMessage;
 
@@ -619,7 +621,7 @@
             document.getElementById("invoiceHeader").innerHTML = date + " &nbsp;&nbsp;&nbsp; مكتبة مكس - ش الأوبرج - 01093393975";
             document.getElementById("invoiceText").textContent = decodeURIComponent(message);
         
-            const w = window.open("", "", "width=800,height=900");
+            const w = window.open("", "", "width=800,height00");
             w.document.write(`
             <html dir="rtl">
             <head>
