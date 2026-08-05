@@ -321,7 +321,7 @@
 
         <div class="summary-card">
             <div class="summary-flex-container" style="display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
-                <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <a href="#" id="whatsappSend" class="whatsapp-btn whatsapp-pulse" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                     💬 ارسل للواتس
                 </a>
                 <div class="total-box-item" style="flex: 2 1 auto; min-width: 0; padding: 10px 5px; font-size: clamp(11px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: visible;">
@@ -628,6 +628,21 @@
                         static-space:pre-wrap;
                         font-size:18px;
                         line-height:1.8;
+                    }
+                    @keyframes pulse-zoom {
+                      0% {
+                        transform: scale(1);
+                      }
+                      50% {
+                        transform: scale(1.08); /* نسبة التكبير (يمكنك تعديلها) */
+                      }
+                      100% {
+                        transform: scale(1);
+                      }
+                    }
+                    
+                    .whatsapp-pulse {
+                      animation: pulse-zoom 1.5s infinite ease-in-out;
                     }
                 </style>
             </head>
