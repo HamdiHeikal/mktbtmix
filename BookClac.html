@@ -112,11 +112,10 @@
             box-shadow: 0 10px 25px rgba(0,0,0,.12);
             display: flex;
             flex-direction: column;
-            max-height: 520px; /* تحديد ارتفاع للكارت ليظهر شريط تمرير داخلي */
-            overflow-y: auto;  /* السماح بالتمرير داخل الكارت للمواد الكثيرة */
+            max-height: 520px;
+            overflow-y: auto;
             position: relative;
         }
-        /* جعل شريط التمرير داخل الكارت أنيقاً */
         .grade-card::-webkit-scrollbar {
             width: 6px;
         }
@@ -130,9 +129,9 @@
             margin-bottom: 15px;
             border-bottom: 2px solid #ccf0d8;
             padding-bottom: 8px;
-            position: sticky; /* التثبيت أثناء التمرير */
-            top: -20px;       /* الالتصاق بأعلى الكارت تماماً مع مراعاة الحشو الداخلي */
-            background: #fff; /* خلفية بيضاء لكي لا تظهر المواد من تحت العنوان أثناء السكرول */
+            position: sticky;
+            top: -20px;
+            background: #fff;
             z-index: 5;
         }
         .book-item {
@@ -161,7 +160,7 @@
             gap: 10px;
             cursor: pointer;
             flex: 1;
-            color: #111827; /* أسود غامق جداً */
+            color: #111827;
             font-weight: 700;
         }
         .book-item input[type="checkbox"] {
@@ -266,7 +265,6 @@
             justify-content: center;
             gap: 15px;
             flex-wrap: wrap;
-            animation: fadeIn 0.3s ease-in-out;
         }
         .delivery-input {
             padding: 10px 15px;
@@ -278,6 +276,22 @@
             background: #fff;
             font-family: 'Cairo', sans-serif;
         }
+
+        /* كود تأثير النبض المستمر لزر الواتساب */
+        @keyframes pulse-zoom {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.08); }
+          100% { transform: scale(1); }
+        }
+        .whatsapp-pulse {
+          animation: pulse-zoom 1.5s infinite ease-in-out;
+          display: inline-block;
+        }
+        .whatsapp-pulse:hover {
+          animation-play-state: paused;
+          transform: scale(1.12);
+        }
+
         .whatsapp-btn {
             display: inline-block;
             background: #25D366;
@@ -292,9 +306,6 @@
             white-space: nowrap;
             direction: rtl;
         }
-        .whatsapp-btn:hover {
-            transform: scale(1.05);
-        }
         .back{
             display: block;
             width: 240px;
@@ -307,7 +318,7 @@
             border-radius: 12px;
             font-size: 18px;
         }
-    </
+    </style>
 </head>
 <body>
 
@@ -321,7 +332,9 @@
 
         <div class="summary-card">
             <div class="summary-flex-container" style="display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
-                <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <a href="#" id="whatsappSend" class="whatsapp-btn whatsapp-pulse" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    💬 ارسل للواتس
+                </a>
                 <div class="total-box-item" style="flex: 2 1 auto; min-width: 0; padding: 10px 5px; font-size: clamp(11px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: visible;">
                     الإجمالي: <span id="totalBefore">0.00</span> (بالخصم: <span id="totalAfter">0.00</span> ج)
                 </div>
@@ -349,8 +362,7 @@
         </div>
 
         <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>
-        <button class="back" id="printInvoiceBtn"
-                style="background:#16a34a;display:inline-block;width:auto;margin-right:10px;">
+        <button class="back" id="printInvoiceBtn" style="background:#16a34a;display:inline-block;width:auto;margin-right:10px;">
             🖨️ طباعة فاتورة
         </button>
 
@@ -586,9 +598,8 @@
 
                 messagePreview.textContent = plainTextMessage;
 
-                //let fPhone = friendPhoneInput.value.replace(/[^\d+]/g, '').trim();
                 let fPhone = "20" + friendPhoneInput.value.replace(/[^\d+]/g, '').replace(/^0+/, '').trim();
-                if (fPhone) {
+                if (fPhone && friendPhoneInput.value.trim() !== "") {
                     shareFriendBtn.href = "https://wa.me/" + fPhone + "?text=" + message;
                 } else {
                     shareFriendBtn.href = "#";
@@ -623,7 +634,7 @@
                         width:120px;
                     }
                     pre{
-                        static-space:pre-wrap;
+                        white-space:pre-wrap;
                         font-size:18px;
                         line-height:1.8;
                     }
