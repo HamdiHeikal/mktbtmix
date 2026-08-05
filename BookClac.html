@@ -7,29 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        @keyframes pulse-zoom {
-          0% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.1); /* درجة التكبير أثناء النبض */
-          }
-          100% {
-            transform: scale(1);
-          }
-        }
-        
-        .whatsapp-pulse {
-          /* تشغيل الحركة باستمرار بشكل تلقائي */
-          animation: pulse-zoom 1.5s infinite ease-in-out;
-          display: inline-block; /* ضروري جداً لكي تعمل خاصية الـ transform بشكل صحيح مع الزر */
-        }
-        
-        /* اختيارياً: إذا أردت أن يتوقف النبض عندما يضع المستخدم الماوس فوقه لكي لا يزعجه */
-        .whatsapp-pulse:hover {
-          animation-play-state: paused; 
-          transform: scale(1.12); /* تكبير ثابت عند الوقوف بالماوس */
-        }
         *{
             margin: 0;
             padding: 0;
@@ -344,9 +321,7 @@
 
         <div class="summary-card">
             <div class="summary-flex-container" style="display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
-                <a href="#" id="whatsappSend" class="whatsapp-btn whatsapp-pulse" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    💬 ارسل للواتس
-                </a>
+                <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 <div class="total-box-item" style="flex: 2 1 auto; min-width: 0; padding: 10px 5px; font-size: clamp(11px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: visible;">
                     الإجمالي: <span id="totalBefore">0.00</span> (بالخصم: <span id="totalAfter">0.00</span> ج)
                 </div>
