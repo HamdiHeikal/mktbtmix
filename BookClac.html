@@ -44,7 +44,7 @@
             display: flex;
             gap: 20px;
             overflow-x: auto;
-            padding-top: 15px;     
+            padding-top: 15px;    
             padding-bottom: 15px;
             scroll-behavior: smooth;
             scroll-snap-type: x mandatory;
@@ -295,14 +295,14 @@
             direction: rtl;
         }
         @keyframes truck-drive {
-            0% { transform: translateX(240px); opacity: 0; } /* زيادة المسافة من 120px إلى 240px */
+            0% { transform: translateX(240px); opacity: 0; }
             20% { opacity: 1; }
             100% { transform: translateX(0); opacity: 1; }
         }
         .animated-truck {
             display: inline-block;
-            font-size: 2em; /* بالحجم الأكبر للضعف  */
-            animation: truck-drive 6s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;/* 2s تبطيئ السرعه من اصل */
+            font-size: 2em; 
+            animation: truck-drive 6s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
         }
         .back {
             display: block;
@@ -410,7 +410,10 @@
         function parsePrice(v) {
             if (v == null) return NaN;
             if (typeof v === 'number') return Number(v);
-            const s = String(v).trim().replace(/[^\d.,-]/g, '').replace(',', '.');
+            const strVal = String(v).trim();
+            // معالجة الحالات النصية مثل "لسة منزلش" أو "ما نزلش"
+            if (strVal === 'لسة منزلش' || strVal === 'ما نزلش' || strVal === '') return NaN;
+            const s = strVal.replace(/[^\d.,-]/g, '').replace(',', '.');
             const n = parseFloat(s);
             return Number.isFinite(n) ? n : NaN;
         }
@@ -428,7 +431,7 @@
         
             for (let i = 1; i < rows.length; i++) {
                 let row = rows[i] || [];
-                let grade = String(row[0] ?? '').trim();       
+                let grade = String(row[0] ?? '').trim();        
                 let bookName = String(row[1] ?? '').trim();    
                 let priceBeforeRaw = row[2]; 
                 let priceAfterRaw = row[3];  
@@ -466,7 +469,8 @@
                     let top = document.createElement('div');
                     top.className = 'book-row-top';
 
-                    if (!Number.isFinite(book.priceBefore) && String(book.rawPriceBefore).trim() === 'ما نزلش') {
+                    let rawBeforeStr = String(book.rawPriceBefore ?? '').trim();
+                    if (!Number.isFinite(book.priceBefore) && (rawBeforeStr === 'لسة منزلش' || rawBeforeStr === 'ما نزلش' || rawBeforeStr === '0')) {
                         let nameSpan = document.createElement('span');
                         nameSpan.className = 'disabled-book';
                         nameSpan.style.flex = '1';
@@ -474,7 +478,7 @@
 
                         let noSpan = document.createElement('span');
                         noSpan.className = 'disabled-book';
-                        noSpan.textContent = 'ما نزلش';
+                        noSpan.textContent = rawBeforeStr === '0' ? 'لسة منزلش' : rawBeforeStr;
 
                         top.appendChild(nameSpan);
                         top.appendChild(noSpan);
@@ -566,7 +570,6 @@
             clientPhone.addEventListener('input', updateTotals);
             friendPhoneInput.addEventListener('input', updateTotals);
 
-            // استخدام تفويض الأحداث (Event Delegation) لإدارة الكميات وتغيير حالة الاختيار بفاعلية وأمان
             container.addEventListener('click', (e) => {
                 const btn = e.target.closest('.qty-btn');
                 if (btn) {
@@ -592,6 +595,7 @@
                     updateTotals();
                 }
             });
+
             function updateTotals() {
                 const checkboxes = container.querySelectorAll('.book-chk');
                 let totalBefore = 0;
@@ -644,7 +648,6 @@
                         if (clientPhone && clientPhone.value.trim()) message += `📞 الهاتف: ${clientPhone.value.trim()}\n`;
                     }
 
-                    // إضافة النص الإضافي التسويقي فقط في حالة وجود عناصر بالسلة
                     message += "\n--------------------------\n";
                     message += "📚 *موقع خاص بمكتبة مكس* 📚\n";
                     message += "اطلب كتبك فى 3 خطوات بسيطة:\n";
@@ -658,7 +661,6 @@
 
                 if (messagePreview) messagePreview.textContent = message;
 
-                // تحديث وتأمين زر الإرسال الأساسي للواتساب بناءً على وجود عناصر
                 if (whatsappSendBtn) {
                     whatsappSendBtn.target = '_blank';
                     whatsappSendBtn.rel = 'noopener noreferrer';
@@ -679,7 +681,6 @@
                     }
                 }
 
-                // ربط وتطبيع رقم هاتف الصديق عند الإرسال
                 if (shareFriendBtn && friendPhoneInput) {
                     shareFriendBtn.target = '_blank';
                     shareFriendBtn.rel = 'noopener noreferrer';
@@ -698,7 +699,7 @@
                     }
                 }
             }
-            // زر طباعة الفاتورة
+
             const printInvoiceBtn = document.getElementById('printInvoiceBtn');
             if (printInvoiceBtn) {
                 printInvoiceBtn.onclick = function() {
