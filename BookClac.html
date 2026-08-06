@@ -34,7 +34,6 @@
             margin: auto;
             padding: 20px 0;
         }
-        /* حاوية السلايدر مع الأسهم */
         .slider-wrapper {
             position: relative;
             display: flex;
@@ -62,7 +61,6 @@
         .cards-container > * {
             scroll-snap-align: start;
         }
-        /* تصميم أزرار التمرير (الأسهم) */
         .scroll-btn {
             position: absolute;
             top: 35px;
@@ -195,9 +193,12 @@
             color: #333;
         }
         .disabled-book {
-            color: #999;
+            color: #e11d48;
             font-weight: 700;
             font-size: 14px;
+            background: #ffe4e6;
+            padding: 2px 8px;
+            border-radius: 6px;
         }
         .summary-card {
             background: #ccf0d8;
@@ -411,11 +412,10 @@
             if (v == null) return NaN;
             if (typeof v === 'number') return Number(v);
             const strVal = String(v).trim();
-            // معالجة الحالات النصية مثل "لسة منزلش" أو "ما نزلش"
-            if (strVal === 'لسة منزلش' || strVal === 'ما نزلش' || strVal === '') return NaN;
+            if (strVal === 'لسة منزلش' || strVal === 'ما نزلش' || strVal === '' || strVal === '0' || strVal === '0.0' || strVal === '0.00') return NaN;
             const s = strVal.replace(/[^\d.,-]/g, '').replace(',', '.');
             const n = parseFloat(s);
-            return Number.isFinite(n) ? n : NaN;
+            return Number.isFinite(n) && n > 0 ? n : NaN;
         }
 
         function formatCurrency(n) {
@@ -470,15 +470,18 @@
                     top.className = 'book-row-top';
 
                     let rawBeforeStr = String(book.rawPriceBefore ?? '').trim();
-                    if (!Number.isFinite(book.priceBefore) && (rawBeforeStr === 'لسة منزلش' || rawBeforeStr === 'ما نزلش' || rawBeforeStr === '0')) {
+                    let isUnreleased = !Number.isFinite(book.priceBefore) || rawBeforeStr === '0' || rawBeforeStr === '0.0' || rawBeforeStr === '0.00' || rawBeforeStr === 'لسة منزلش' || rawBeforeStr === 'ما نزلش';
+
+                    if (isUnreleased) {
                         let nameSpan = document.createElement('span');
-                        nameSpan.className = 'disabled-book';
                         nameSpan.style.flex = '1';
+                        nameSpan.style.fontWeight = '700';
+                        nameSpan.style.color = '#111827';
                         nameSpan.textContent = book.name;
 
                         let noSpan = document.createElement('span');
                         noSpan.className = 'disabled-book';
-                        noSpan.textContent = rawBeforeStr === '0' ? 'لسة منزلش' : rawBeforeStr;
+                        noSpan.textContent = 'مانزلش';
 
                         top.appendChild(nameSpan);
                         top.appendChild(noSpan);
