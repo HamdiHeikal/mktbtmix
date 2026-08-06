@@ -591,8 +591,7 @@
                     updateTotals();
                 }
             });
-        
-            function updateTotals() {
+        function updateTotals() {
                 const checkboxes = container.querySelectorAll('.book-chk');
                 let totalBefore = 0;
                 let totalAfter = 0;
@@ -622,7 +621,7 @@
                 totalBeforeEl.textContent = formatCurrency(totalBefore);
                 totalAfterEl.textContent = formatCurrency(totalAfter);
 
-                // بناء نص الرسالة والمعاينة
+                // بناء نص الرسالة والمعاينة مع النص الإضافي في الأسفل
                 let message = "📚 *طلب كتب خارجية من مكتبةمكس_MKTBTmix* 📚\n\n";
                 let hasItems = false;
 
@@ -645,14 +644,23 @@
                         if (clientPhone.value.trim()) message += `📞 الهاتف: ${clientPhone.value.trim()}\n`;
                     }
                 } else {
-                    message = "لم يتم اختيار أي كتب بعد...";
+                    message = "لم يتم اختيار أي كتب بعد...\n\n";
                 }
+
+                // إضافة النص الإضافي الثابت أسفل الفاتورة والرسالة
+                message += "\n--------------------------\n";
+                message += "📚 *موقع خاص بمكتبة مكس* 📚\n";
+                message += "اطلب كتبك فى 3 خطوات بسيطة:\n";
+                message += "1- ادخل على الرابط.  2- اختار الكتب اللى محتاجها.  3- اضغط (إرسال لواتس المكتبة).\n";
+                message += "https://hamdiheikal.github.io/mktbtmix/BookClac.html\n";
+                message += "💻 برمجتى الشخصية وتحت أمركم فى اقتراحات التطوير. | ⭐ أسهل / أسرع / ومعرفة اللى لسه منزلتش.\n";
+                message += "🌹 *مستنى تجربتكم وتشجيعكم* 🌹";
 
                 messagePreview.textContent = message;
 
                 // ربط أزرار الواتساب
                 const encodedMessage = encodeURIComponent(message);
-                whatsappSendBtn.href = `https://wa.me/201093393975?text=${encodedMessage}`; // ضع رقم الواتساب الخاص بك مكان الأصفار
+                whatsappSendBtn.href = `https://wa.me/201093393975?text=${encodedMessage}`;
 
                 const friendPhone = friendPhoneInput.value.trim();
                 if (friendPhone) {
