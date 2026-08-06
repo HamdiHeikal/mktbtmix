@@ -32,19 +32,6 @@
             margin: auto;
             padding: 20px 0;
         }
-        .main-banner{
-            background: #fff;
-            border-radius: 18px;
-            padding: 20px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: #16a34a;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,.12);
-            line-height: 1.8;
-        }
-        /* حاوية السلايدر مع الأسهم */
         .slider-wrapper {
             position: relative;
             display: flex;
@@ -72,7 +59,6 @@
         .cards-container > * {
             transform: rotateX(180deg);
         }
-        /* تصميم أزرار التمرير (الأسهم) */
         .scroll-btn {
             position: absolute;
             top: 35px;
@@ -225,12 +211,6 @@
             flex-wrap: wrap;
             direction: ltr;
         }
-        .totals-box {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            direction: rtl;
-        }
         .total-box-item {
             background: #fff;
             padding: 15px 20px;
@@ -259,6 +239,19 @@
             height: 18px;
             accent-color: #d97706;
         }
+        
+        /* تحسين حركة السيارة وأنيميشن التوصيل */
+        @keyframes truck-bounce {
+            0%, 100% { transform: translateX(0) translateY(0) scale(1); }
+            25% { transform: translateX(6px) translateY(-2px) scale(1.1); }
+            50% { transform: translateX(12px) translateY(0) scale(1); }
+            75% { transform: translateX(6px) translateY(-1px) scale(1.05); }
+        }
+        .animated-truck {
+            display: inline-block;
+            animation: truck-bounce 1.5s infinite ease-in-out;
+        }
+
         #deliveryDetails {
             margin-top: 15px;
             display: flex;
@@ -275,12 +268,15 @@
             outline: none;
             background: #fff;
             font-family: 'Cairo', sans-serif;
+            transition: all 0.3s ease;
         }
-
-        /* كود تأثير النبض المستمر لزر الواتساب */
+        .delivery-input:focus {
+            border-color: #b45309;
+            box-shadow: 0 0 8px rgba(217, 119, 6, 0.3);
+        }
         @keyframes pulse-zoom {
           0% { transform: scale(1); }
-          50% { transform: scale(1.25); }
+          50% { transform: scale(1.08); }
           100% { transform: scale(1); }
         }
         .whatsapp-pulse {
@@ -291,7 +287,6 @@
           animation-play-state: paused;
           transform: scale(1.12);
         }
-
         .whatsapp-btn {
             display: inline-block;
             background: #25D366;
@@ -343,7 +338,7 @@
             <div class="footer-note">
                 <label>
                     <input type="checkbox" id="deliveryCheckbox">
-                    🚚 لو حابب التوصيل، فعّل هذا الخيار.
+                    <span class="animated-truck">&#128666;</span> لو حابب التوصيل، فعّل هذا الخيار.
                 </label>
                 <div id="deliveryDetails" style="display: none;">
                     <input type="text" id="clientAddress" class="delivery-input" placeholder="اكتب عنوانك بالتفصيل هنا...">
@@ -352,7 +347,6 @@
             </div>
         </div>
 
-        <!-- حاوية الكروت مع أزرار الأسهم للتنقل -->
         <div class="slider-wrapper">
             <button class="scroll-btn scroll-right" id="scrollRight">&lt;</button>
             <div class="cards-container" id="cardsContainer">
@@ -366,7 +360,6 @@
             🖨️ طباعة فاتورة
         </button>
 
-        <!-- مربع معاينة نص الرسالة مع حقل وزر مشاركة الصديق -->
         <div style="margin-top: 20px; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
                 <h4 style="color: #16a34a; font-size: 18px; margin: 0;">📄 معاينة نص الرسالة (التي ستُرسل للواتساب والفاتورة):</h4>
@@ -400,7 +393,6 @@
                 })
                 .catch(error => console.error("خطأ في قراءة ملف الأكسيل:", error));
         
-            // تفعيل أزرار التمرير (الأسهم)
             const container = document.getElementById('cardsContainer');
             document.getElementById('scrollRight').addEventListener('click', () => {
                 container.scrollBy({ left: 340, behavior: 'smooth' });
@@ -565,11 +557,11 @@
                 totalBeforeEl.textContent = totalBefore.toFixed(2);
                 totalAfterEl.textContent = totalAfter.toFixed(2);
         
-                let message = "📚 *طلب حجز كتب خارجية*%0A";
+                let message = "&#128218; طلب حجز كتب خارجية%0A";
                 let plainTextMessage = "📚 طلب حجز كتب خارجية\n";
                 
                 for (let grade in groupedBooks) {
-                    message += "%0A📌 *" + grade + "*:%0A";
+                    message += "%0A&#128204; " + grade + ":%0A";
                     plainTextMessage += "\n📌 " + grade + ":\n";
                     groupedBooks[grade].forEach((book, index) => {
                         message += (index + 1) + "- " + book + "%0A";
@@ -584,25 +576,23 @@
                 plainTextMessage += "\nإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
 
                 if (deliveryCheckbox.checked) {
-                    message += "%0A%0A🚚 *طلب توصيل للمنزل*:";
-                    message += "%0A📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
-                    message += "%0A📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
+                    message += "%0A%0A&#128666; طلب توصيل للمنزل:";
+                    message += "%0A&#128205; العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
+                    message += "%0A&#128222; التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
 
                     plainTextMessage += "\n\n🚚 طلب توصيل للمنزل:";
                     plainTextMessage += "\n📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
                     plainTextMessage += "\n📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
                 }
 
-                // النص الجديد المطلوب بدلاً من السطر القديم
-                // الذيل مدمج في سطور أقل ومحافظ على الرموز الآمنة لطباعة الفاتورة والواتس
-                message += "%0A%0A&#128218; موقع خاص بمكتبة مكس &#128218;%0Aاطلب كتبك فى 3 خطوات:%0A1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A&#128187; الموقع برمجتى الشخصية | &#11088; أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.%0A&#127801; مستنى تجربتكم وتشجيعكم.";
+                message += "%0A%0A&#128218; موقع خاص بمكتبة مكس &#128218;%0Aاطلب كتبك فى 3 خطوات:%0A1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A&#128187; الموقع برمجتى الشخصية | &#11088; أسهل لاختيار الكتب ومعرفة اللى لسه منزلش.%0A&#127801; مستنى تجربتكم وتشجيعكم.";
                 
-                plainTextMessage += "\n\n📚 موقع خاص بمكتبة مكس 📚\nاطلب كتبك فى 3 خطوات:\n1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n💻 الموقع برمجتى الشخصية | ⭐ أسهل لاختيار الكتب ومعرفة المنزل واللى لسه.\n🌹 مستنى تجربتكم وتشجيعكم.";                
-                              
+                plainTextMessage += "\n\n📚 موقع خاص بمكتبة مكس 📚\nاطلب كتبك فى 3 خطوات:\n1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n💻 الموقع برمجتى الشخصية | ⭐ أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.\n🌹 مستنى تجربتكم وتشجيعكم.";                
+                
                 messagePreview.textContent = plainTextMessage;
-                // معالجة رقم هاتف الصديق مهما كانت طريقة نسخه (مسافات، أقواس، +20، أصفار زائدة)
-                let rawInput = friendPhoneInput.value.trim();
+
                 let cleanDigits = friendPhoneInput.value.replace(/[^\d+]/g, '');
+                let rawInput = friendPhoneInput.value.trim();
                 let fPhone = "";
 
                 if (rawInput.startsWith("+")) {
@@ -610,7 +600,6 @@
                 } else if (cleanDigits.startsWith("20") && cleanDigits.length > 10) {
                     fPhone = cleanDigits;
                 } else {
-                    // إزالة الأصفار من البداية لو وجدت ثم إضافة كود مصر الدولي تلقائياً 20
                     let noLeadingZeros = cleanDigits.replace(/^0+/, '');
                     if (noLeadingZeros.length > 0) {
                         fPhone = "20" + noLeadingZeros;
@@ -640,7 +629,7 @@
             document.getElementById("invoiceHeader").innerHTML = date + " &nbsp;&nbsp;&nbsp; مكتبة مكس - ش الأوبرج - 01093393975";
             document.getElementById("invoiceText").textContent = decodeURIComponent(message);
         
-            const w = window.open("", "", "width=800,height00");
+            const w = window.open("", "", "width=800,height=600");
             w.document.write(`
             <html dir="rtl">
             <head>
