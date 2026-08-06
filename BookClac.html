@@ -306,6 +306,29 @@
             white-space: nowrap;
             direction: rtl;
         }
+        @keyframes truck-drive {
+            0% { transform: translateX(120px); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        
+        .footer-note label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        
+        .animated-truck {
+            display: inline-block;
+            animation: truck-drive 2s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+        }
+        
+        .footer-note span:not(.animated-truck) {
+            display: inline-block;
+            animation: truck-drive 2s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+        }
         .back{
             display: block;
             width: 240px;
@@ -341,8 +364,10 @@
             </div>
         
             <div class="footer-note">
-                <label class="whatsapp-pulse" >
-                    🚚 لو حابب التوصيل، فعّل هذا الخيار.
+                <label>
+                    <span class="truck-container">
+                        لو حابب التوصيل، فعّل هذا الخيار. <span class="animated-truck">🚚</span>
+                    </span>
                     <input type="checkbox" id="deliveryCheckbox">
                 </label>
                 <div id="deliveryDetails" style="display: none;">
@@ -565,10 +590,10 @@
                 totalBeforeEl.textContent = totalBefore.toFixed(2);
                 totalAfterEl.textContent = totalAfter.toFixed(2);
         
-                // الذيل مدمج في سطور أقل ومحافظ على الرموز الآمنة لطباعة الفاتورة والواتس
-                message += "%0A%0A&#128218; موقع خاص بمكتبة مكس &#128218;%0Aاطلب كتبك فى 3 خطوات:%0A1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A&#128187; الموقع برمجتى الشخصية | &#11088; أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.%0A&#127801; مستنى تجربتكم وتشجيعكم.";
+                // 1. نبدأ الرسالة بالعنوان والكتب أولاً
+                let message = "&#128218; طلب حجز كتب خارجية%0A";
+                let plainTextMessage = "📚 طلب حجز كتب خارجية\n";
                 
-                plainTextMessage += "\n\n📚 موقع خاص بمكتبة مكس 📚\nاطلب كتبك فى 3 خطوات:\n1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n💻 الموقع برمجتى الشخصية | ⭐ أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.\n🌹 مستنى تجربتكم وتشجيعكم.";
                 for (let grade in groupedBooks) {
                     message += "%0A📌 *" + grade + "*:%0A";
                     plainTextMessage += "\n📌 " + grade + ":\n";
@@ -578,6 +603,59 @@
                     });
                 }
 
+                // 2. إضافة الإجماليات
+                message += "%0Aإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
+                message += "%0Aإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
+
+                plainTextMessage += "\nإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
+                plainTextMessage += "\nإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
+
+                if (deliveryCheckbox.checked) {
+                    message += "%0A%0A&#128666; طلب توصيل للمنزل:";
+                    message += "%0A&#128205; العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
+                    message += "%0A&#128222; التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
+
+                    plainTextMessage += "\n\n🚚 طلب توصيل للمنزل:";
+                    plainTextMessage += "\n📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
+                    plainTextMessage += "\n📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
+                }
+
+                // 3. وضع الذيل (Footer) في النهاية تماماً
+                message += "%0A%0A&#128218; موقع خاص بمكتبة مكس &#128218;%0Aاطلب كتبك فى 3 خطوات:%0A1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A&#128187; الموقع برمجتى الشخصية | &#11088; أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.%0A&#127801; مستنى تجربتكم وتشجيعكم.";
+                
+                plainTextMessage += "\n\n📚 موقع خاص بمكتبة مكس 📚\nاطلب كتبك فى 3 خطوات:\n1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n💻 الموقع برمجتى الشخصية | ⭐ أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.\n🌹 مستنى تجربتكم وتشجيعكم.";                
+                
+                messagePreview.textContent = plainTextMessage;
+
+                let cleanDigits = friendPhoneInput.value.replace(/[^\d+]/g, '');
+                let rawInput = friendPhoneInput.value.trim();
+                let fPhone = "";
+
+                if (rawInput.startsWith("+")) {
+                    fPhone = "+" + cleanDigits.replace(/\+/g, '');
+                } else if (cleanDigits.startsWith("20") && cleanDigits.length > 10) {
+                    fPhone = cleanDigits;
+                } else {
+                    let noLeadingZeros = cleanDigits.replace(/^0+/, '');
+                    if (noLeadingZeros.length > 0) {
+                        fPhone = "20" + noLeadingZeros;
+                    }
+                }
+
+                if (fPhone && fPhone.length >= 10) {
+                    shareFriendBtn.href = "https://wa.me/" + fPhone + "?text=" + message;
+                    shareFriendBtn.style.opacity = "1";
+                    shareFriendBtn.style.pointerEvents = "auto";
+                } else {
+                    shareFriendBtn.href = "#";
+                    shareFriendBtn.style.opacity = "0.6";
+                }
+
+                document.getElementById("printInvoiceBtn").onclick = function(){
+                    printInvoice(message);
+                };        
+                whatsappSendBtn.href = "https://wa.me/201093393975?text=" + message;
+            }
                 message += "%0Aإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
                 message += "%0Aإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
 
