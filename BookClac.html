@@ -297,7 +297,7 @@
 
     <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 15px 20px;">
         <div style="flex: 1; text-align: center; font-size: clamp(14px, 2.5vw, 22px); font-weight: bold; order: 2; white-space: nowrap;">
-            اختار المواد ⬅️ شوف الاجمالى ⬅️ ارسل طلبيتك للواتس
+            اختار المواد ⬅️ شوف الاجمالى (خصم15%) ⬅️ ارسل طلبيتك للواتس
         </div>
     </header>
 
@@ -568,8 +568,11 @@
                     plainTextMessage += "\n📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
                 }
 
-                message += "%0A%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
-                plainTextMessage += "\n\nمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
+                //message += "%0A%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
+                //plainTextMessage += "\n\nمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
+                message += "%0A%0A&#128218; موقع خاص بمكتبة مكس &#128218;%0Aاطلب كتبك فى 3 خطوات:%0A1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A&#128187; الموقع برمجتى الشخصية | &#11088; أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.%0A&#127801; مستنى تجربتكم وتشجيعكم.";
+                plainTextMessage += "\n\n📚 موقع خاص بمكتبة مكس 📚\nاطلب كتبك فى 3 خطوات:\n1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n💻 الموقع برمجتى الشخصية | ⭐ أسهل لاختيار الكتب ومعرفة المنزل واللى لسه.\n🌹 مستنى تجربتكم وتشجيعكم.";                
+
 
                 // تحديث مربع المعاينة
                 messagePreview.textContent = plainTextMessage;
