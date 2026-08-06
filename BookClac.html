@@ -4,20 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>اعرف حساب طلبيات الكتب الخارجية | مكتبةمكس_MKTBTmix</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
     <style>
-        *{
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Cairo', sans-serif;
         }
-        body{
+        body {
             background: #dde3eb;
             color: #333;
         }
-        header{
+        header {
             background: #16a34a;
             color: white;
             padding: 20px;
@@ -26,23 +28,11 @@
             font-weight: bold;
             box-shadow: 0 3px 10px rgba(0,0,0,.2);
         }
-        .container{
+        .container {
             width: 95%;
             max-width: 1100px;
             margin: auto;
             padding: 20px 0;
-        }
-        .main-banner{
-            background: #fff;
-            border-radius: 18px;
-            padding: 20px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: #16a34a;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,.12);
-            line-height: 1.8;
         }
         /* حاوية السلايدر مع الأسهم */
         .slider-wrapper {
@@ -59,8 +49,8 @@
             scroll-behavior: smooth;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
-            transform: rotateX(180deg);
             width: 100%;
+            direction: rtl;
         }
         .cards-container::-webkit-scrollbar {
             height: 10px;
@@ -70,7 +60,7 @@
             border-radius: 10px;
         }
         .cards-container > * {
-            transform: rotateX(180deg);
+            scroll-snap-align: start;
         }
         /* تصميم أزرار التمرير (الأسهم) */
         .scroll-btn {
@@ -219,10 +209,10 @@
         }
         .summary-flex-container {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 10px;
+            width: 100%;
             direction: ltr;
         }
         .totals-box {
@@ -253,6 +243,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            white-space: nowrap;
         }
         .footer-note input[type="checkbox"] {
             width: 18px;
@@ -261,7 +252,7 @@
         }
         #deliveryDetails {
             margin-top: 15px;
-            display: flex;
+            display: none;
             justify-content: center;
             gap: 15px;
             flex-wrap: wrap;
@@ -276,22 +267,19 @@
             background: #fff;
             font-family: 'Cairo', sans-serif;
         }
-
-        /* كود تأثير النبض المستمر لزر الواتساب */
         @keyframes pulse-zoom {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.30); }
-          100% { transform: scale(1); }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.30); }
+            100% { transform: scale(1); }
         }
         .whatsapp-pulse {
-          animation: pulse-zoom 1.5s infinite ease-in-out;
-          display: inline-block;
+            animation: pulse-zoom 1.5s infinite ease-in-out;
+            display: inline-block;
         }
         .whatsapp-pulse:hover {
-          animation-play-state: paused;
-          transform: scale(1.12);
+            animation-play-state: paused;
+            transform: scale(1.12);
         }
-
         .whatsapp-btn {
             display: inline-block;
             background: #25D366;
@@ -311,25 +299,11 @@
             20% { opacity: 1; }
             100% { transform: translateX(0); opacity: 1; }
         }
-        
-        .footer-note label {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        
         .animated-truck {
             display: inline-block;
             animation: truck-drive 2s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
         }
-        
-        .footer-note span:not(.animated-truck) {
-            display: inline-block;
-            animation: truck-drive 2s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
-        }
-        .back{
+        .back {
             display: block;
             width: 240px;
             margin: 20px auto 0;
@@ -347,18 +321,18 @@
 
     <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 15px 20px;">
         <div style="flex: 1; text-align: center; font-size: clamp(14px, 2.5vw, 22px); font-weight: bold; order: 2; white-space: nowrap;">
-            اختار المواد ⬅️ شوف الاجمالى(خصم15%) ⬅️ ارسل طلبيتك للواتس
+            اختار المواد ⬅️ شوف الاجمالى (خصم 15%) ⬅️ ارسل طلبيتك للواتس
         </div>
     </header>
 
     <div class="container">
 
         <div class="summary-card">
-            <div class="summary-flex-container" style="display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
-                <a href="#" id="whatsappSend" class="whatsapp-btn whatsapp-pulse" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <div class="summary-flex-container">
+                <a href="#" id="whatsappSend" class="whatsapp-btn whatsapp-pulse" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; text-overflow: ellipsis;">
                     💬 ارسل للواتس
                 </a>
-                <div class="total-box-item" style="flex: 2 1 auto; min-width: 0; padding: 10px 5px; font-size: clamp(11px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: visible;">
+                <div class="total-box-item" style="flex: 2 1 auto; min-width: 0; padding: 10px 5px; font-size: clamp(11px, 2.5vw, 15px); text-align: center;">
                     الإجمالي: <span id="totalBefore">0.00</span> (بالخصم: <span id="totalAfter">0.00</span> ج)
                 </div>
             </div>
@@ -370,28 +344,26 @@
                     </span>
                     <input type="checkbox" id="deliveryCheckbox">
                 </label>
-                <div id="deliveryDetails" style="display: none;">
+                <div id="deliveryDetails">
                     <input type="text" id="clientAddress" class="delivery-input" placeholder="اكتب عنوانك بالتفصيل هنا...">
                     <input type="text" id="clientPhone" class="delivery-input" placeholder="اكتب رقم التليفون هنا...">
                 </div>
             </div>
         </div>
 
-        <!-- حاوية الكروت مع أزرار الأسهم للتنقل -->
         <div class="slider-wrapper">
             <button class="scroll-btn scroll-right" id="scrollRight">&lt;</button>
             <div class="cards-container" id="cardsContainer">
-                <!-- سيتم تعبئة المراحل والكتب تلقائياً من ملف الأكسيل -->
+                <!-- سيتم تعبئة المراحل والكتب تلقائياً بأمان من ملف الأكسيل -->
             </div>
             <button class="scroll-btn scroll-left" id="scrollLeft">&gt;</button>
         </div>
 
         <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>
-        <button class="back" id="printInvoiceBtn" style="background:#16a34a;display:inline-block;width:auto;margin-right:10px;">
+        <button class="back" id="printInvoiceBtn" style="background:#16a34a;display:inline-block;width:auto;margin-right:10px;cursor:pointer;">
             🖨️ طباعة فاتورة
         </button>
 
-        <!-- مربع معاينة نص الرسالة مع حقل وزر مشاركة الصديق -->
         <div style="margin-top: 20px; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
                 <h4 style="color: #16a34a; font-size: 18px; margin: 0;">📄 معاينة نص الرسالة (التي ستُرسل للواتساب والفاتورة):</h4>
@@ -425,7 +397,6 @@
                 })
                 .catch(error => console.error("خطأ في قراءة ملف الأكسيل:", error));
         
-            // تفعيل أزرار التمرير (الأسهم)
             const container = document.getElementById('cardsContainer');
             document.getElementById('scrollRight').addEventListener('click', () => {
                 container.scrollBy({ left: 340, behavior: 'smooth' });
@@ -434,21 +405,37 @@
                 container.scrollBy({ left: -340, behavior: 'smooth' });
             });
         });
+
+        function parsePrice(v) {
+            if (v == null) return NaN;
+            if (typeof v === 'number') return Number(v);
+            const s = String(v).trim().replace(/[^\d.,-]/g, '').replace(',', '.');
+            const n = parseFloat(s);
+            return Number.isFinite(n) ? n : NaN;
+        }
+
+        function formatCurrency(n) {
+            if (!Number.isFinite(n)) return String(n);
+            return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
         
         function processExcelData(rows) {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = "";
-        
+            const fragment = document.createDocumentFragment();
             let gradesData = {};
         
             for (let i = 1; i < rows.length; i++) {
-                let row = rows[i];
-                let grade = row[0];       
-                let bookName = row[1];    
-                let priceBefore = row[2]; 
-                let priceAfter = row[3];  
+                let row = rows[i] || [];
+                let grade = String(row[0] ?? '').trim();       
+                let bookName = String(row[1] ?? '').trim();    
+                let priceBeforeRaw = row[2]; 
+                let priceAfterRaw = row[3];  
         
                 if (!grade || !bookName) continue;
+
+                let priceBefore = parsePrice(priceBeforeRaw);
+                let priceAfter = parsePrice(priceAfterRaw);
         
                 if (!gradesData[grade]) {
                     gradesData[grade] = [];
@@ -456,54 +443,102 @@
         
                 gradesData[grade].push({
                     name: bookName,
-                    price: priceBefore,
-                    discounted: priceAfter
+                    priceBefore,
+                    priceAfter,
+                    rawPriceBefore: priceBeforeRaw,
+                    rawPriceAfter: priceAfterRaw
                 });
             }
         
-            for (let grade in gradesData) {
+            Object.keys(gradesData).forEach(grade => {
                 let cardDiv = document.createElement('div');
                 cardDiv.className = 'grade-card';
+
+                let h3 = document.createElement('h3');
+                h3.textContent = grade;
+                cardDiv.appendChild(h3);
         
-                let innerContent = `<h3>${grade}</h3>`;
-        
-                gradesData[grade].forEach((book, idx) => {
-                    if (book.price === "ما نزلش" || !book.price) {
-                        innerContent += `
-                            <div class="book-item">
-                                <div class="book-row-top">
-                                    <span class="disabled-book" style="flex:1;">${book.name}</span>
-                                    <span class="disabled-book">ما نزلش</span>
-                                </div>
-                            </div>`;
-                    } else {
-                        innerContent += `
-                            <div class="book-item">
-                                <div class="book-row-top">
-                                    <label>
-                                        <input type="checkbox" class="book-chk" data-grade="${grade}" data-name="${book.name}" data-price="${book.price}" data-discounted="${book.discounted}">
-                                        <span>${book.name}</span>
-                                    </label>
-                                    <span class="price-tag">${book.discounted} ج</span>
-                                </div>
-                                <div class="book-controls">
-                                    <button type="button" class="qty-btn minus-btn">-</button>
-                                    <span class="qty-display">1</span>
-                                    <button type="button" class="qty-btn plus-btn">+</button>
-                                </div>
-                            </div>`;
+                gradesData[grade].forEach(book => {
+                    let item = document.createElement('div');
+                    item.className = 'book-item';
+
+                    let top = document.createElement('div');
+                    top.className = 'book-row-top';
+
+                    if (!Number.isFinite(book.priceBefore) && String(book.rawPriceBefore).trim() === 'ما نزلش') {
+                        let nameSpan = document.createElement('span');
+                        nameSpan.className = 'disabled-book';
+                        nameSpan.style.flex = '1';
+                        nameSpan.textContent = book.name;
+
+                        let noSpan = document.createElement('span');
+                        noSpan.className = 'disabled-book';
+                        noSpan.textContent = 'ما نزلش';
+
+                        top.appendChild(nameSpan);
+                        top.appendChild(noSpan);
+                        item.appendChild(top);
+                        cardDiv.appendChild(item);
+                        return;
                     }
+
+                    let label = document.createElement('label');
+                    let checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'book-chk';
+                    checkbox.dataset.grade = grade;
+                    checkbox.dataset.name = book.name;
+                    checkbox.dataset.price = String(book.priceBefore);
+                    checkbox.dataset.discounted = String(book.priceAfter);
+
+                    let nameSpan = document.createElement('span');
+                    nameSpan.textContent = book.name;
+
+                    label.appendChild(checkbox);
+                    label.appendChild(nameSpan);
+
+                    let priceTag = document.createElement('span');
+                    priceTag.className = 'price-tag';
+                    priceTag.textContent = Number.isFinite(book.priceAfter) ? formatCurrency(book.priceAfter) + ' ج' : String(book.rawPriceAfter);
+
+                    top.appendChild(label);
+                    top.appendChild(priceTag);
+
+                    let controls = document.createElement('div');
+                    controls.className = 'book-controls';
+
+                    let minus = document.createElement('button');
+                    minus.type = 'button';
+                    minus.className = 'qty-btn minus-btn';
+                    minus.textContent = '-';
+
+                    let qty = document.createElement('span');
+                    qty.className = 'qty-display';
+                    qty.textContent = '1';
+
+                    let plus = document.createElement('button');
+                    plus.type = 'button';
+                    plus.className = 'qty-btn plus-btn';
+                    plus.textContent = '+';
+
+                    controls.appendChild(minus);
+                    controls.appendChild(qty);
+                    controls.appendChild(plus);
+
+                    item.appendChild(top);
+                    item.appendChild(controls);
+                    cardDiv.appendChild(item);
                 });
-        
-                cardDiv.innerHTML = innerContent;
-                container.appendChild(cardDiv);
-            }
-        
+
+                fragment.appendChild(cardDiv);
+            });
+
+            container.appendChild(fragment);
             initCalculator();
         }
         
         function initCalculator() {
-            const bookItems = document.querySelectorAll('.book-item');
+            const container = document.getElementById('cardsContainer');
             const totalBeforeEl = document.getElementById('totalBefore');
             const totalAfterEl = document.getElementById('totalAfter');
             const whatsappSendBtn = document.getElementById('whatsappSend');
@@ -529,218 +564,116 @@
             clientAddress.addEventListener('input', updateTotals);
             clientPhone.addEventListener('input', updateTotals);
             friendPhoneInput.addEventListener('input', updateTotals);
-        
-            bookItems.forEach(item => {
-                const chk = item.querySelector('.book-chk');
-                if (!chk) return;
-                
-                const minusBtn = item.querySelector('.minus-btn');
-                const plusBtn = item.querySelector('.plus-btn');
-                const qtyDisplay = item.querySelector('.qty-display');
-                let qty = 1;
 
-                plusBtn.addEventListener('click', (e) => {
+            // استخدام تفويض الأحداث (Event Delegation) لإدارة الكميات وتغيير حالة الاختيار بفاعلية وأمان
+            container.addEventListener('click', (e) => {
+                const btn = e.target.closest('.qty-btn');
+                if (btn) {
                     e.preventDefault();
-                    qty++;
-                    qtyDisplay.textContent = qty;
-                    if (chk.checked) updateTotals();
-                });
+                    const item = btn.closest('.book-item');
+                    const qtyEl = item.querySelector('.qty-display');
+                    let qty = parseInt(qtyEl.textContent, 10) || 1;
+                    
+                    if (btn.classList.contains('plus-btn')) qty++;
+                    if (btn.classList.contains('minus-btn')) qty = Math.max(1, qty - 1);
+                    
+                    qtyEl.textContent = qty;
+                    updateTotals();
+                    return;
+                }
+            });
 
-                minusBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if (qty > 1) {
-                        qty--;
-                        qtyDisplay.textContent = qty;
-                        if (chk.checked) updateTotals();
-                    }
-                });
-
-                chk.addEventListener('change', updateTotals);
-                item.datasetQty = () => qty;
+            container.addEventListener('change', (e) => {
+                const chk = e.target.closest('.book-chk');
+                if (chk) {
+                    const bookItem = chk.closest('.book-item');
+                    bookItem.classList.toggle('selected-book', chk.checked);
+                    updateTotals();
+                }
             });
         
             function updateTotals() {
+                const checkboxes = container.querySelectorAll('.book-chk');
                 let totalBefore = 0;
                 let totalAfter = 0;
                 let groupedBooks = {};
-        
-                bookItems.forEach(item => {
-                    const chk = item.querySelector('.book-chk');
-                    if (!chk) return;
-                    
-                    if (chk.checked) {
-                        item.classList.add('selected-book');
-                        let qty = item.datasetQty();
-                        let unitPrice = parseFloat(chk.dataset.price) || 0;
-                        let unitDiscounted = parseFloat(chk.dataset.discounted) || 0;
 
-                        totalBefore += unitPrice * qty;
-                        totalAfter += unitDiscounted * qty;
-                        
-                        let grade = chk.dataset.grade;
-                        if (!groupedBooks[grade]) {
-                            groupedBooks[grade] = [];
-                        }
-                        groupedBooks[grade].push(chk.dataset.name + " (عدد " + qty + " نسخه) (" + (unitDiscounted * qty) + " جنيه)");
-                    } else {
+                checkboxes.forEach(chk => {
+                    const item = chk.closest('.book-item');
+                    if (!chk.checked) {
                         item.classList.remove('selected-book');
+                        return;
                     }
+                    
+                    item.classList.add('selected-book');
+                    const qty = parseInt(item.querySelector('.qty-display').textContent, 10) || 1;
+                    const priceBefore = parsePrice(chk.dataset.price);
+                    const priceAfter = parsePrice(chk.dataset.discounted);
+                    const grade = chk.dataset.grade;
+                    const bookName = chk.dataset.name;
+
+                    if (Number.isFinite(priceBefore)) totalBefore += priceBefore * qty;
+                    if (Number.isFinite(priceAfter)) totalAfter += priceAfter * qty;
+
+                    if (!groupedBooks[grade]) groupedBooks[grade] = [];
+                    groupedBooks[grade].push({ name: bookName, qty, price: priceAfter });
                 });
-        
-                totalBeforeEl.textContent = totalBefore.toFixed(2);
-                totalAfterEl.textContent = totalAfter.toFixed(2);
-        
-                // 1. نبدأ الرسالة بالعنوان والكتب أولاً
-                let message = "&#128218; طلب حجز كتب خارجية%0A";
-                let plainTextMessage = "📚 طلب حجز كتب خارجية\n";
-                
+
+                totalBeforeEl.textContent = formatCurrency(totalBefore);
+                totalAfterEl.textContent = formatCurrency(totalAfter);
+
+                // بناء نص الرسالة والمعاينة
+                let message = "📚 *طلب كتب خارجية من مكتبةمكس_MKTBTmix* 📚\n\n";
+                let hasItems = false;
+
                 for (let grade in groupedBooks) {
-                    message += "%0A📌 *" + grade + "*:%0A";
-                    plainTextMessage += "\n📌 " + grade + ":\n";
-                    groupedBooks[grade].forEach((book, index) => {
-                        message += (index + 1) + "- " + book + "%0A";
-                        plainTextMessage += (index + 1) + "- " + book + "\n";
+                    hasItems = true;
+                    message += `📌 *${grade}*:\n`;
+                    groupedBooks[grade].forEach(b => {
+                        message += `▫️ ${b.name} (عدد: ${b.qty}) - ${formatCurrency(b.price * b.qty)} ج\n`;
                     });
+                    message += "\n";
                 }
 
-                // 2. إضافة الإجماليات
-                message += "%0Aإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
-                message += "%0Aإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
+                if (hasItems) {
+                    message += `💰 *الإجمالي قبل الخصم:* ${formatCurrency(totalBefore)} ج\n`;
+                    message += `🎁 *الإجمالي بعد خصم 15%:* ${formatCurrency(totalAfter)} ج\n`;
 
-                plainTextMessage += "\nإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
-                plainTextMessage += "\nإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
-
-                if (deliveryCheckbox.checked) {
-                    message += "%0A%0A&#128666; طلب توصيل للمنزل:";
-                    message += "%0A&#128205; العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
-                    message += "%0A&#128222; التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
-
-                    plainTextMessage += "\n\n🚚 طلب توصيل للمنزل:";
-                    plainTextMessage += "\n📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
-                    plainTextMessage += "\n📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
-                }
-
-                // 3. وضع الذيل (Footer) في النهاية تماماً
-                message += "%0A%0A&#128218; موقع خاص بمكتبة مكس &#128218;%0Aاطلب كتبك فى 3 خطوات:%0A1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A&#128187; الموقع برمجتى الشخصية | &#11088; أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.%0A&#127801; مستنى تجربتكم وتشجيعكم.";
-                
-                plainTextMessage += "\n\n📚 موقع خاص بمكتبة مكس 📚\nاطلب كتبك فى 3 خطوات:\n1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n💻 الموقع برمجتى الشخصية | ⭐ أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.\n🌹 مستنى تجربتكم وتشجيعكم.";                
-                
-                messagePreview.textContent = plainTextMessage;
-
-                let cleanDigits = friendPhoneInput.value.replace(/[^\d+]/g, '');
-                let rawInput = friendPhoneInput.value.trim();
-                let fPhone = "";
-
-                if (rawInput.startsWith("+")) {
-                    fPhone = "+" + cleanDigits.replace(/\+/g, '');
-                } else if (cleanDigits.startsWith("20") && cleanDigits.length > 10) {
-                    fPhone = cleanDigits;
-                } else {
-                    let noLeadingZeros = cleanDigits.replace(/^0+/, '');
-                    if (noLeadingZeros.length > 0) {
-                        fPhone = "20" + noLeadingZeros;
+                    if (deliveryCheckbox.checked) {
+                        message += `\n🚚 *خدمة التوصيل مفعلة*\n`;
+                        if (clientAddress.value.trim()) message += `📍 العنوان: ${clientAddress.value.trim()}\n`;
+                        if (clientPhone.value.trim()) message += `📞 الهاتف: ${clientPhone.value.trim()}\n`;
                     }
+                } else {
+                    message = "لم يتم اختيار أي كتب بعد...";
                 }
 
-                if (fPhone && fPhone.length >= 10) {
-                    shareFriendBtn.href = "https://wa.me/" + fPhone + "?text=" + message;
+                messagePreview.textContent = message;
+
+                // ربط أزرار الواتساب
+                const encodedMessage = encodeURIComponent(message);
+                whatsappSendBtn.href = `https://wa.me/200000000000?text=${encodedMessage}`; // ضع رقم الواتساب الخاص بك مكان الأصفار
+
+                const friendPhone = friendPhoneInput.value.trim();
+                if (friendPhone) {
+                    shareFriendBtn.href = `https://wa.me/${friendPhone}?text=${encodedMessage}`;
                     shareFriendBtn.style.opacity = "1";
                     shareFriendBtn.style.pointerEvents = "auto";
                 } else {
                     shareFriendBtn.href = "#";
                     shareFriendBtn.style.opacity = "0.6";
+                    shareFriendBtn.style.pointerEvents = "none";
                 }
-
-                document.getElementById("printInvoiceBtn").onclick = function(){
-                    printInvoice(message);
-                };        
-                whatsappSendBtn.href = "https://wa.me/201093393975?text=" + message;
             }
-                message += "%0Aإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
-                message += "%0Aإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
 
-                plainTextMessage += "\nإجمالي السعر قبل الخصم: " + totalBefore.toFixed(2) + " جنيه";
-                plainTextMessage += "\nإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
-
-                if (deliveryCheckbox.checked) {
-                    message += "%0A%0A🚚 *طلب توصيل للمنزل*:";
-                    message += "%0A📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
-                    message += "%0A📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
-
-                    plainTextMessage += "\n\n🚚 طلب توصيل للمنزل:";
-                    plainTextMessage += "\n📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
-                    plainTextMessage += "\n📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
-                }
-
-                message += "%0A%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
-                plainTextMessage += "\n\nمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
-
-                messagePreview.textContent = plainTextMessage;
-
-                let fPhone = "20" + friendPhoneInput.value.replace(/[^\d+]/g, '').replace(/^0+/, '').trim();
-                if (fPhone && friendPhoneInput.value.trim() !== "") {
-                    shareFriendBtn.href = "https://wa.me/" + fPhone + "?text=" + message;
-                } else {
-                    shareFriendBtn.href = "#";
-                }
-
-                document.getElementById("printInvoiceBtn").onclick = function(){
-                    printInvoice(message);
-                };        
-                whatsappSendBtn.href = "https://wa.me/201093393975?text=" + message;
+            // زر طباعة الفاتورة
+            const printInvoiceBtn = document.getElementById('printInvoiceBtn');
+            if (printInvoiceBtn) {
+                printInvoiceBtn.onclick = function() {
+                    window.print();
+                };
             }
-        }
-        
-        function printInvoice(message){
-            const now = new Date();
-            const date = now.toLocaleDateString('ar-EG') + " " + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-        
-            document.getElementById("invoiceHeader").innerHTML = date + " &nbsp;&nbsp;&nbsp; مكتبة مكس - ش الأوبرج - 01093393975";
-            document.getElementById("invoiceText").textContent = decodeURIComponent(message);
-        
-            const w = window.open("", "", "width=800,height=900");
-            w.document.write(`
-            <html dir="rtl">
-            <head>
-                <title>فاتورة</title>
-                <style>
-                    body{
-                        font-family:Cairo,sans-serif;
-                        padding:25px;
-                        direction:rtl;
-                    }
-                    img{
-                        width:120px;
-                    }
-                    pre{
-                        white-space:pre-wrap;
-                        font-size:18px;
-                        line-height:1.8;
-                    }
-                </style>
-            </head>
-            <body>
-                ${document.getElementById("invoiceArea").innerHTML}
-            </body>
-            </html>
-            `);
-        
-            w.document.close();
-            w.focus();
-            setTimeout(() => {
-                w.print();
-                w.close();
-            }, 300);
         }
     </script>
-    
-    <div id="invoiceArea" style="display:none">
-        <div style="text-align:center">
-            <img src="logo.png" style="width:120px;margin-bottom:10px;">
-            <div id="invoiceHeader" style="font-weight:bold;font-size:18px;margin-bottom:15px;"></div>
-        </div>
-        <pre id="invoiceText" style="font-family:'Cairo',sans-serif;font-size:18px;white-space:pre-wrap;line-height:1.8;"></pre>
-    </div>
-
 </body>
 </html>
