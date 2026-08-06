@@ -58,7 +58,7 @@
             padding-bottom: 15px;
             scroll-behavior: smooth;
             scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
+            -webkit-overflow-scrolling: touch; /* لتحسين نعومة السحب على الأجهزة الذكية وبطئها الطبيعي */
             transform: rotateX(180deg);
             width: 100%;
         }
@@ -72,10 +72,10 @@
         .cards-container > * {
             transform: rotateX(180deg);
         }
-        /* تصميم أزرار التمرير (الأسهم) */
+        /* تصميم أزرار التمرير (الأسهم) - تم نقلها للأعلى قريبة من أسماء الصفوف */
         .scroll-btn {
             position: absolute;
-            top: 35px;
+            top: 35px; /* رفعناها للأعلى لتكون قريبة من عنوان الصف الدراسي */
             background: rgba(22, 163, 74, 0.85);
             color: white;
             border: none;
@@ -108,20 +108,11 @@
             min-width: 300px;
             flex: 0 0 320px;
             scroll-snap-align: start;
-            scroll-snap-stop: always;
+            scroll-snap-stop: always; /* تجبر السحب على الانتقال كارت بكارت ببطء وتوازن */
             box-shadow: 0 10px 25px rgba(0,0,0,.12);
             display: flex;
             flex-direction: column;
-            max-height: 520px;
-            overflow-y: auto;
-            position: relative;
-        }
-        .grade-card::-webkit-scrollbar {
-            width: 6px;
-        }
-        .grade-card::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
+            justify-content: space-between;
         }
         .grade-card h3 {
             color: #16a34a;
@@ -129,10 +120,6 @@
             margin-bottom: 15px;
             border-bottom: 2px solid #ccf0d8;
             padding-bottom: 8px;
-            position: sticky;
-            top: -20px;
-            background: #fff;
-            z-index: 5;
         }
         .book-item {
             display: flex;
@@ -145,6 +132,7 @@
             gap: 8px;
             transition: background-color 0.25s ease, transform 0.15s ease;
         }
+        /* التنسيق عند اختيار الكتاب (تظليل بلون خفيف وحلو) */
         .book-item.selected-book {
             background: #c9f5d5;
             border: 1px solid #bbf7d0;
@@ -160,8 +148,6 @@
             gap: 10px;
             cursor: pointer;
             flex: 1;
-            color: #111827;
-            font-weight: 700;
         }
         .book-item input[type="checkbox"] {
             width: 18px;
@@ -206,7 +192,6 @@
         }
         .disabled-book {
             color: #999;
-            font-weight: 700;
             font-size: 14px;
         }
         .summary-card {
@@ -265,6 +250,7 @@
             justify-content: center;
             gap: 15px;
             flex-wrap: wrap;
+            animation: fadeIn 0.3s ease-in-out;
         }
         .delivery-input {
             padding: 10px 15px;
@@ -276,22 +262,6 @@
             background: #fff;
             font-family: 'Cairo', sans-serif;
         }
-
-        /* كود تأثير النبض المستمر لزر الواتساب */
-        @keyframes pulse-zoom {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.25); }
-          100% { transform: scale(1); }
-        }
-        .whatsapp-pulse {
-          animation: pulse-zoom 1.5s infinite ease-in-out;
-          display: inline-block;
-        }
-        .whatsapp-pulse:hover {
-          animation-play-state: paused;
-          transform: scale(1.12);
-        }
-
         .whatsapp-btn {
             display: inline-block;
             background: #25D366;
@@ -305,6 +275,9 @@
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
             white-space: nowrap;
             direction: rtl;
+        }
+        .whatsapp-btn:hover {
+            transform: scale(1.05);
         }
         .back{
             display: block;
@@ -332,7 +305,7 @@
 
         <div class="summary-card">
             <div class="summary-flex-container" style="display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
-                <a href="#" id="whatsappSend" class="whatsapp-btn whatsapp-pulse" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                     💬 ارسل للواتس
                 </a>
                 <div class="total-box-item" style="flex: 2 1 auto; min-width: 0; padding: 10px 5px; font-size: clamp(11px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: visible;">
@@ -362,7 +335,8 @@
         </div>
 
         <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>
-        <button class="back" id="printInvoiceBtn" style="background:#16a34a;display:inline-block;width:auto;margin-right:10px;">
+        <button class="back" id="printInvoiceBtn"
+                style="background:#16a34a;display:inline-block;width:auto;margin-right:10px;">
             🖨️ طباعة فاتورة
         </button>
 
@@ -440,14 +414,14 @@
                 let cardDiv = document.createElement('div');
                 cardDiv.className = 'grade-card';
         
-                let innerContent = `<h3>${grade}</h3>`;
+                let innerContent = `<div><h3>${grade}</h3>`;
         
                 gradesData[grade].forEach((book, idx) => {
                     if (book.price === "ما نزلش" || !book.price) {
                         innerContent += `
                             <div class="book-item">
                                 <div class="book-row-top">
-                                    <span class="disabled-book" style="flex:1;">${book.name}</span>
+                                    <span style="flex:1;">${book.name}</span>
                                     <span class="disabled-book">ما نزلش</span>
                                 </div>
                             </div>`;
@@ -470,6 +444,7 @@
                     }
                 });
         
+                innerContent += `</div>`;
                 cardDiv.innerHTML = innerContent;
                 container.appendChild(cardDiv);
             }
@@ -593,36 +568,18 @@
                     plainTextMessage += "\n📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
                 }
 
-                // النص الجديد المطلوب بدلاً من السطر القديم
-                message += "%0A%0A📚 *موقع خاص بمكتبة مكس* 📚%0A%0Aاطلب كتبك فى 3 خطوات بسيطة:%0A1- ادخل على الرابط.%0A2- اختار الكتب اللى محتاجها.%0A3- اضغط (إرسال للواتس) وهيتبعتلى طلبك فورًا.%0A%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A%0A💻 الموقع من برمجتى الشخصية.%0A⭐ أسهل طريقة لاختيار الكتب ومعرفة الكتب اللى نزلت واللى لسه منزلتش.%0A%0A🌹 مستنى تجربتكم وتشجيعكم.";
-                
-                plainTextMessage += "\n\n📚 *موقع خاص بمكتبة مكس* 📚\n\nاطلب كتبك فى 3 خطوات بسيطة:\n1- ادخل على الرابط.\n2- اختار الكتب اللى محتاجها.\n3- اضغط (إرسال للواتس) وهيتبعتلى طلبك فورًا.\n\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n\n💻 الموقع من برمجتى الشخصية.\n⭐ أسهل طريقة لاختيار الكتب ومعرفة الكتب اللى نزلت واللى لسه منزلتش.\n\n🌹 مستنى تجربتكم وتشجيعكم.";                
-                
+                message += "%0A%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
+                plainTextMessage += "\n\nمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
+
+                // تحديث مربع المعاينة
                 messagePreview.textContent = plainTextMessage;
-                // معالجة رقم هاتف الصديق مهما كانت طريقة نسخه (مسافات، أقواس، +20، أصفار زائدة)
-                let rawInput = friendPhoneInput.value.trim();
-                let cleanDigits = friendPhoneInput.value.replace(/[^\d+]/g, '');
-                let fPhone = "";
 
-                if (rawInput.startsWith("+")) {
-                    fPhone = "+" + cleanDigits.replace(/\+/g, '');
-                } else if (cleanDigits.startsWith("20") && cleanDigits.length > 10) {
-                    fPhone = cleanDigits;
-                } else {
-                    // إزالة الأصفار من البداية لو وجدت ثم إضافة كود مصر الدولي تلقائياً 20
-                    let noLeadingZeros = cleanDigits.replace(/^0+/, '');
-                    if (noLeadingZeros.length > 0) {
-                        fPhone = "20" + noLeadingZeros;
-                    }
-                }
-
-                if (fPhone && fPhone.length >= 10) {
+                // إعداد زر مشاركة الصديق (مع تنظيف الرقم تلقائياً من أي مسافات أو رموز غير صالحة)
+                let fPhone = friendPhoneInput.value.replace(/[^\d+]/g, '').trim();
+                if (fPhone) {
                     shareFriendBtn.href = "https://wa.me/" + fPhone + "?text=" + message;
-                    shareFriendBtn.style.opacity = "1";
-                    shareFriendBtn.style.pointerEvents = "auto";
                 } else {
                     shareFriendBtn.href = "#";
-                    shareFriendBtn.style.opacity = "0.6";
                 }
 
                 document.getElementById("printInvoiceBtn").onclick = function(){
@@ -639,7 +596,7 @@
             document.getElementById("invoiceHeader").innerHTML = date + " &nbsp;&nbsp;&nbsp; مكتبة مكس - ش الأوبرج - 01093393975";
             document.getElementById("invoiceText").textContent = decodeURIComponent(message);
         
-            const w = window.open("", "", "width=800,height00");
+            const w = window.open("", "", "width=800,height=900");
             w.document.write(`
             <html dir="rtl">
             <head>
