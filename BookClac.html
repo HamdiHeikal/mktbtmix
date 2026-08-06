@@ -601,7 +601,7 @@
                 messagePreview.textContent = plainTextMessage;
                 // معالجة رقم هاتف الصديق مهما كانت طريقة نسخه (مسافات، أقواس، +20، أصفار زائدة)
                 let rawInput = friendPhoneInput.value.trim();
-                let cleanDigits = rawInput.replace(/[^\d+]/g, ''); // الاحتفاظ بالأرقام وعلامة + فقط
+                let cleanDigits = friendPhoneInput.value.replace(/[^\d+]/g, '');
                 let fPhone = "";
 
                 if (rawInput.startsWith("+")) {
