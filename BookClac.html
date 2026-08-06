@@ -599,12 +599,30 @@
                 plainTextMessage += "\n\n📚 *موقع خاص بمكتبة مكس* 📚\n\nاطلب كتبك فى 3 خطوات بسيطة:\n1- ادخل على الرابط.\n2- اختار الكتب اللى محتاجها.\n3- اضغط (إرسال للواتس) وهيتبعتلى طلبك فورًا.\n\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n\n💻 الموقع من برمجتى الشخصية.\n⭐ أسهل طريقة لاختيار الكتب ومعرفة الكتب اللى نزلت واللى لسه منزلتش.\n\n🌹 مستنى تجربتكم وتشجيعكم.";                
                 
                 messagePreview.textContent = plainTextMessage;
+                // معالجة رقم هاتف الصديق مهما كانت طريقة نسخه (مسافات، أقواس، +20، أصفار زائدة)
+                let rawInput = friendPhoneInput.value.trim();
+                let cleanDigits = rawInput.replace(/[^\d+]/g, ''); // الاحتفاظ بالأرقام وعلامة + فقط
+                let fPhone = "";
 
-                let fPhone = "20" + friendPhoneInput.value.replace(/[^\d+]/g, '').replace(/^0+/, '').trim();
-                if (fPhone && friendPhoneInput.value.trim() !== "") {
+                if (rawInput.startsWith("+")) {
+                    fPhone = "+" + cleanDigits.replace(/\+/g, '');
+                } else if (cleanDigits.startsWith("20") && cleanDigits.length > 10) {
+                    fPhone = cleanDigits;
+                } else {
+                    // إزالة الأصفار من البداية لو وجدت ثم إضافة كود مصر الدولي تلقائياً 20
+                    let noLeadingZeros = cleanDigits.replace(/^0+/, '');
+                    if (noLeadingZeros.length > 0) {
+                        fPhone = "20" + noLeadingZeros;
+                    }
+                }
+
+                if (fPhone && fPhone.length >= 10) {
                     shareFriendBtn.href = "https://wa.me/" + fPhone + "?text=" + message;
+                    shareFriendBtn.style.opacity = "1";
+                    shareFriendBtn.style.pointerEvents = "auto";
                 } else {
                     shareFriendBtn.href = "#";
+                    shareFriendBtn.style.opacity = "0.6";
                 }
 
                 document.getElementById("printInvoiceBtn").onclick = function(){
