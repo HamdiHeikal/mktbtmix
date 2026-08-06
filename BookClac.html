@@ -32,6 +32,19 @@
             margin: auto;
             padding: 20px 0;
         }
+        .main-banner{
+            background: #fff;
+            border-radius: 18px;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #16a34a;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,.12);
+            line-height: 1.8;
+        }
+        /* حاوية السلايدر مع الأسهم */
         .slider-wrapper {
             position: relative;
             display: flex;
@@ -59,6 +72,7 @@
         .cards-container > * {
             transform: rotateX(180deg);
         }
+        /* تصميم أزرار التمرير (الأسهم) */
         .scroll-btn {
             position: absolute;
             top: 35px;
@@ -211,6 +225,12 @@
             flex-wrap: wrap;
             direction: ltr;
         }
+        .totals-box {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            direction: rtl;
+        }
         .total-box-item {
             background: #fff;
             padding: 15px 20px;
@@ -256,9 +276,11 @@
             background: #fff;
             font-family: 'Cairo', sans-serif;
         }
+
+        /* كود تأثير النبض المستمر لزر الواتساب */
         @keyframes pulse-zoom {
           0% { transform: scale(1); }
-          50% { transform: scale(1.30); }
+          50% { transform: scale(1.25); }
           100% { transform: scale(1); }
         }
         .whatsapp-pulse {
@@ -269,6 +291,7 @@
           animation-play-state: paused;
           transform: scale(1.12);
         }
+
         .whatsapp-btn {
             display: inline-block;
             background: #25D366;
@@ -329,6 +352,7 @@
             </div>
         </div>
 
+        <!-- حاوية الكروت مع أزرار الأسهم للتنقل -->
         <div class="slider-wrapper">
             <button class="scroll-btn scroll-right" id="scrollRight">&lt;</button>
             <div class="cards-container" id="cardsContainer">
@@ -342,6 +366,7 @@
             🖨️ طباعة فاتورة
         </button>
 
+        <!-- مربع معاينة نص الرسالة مع حقل وزر مشاركة الصديق -->
         <div style="margin-top: 20px; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
                 <h4 style="color: #16a34a; font-size: 18px; margin: 0;">📄 معاينة نص الرسالة (التي ستُرسل للواتساب والفاتورة):</h4>
@@ -375,6 +400,7 @@
                 })
                 .catch(error => console.error("خطأ في قراءة ملف الأكسيل:", error));
         
+            // تفعيل أزرار التمرير (الأسهم)
             const container = document.getElementById('cardsContainer');
             document.getElementById('scrollRight').addEventListener('click', () => {
                 container.scrollBy({ left: 340, behavior: 'smooth' });
@@ -539,12 +565,11 @@
                 totalBeforeEl.textContent = totalBefore.toFixed(2);
                 totalAfterEl.textContent = totalAfter.toFixed(2);
         
-                // استخدام الرموز البرمجية الآمنة لتجنب علامات الاستفهام تماماً
-                let message = "&#128218; طلب حجز كتب خارجية%0A";
+                let message = "📚 *طلب حجز كتب خارجية*%0A";
                 let plainTextMessage = "📚 طلب حجز كتب خارجية\n";
                 
                 for (let grade in groupedBooks) {
-                    message += "%0A&#128204; " + grade + ":%0A";
+                    message += "%0A📌 *" + grade + "*:%0A";
                     plainTextMessage += "\n📌 " + grade + ":\n";
                     groupedBooks[grade].forEach((book, index) => {
                         message += (index + 1) + "- " + book + "%0A";
@@ -559,24 +584,24 @@
                 plainTextMessage += "\nإجمالي السعر بعد الخصم: " + totalAfter.toFixed(2) + " جنيه";
 
                 if (deliveryCheckbox.checked) {
-                    message += "%0A%0A&#128666; طلب توصيل للمنزل:";
-                    message += "%0A&#128205; العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
-                    message += "%0A&#128222; التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
+                    message += "%0A%0A🚚 *طلب توصيل للمنزل*:";
+                    message += "%0A📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
+                    message += "%0A📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
 
                     plainTextMessage += "\n\n🚚 طلب توصيل للمنزل:";
                     plainTextMessage += "\n📍 العنوان: " + (clientAddress.value ? clientAddress.value : "لم يكتب");
                     plainTextMessage += "\n📞 التليفون: " + (clientPhone.value ? clientPhone.value : "لم يكتب");
                 }
 
-                // الذيل مدمج في سطور أقل ومحافظ على الرموز الآمنة لطباعة الفاتورة والواتس
-                message += "%0A%0A&#128218; موقع خاص بمكتبة مكس &#128218;%0Aاطلب كتبك فى 3 خطوات:%0A1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A&#128187; الموقع برمجتى الشخصية | &#11088; أسهل لاختيار الكتب ومعرفة المنزل واللى لسه.%0A&#127801; مستنى تجربتكم وتشجيعكم.";
+                // النص الجديد المطلوب بدلاً من السطر القديم
+                message += "%0A%0A📚 *موقع خاص بمكتبة مكس* 📚%0A%0Aاطلب كتبك فى 3 خطوات بسيطة:%0A1- ادخل على الرابط.%0A2- اختار الكتب اللى محتاجها.%0A3- اضغط (إرسال للواتس) وهيتبعتلى طلبك فورًا.%0A%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A%0A💻 الموقع من برمجتى الشخصية.%0A⭐ أسهل طريقة لاختيار الكتب ومعرفة الكتب اللى نزلت واللى لسه منزلتش.%0A%0A🌹 مستنى تجربتكم وتشجيعكم.";
                 
-                plainTextMessage += "\n\n📚 موقع خاص بمكتبة مكس 📚\nاطلب كتبك فى 3 خطوات:\n1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n💻 الموقع برمجتى الشخصية | ⭐ أسهل لاختيار الكتب ومعرفة المنزل واللى لسه.\n🌹 مستنى تجربتكم وتشجيعكم.";                
+                plainTextMessage += "\n\n📚 *موقع خاص بمكتبة مكس* 📚\n\nاطلب كتبك فى 3 خطوات بسيطة:\n1- ادخل على الرابط.\n2- اختار الكتب اللى محتاجها.\n3- اضغط (إرسال للواتس) وهيتبعتلى طلبك فورًا.\n\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n\n💻 الموقع من برمجتى الشخصية.\n⭐ أسهل طريقة لاختيار الكتب ومعرفة الكتب اللى نزلت واللى لسه منزلتش.\n\n🌹 مستنى تجربتكم وتشجيعكم.";                
                 
                 messagePreview.textContent = plainTextMessage;
-
-                let cleanDigits = friendPhoneInput.value.replace(/[^\d+]/g, '');
+                // معالجة رقم هاتف الصديق مهما كانت طريقة نسخه (مسافات، أقواس، +20، أصفار زائدة)
                 let rawInput = friendPhoneInput.value.trim();
+                let cleanDigits = friendPhoneInput.value.replace(/[^\d+]/g, '');
                 let fPhone = "";
 
                 if (rawInput.startsWith("+")) {
@@ -584,6 +609,7 @@
                 } else if (cleanDigits.startsWith("20") && cleanDigits.length > 10) {
                     fPhone = cleanDigits;
                 } else {
+                    // إزالة الأصفار من البداية لو وجدت ثم إضافة كود مصر الدولي تلقائياً 20
                     let noLeadingZeros = cleanDigits.replace(/^0+/, '');
                     if (noLeadingZeros.length > 0) {
                         fPhone = "20" + noLeadingZeros;
@@ -613,7 +639,7 @@
             document.getElementById("invoiceHeader").innerHTML = date + " &nbsp;&nbsp;&nbsp; مكتبة مكس - ش الأوبرج - 01093393975";
             document.getElementById("invoiceText").textContent = decodeURIComponent(message);
         
-            const w = window.open("", "", "width=800,height=600");
+            const w = window.open("", "", "width=800,height00");
             w.document.write(`
             <html dir="rtl">
             <head>
