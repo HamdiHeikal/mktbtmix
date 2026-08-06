@@ -591,7 +591,7 @@
                     updateTotals();
                 }
             });
-        function updateTotals() {
+            function updateTotals() {
                 const checkboxes = container.querySelectorAll('.book-chk');
                 let totalBefore = 0;
                 let totalAfter = 0;
@@ -618,10 +618,9 @@
                     groupedBooks[grade].push({ name: bookName, qty, price: priceAfter });
                 });
 
-                totalBeforeEl.textContent = formatCurrency(totalBefore);
-                totalAfterEl.textContent = formatCurrency(totalAfter);
+                if (totalBeforeEl) totalBeforeEl.textContent = formatCurrency(totalBefore);
+                if (totalAfterEl) totalAfterEl.textContent = formatCurrency(totalAfter);
 
-                // بناء نص الرسالة والمعاينة مع النص الإضافي في الأسفل
                 let message = "📚 *طلب كتب خارجية من مكتبةمكس_MKTBTmix* 📚\n\n";
                 let hasItems = false;
 
@@ -638,42 +637,66 @@
                     message += `💰 *الإجمالي قبل الخصم:* ${formatCurrency(totalBefore)} ج\n`;
                     message += `🎁 *الإجمالي بعد خصم 15%:* ${formatCurrency(totalAfter)} ج\n`;
 
-                    if (deliveryCheckbox.checked) {
+                    if (deliveryCheckbox && deliveryCheckbox.checked) {
                         message += `\n🚚 *خدمة التوصيل مفعلة*\n`;
-                        if (clientAddress.value.trim()) message += `📍 العنوان: ${clientAddress.value.trim()}\n`;
-                        if (clientPhone.value.trim()) message += `📞 الهاتف: ${clientPhone.value.trim()}\n`;
+                        if (clientAddress && clientAddress.value.trim()) message += `📍 العنوان: ${clientAddress.value.trim()}\n`;
+                        if (clientPhone && clientPhone.value.trim()) message += `📞 الهاتف: ${clientPhone.value.trim()}\n`;
                     }
+
+                    // إضافة النص الإضافي التسويقي فقط في حالة وجود عناصر بالسلة
+                    message += "\n--------------------------\n";
+                    message += "📚 *موقع خاص بمكتبة مكس* 📚\n";
+                    message += "اطلب كتبك فى 3 خطوات بسيطة:\n";
+                    message += "1- ادخل على الرابط.  2- اختار الكتب اللى محتاجها.  3- اضغط (إرسال لواتس المكتبة).\n";
+                    message += "https://hamdiheikal.github.io/mktbtmix/BookClac.html\n";
+                    message += "💻 برمجتى الشخصية وتحت أمركم فى اقتراحات التطوير. | ⭐ أسهل / أسرع / ومعرفة اللى لسه منزلتش.\n";
+                    message += "🌹 *مستنى تجربتكم وتشجيعكم* 🌹";
                 } else {
-                    message = "لم يتم اختيار أي كتب بعد...\n\n";
+                    message = "لم يتم اختيار أي كتب بعد...";
                 }
 
-                // إضافة النص الإضافي الثابت أسفل الفاتورة والرسالة
-                message += "\n--------------------------\n";
-                message += "📚 *موقع خاص بمكتبة مكس* 📚\n";
-                message += "اطلب كتبك فى 3 خطوات بسيطة:\n";
-                message += "1- ادخل على الرابط.  2- اختار الكتب اللى محتاجها.  3- اضغط (إرسال لواتس المكتبة).\n";
-                message += "https://hamdiheikal.github.io/mktbtmix/BookClac.html\n";
-                message += "💻 برمجتى الشخصية وتحت أمركم فى اقتراحات التطوير. | ⭐ أسهل / أسرع / ومعرفة اللى لسه منزلتش.\n";
-                message += "🌹 *مستنى تجربتكم وتشجيعكم* 🌹";
+                if (messagePreview) messagePreview.textContent = message;
 
-                messagePreview.textContent = message;
+                // تحديث وتأمين زر الإرسال الأساسي للواتساب بناءً على وجود عناصر
+                if (whatsappSendBtn) {
+                    whatsappSendBtn.target = '_blank';
+                    whatsappSendBtn.rel = 'noopener noreferrer';
+                    
+                    if (hasItems) {
+                        const encodedMessage = encodeURIComponent(message);
+                        whatsappSendBtn.href = `https://wa.me/201093393975?text=${encodedMessage}`;
+                        whatsappSendBtn.classList.remove('disabled');
+                        whatsappSendBtn.removeAttribute('aria-disabled');
+                        whatsappSendBtn.style.opacity = "1";
+                        whatsappSendBtn.style.pointerEvents = "auto";
+                    } else {
+                        whatsappSendBtn.removeAttribute('href');
+                        whatsappSendBtn.classList.add('disabled');
+                        whatsappSendBtn.setAttribute('aria-disabled', 'true');
+                        whatsappSendBtn.style.opacity = "0.6";
+                        whatsappSendBtn.style.pointerEvents = "none";
+                    }
+                }
 
-                // ربط أزرار الواتساب
-                const encodedMessage = encodeURIComponent(message);
-                whatsappSendBtn.href = `https://wa.me/201093393975?text=${encodedMessage}`;
+                // ربط وتطبيع رقم هاتف الصديق عند الإرسال
+                if (shareFriendBtn && friendPhoneInput) {
+                    shareFriendBtn.target = '_blank';
+                    shareFriendBtn.rel = 'noopener noreferrer';
 
-                const friendPhone = friendPhoneInput.value.trim();
-                if (friendPhone) {
-                    shareFriendBtn.href = `https://wa.me/${friendPhone}?text=${encodedMessage}`;
-                    shareFriendBtn.style.opacity = "1";
-                    shareFriendBtn.style.pointerEvents = "auto";
-                } else {
-                    shareFriendBtn.href = "#";
-                    shareFriendBtn.style.opacity = "0.6";
-                    shareFriendBtn.style.pointerEvents = "none";
+                    const rawFriendPhone = friendPhoneInput.value.trim();
+                    if (hasItems && rawFriendPhone) {
+                        const normalizedPhone = rawFriendPhone.replace(/\D/g, '');
+                        const encodedMessage = encodeURIComponent(message);
+                        shareFriendBtn.href = `https://wa.me/${normalizedPhone}?text=${encodedMessage}`;
+                        shareFriendBtn.style.opacity = "1";
+                        shareFriendBtn.style.pointerEvents = "auto";
+                    } else {
+                        shareFriendBtn.href = "#";
+                        shareFriendBtn.style.opacity = "0.6";
+                        shareFriendBtn.style.pointerEvents = "none";
+                    }
                 }
             }
-
             // زر طباعة الفاتورة
             const printInvoiceBtn = document.getElementById('printInvoiceBtn');
             if (printInvoiceBtn) {
