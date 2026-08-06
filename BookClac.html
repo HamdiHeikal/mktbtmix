@@ -58,7 +58,7 @@
             padding-bottom: 15px;
             scroll-behavior: smooth;
             scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch; /* لتحسين نعومة السحب على الأجهزة الذكية وبطئها الطبيعي */
+            -webkit-overflow-scrolling: touch;
             transform: rotateX(180deg);
             width: 100%;
         }
@@ -72,10 +72,10 @@
         .cards-container > * {
             transform: rotateX(180deg);
         }
-        /* تصميم أزرار التمرير (الأسهم) - تم نقلها للأعلى قريبة من أسماء الصفوف */
+        /* تصميم أزرار التمرير (الأسهم) */
         .scroll-btn {
             position: absolute;
-            top: 35px; /* رفعناها للأعلى لتكون قريبة من عنوان الصف الدراسي */
+            top: 35px;
             background: rgba(22, 163, 74, 0.85);
             color: white;
             border: none;
@@ -108,11 +108,20 @@
             min-width: 300px;
             flex: 0 0 320px;
             scroll-snap-align: start;
-            scroll-snap-stop: always; /* تجبر السحب على الانتقال كارت بكارت ببطء وتوازن */
+            scroll-snap-stop: always;
             box-shadow: 0 10px 25px rgba(0,0,0,.12);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            max-height: 520px;
+            overflow-y: auto;
+            position: relative;
+        }
+        .grade-card::-webkit-scrollbar {
+            width: 6px;
+        }
+        .grade-card::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
         }
         .grade-card h3 {
             color: #16a34a;
@@ -120,6 +129,10 @@
             margin-bottom: 15px;
             border-bottom: 2px solid #ccf0d8;
             padding-bottom: 8px;
+            position: sticky;
+            top: -20px;
+            background: #fff;
+            z-index: 5;
         }
         .book-item {
             display: flex;
@@ -132,7 +145,6 @@
             gap: 8px;
             transition: background-color 0.25s ease, transform 0.15s ease;
         }
-        /* التنسيق عند اختيار الكتاب (تظليل بلون خفيف وحلو) */
         .book-item.selected-book {
             background: #c9f5d5;
             border: 1px solid #bbf7d0;
@@ -148,6 +160,8 @@
             gap: 10px;
             cursor: pointer;
             flex: 1;
+            color: #111827;
+            font-weight: 700;
         }
         .book-item input[type="checkbox"] {
             width: 18px;
@@ -192,6 +206,7 @@
         }
         .disabled-book {
             color: #999;
+            font-weight: 700;
             font-size: 14px;
         }
         .summary-card {
@@ -250,7 +265,6 @@
             justify-content: center;
             gap: 15px;
             flex-wrap: wrap;
-            animation: fadeIn 0.3s ease-in-out;
         }
         .delivery-input {
             padding: 10px 15px;
@@ -262,6 +276,22 @@
             background: #fff;
             font-family: 'Cairo', sans-serif;
         }
+
+        /* كود تأثير النبض المستمر لزر الواتساب */
+        @keyframes pulse-zoom {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.30); }
+          100% { transform: scale(1); }
+        }
+        .whatsapp-pulse {
+          animation: pulse-zoom 1.5s infinite ease-in-out;
+          display: inline-block;
+        }
+        .whatsapp-pulse:hover {
+          animation-play-state: paused;
+          transform: scale(1.12);
+        }
+
         .whatsapp-btn {
             display: inline-block;
             background: #25D366;
@@ -275,9 +305,6 @@
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
             white-space: nowrap;
             direction: rtl;
-        }
-        .whatsapp-btn:hover {
-            transform: scale(1.05);
         }
         .back{
             display: block;
@@ -305,7 +332,7 @@
 
         <div class="summary-card">
             <div class="summary-flex-container" style="display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
-                <a href="#" id="whatsappSend" class="whatsapp-btn" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <a href="#" id="whatsappSend" class="whatsapp-btn whatsapp-pulse" target="_blank" style="flex: 0 1 auto; min-width: 90px; padding: 10px 8px; font-size: clamp(10px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                     💬 ارسل للواتس
                 </a>
                 <div class="total-box-item" style="flex: 2 1 auto; min-width: 0; padding: 10px 5px; font-size: clamp(11px, 2.5vw, 15px); text-align: center; white-space: nowrap; overflow: visible;">
@@ -314,9 +341,9 @@
             </div>
         
             <div class="footer-note">
-                <label>
-                    <input type="checkbox" id="deliveryCheckbox">
+                <label class="whatsapp-pulse" >
                     🚚 لو حابب التوصيل، فعّل هذا الخيار.
+                    <input type="checkbox" id="deliveryCheckbox">
                 </label>
                 <div id="deliveryDetails" style="display: none;">
                     <input type="text" id="clientAddress" class="delivery-input" placeholder="اكتب عنوانك بالتفصيل هنا...">
@@ -335,8 +362,7 @@
         </div>
 
         <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>
-        <button class="back" id="printInvoiceBtn"
-                style="background:#16a34a;display:inline-block;width:auto;margin-right:10px;">
+        <button class="back" id="printInvoiceBtn" style="background:#16a34a;display:inline-block;width:auto;margin-right:10px;">
             🖨️ طباعة فاتورة
         </button>
 
@@ -414,14 +440,14 @@
                 let cardDiv = document.createElement('div');
                 cardDiv.className = 'grade-card';
         
-                let innerContent = `<div><h3>${grade}</h3>`;
+                let innerContent = `<h3>${grade}</h3>`;
         
                 gradesData[grade].forEach((book, idx) => {
                     if (book.price === "ما نزلش" || !book.price) {
                         innerContent += `
                             <div class="book-item">
                                 <div class="book-row-top">
-                                    <span style="flex:1;">${book.name}</span>
+                                    <span class="disabled-book" style="flex:1;">${book.name}</span>
                                     <span class="disabled-book">ما نزلش</span>
                                 </div>
                             </div>`;
@@ -444,7 +470,6 @@
                     }
                 });
         
-                innerContent += `</div>`;
                 cardDiv.innerHTML = innerContent;
                 container.appendChild(cardDiv);
             }
@@ -540,9 +565,10 @@
                 totalBeforeEl.textContent = totalBefore.toFixed(2);
                 totalAfterEl.textContent = totalAfter.toFixed(2);
         
-                let message = "📚 *طلب حجز كتب خارجية*%0A";
-                let plainTextMessage = "📚 طلب حجز كتب خارجية\n";
+                // الذيل مدمج في سطور أقل ومحافظ على الرموز الآمنة لطباعة الفاتورة والواتس
+                message += "%0A%0A&#128218; موقع خاص بمكتبة مكس &#128218;%0Aاطلب كتبك فى 3 خطوات:%0A1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A&#128187; الموقع برمجتى الشخصية | &#11088; أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.%0A&#127801; مستنى تجربتكم وتشجيعكم.";
                 
+                plainTextMessage += "\n\n📚 موقع خاص بمكتبة مكس 📚\nاطلب كتبك فى 3 خطوات:\n1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n💻 الموقع برمجتى الشخصية | ⭐ أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.\n🌹 مستنى تجربتكم وتشجيعكم.";
                 for (let grade in groupedBooks) {
                     message += "%0A📌 *" + grade + "*:%0A";
                     plainTextMessage += "\n📌 " + grade + ":\n";
@@ -571,12 +597,10 @@
                 message += "%0A%0Aمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
                 plainTextMessage += "\n\nمتاح التوصيل أو الحجز من خلال المكتبة. يسعدنا زيارتكم!";
 
-                // تحديث مربع المعاينة
                 messagePreview.textContent = plainTextMessage;
 
-                // إعداد زر مشاركة الصديق (مع تنظيف الرقم تلقائياً من أي مسافات أو رموز غير صالحة)
-                let fPhone = friendPhoneInput.value.replace(/[^\d+]/g, '').trim();
-                if (fPhone) {
+                let fPhone = "20" + friendPhoneInput.value.replace(/[^\d+]/g, '').replace(/^0+/, '').trim();
+                if (fPhone && friendPhoneInput.value.trim() !== "") {
                     shareFriendBtn.href = "https://wa.me/" + fPhone + "?text=" + message;
                 } else {
                     shareFriendBtn.href = "#";
