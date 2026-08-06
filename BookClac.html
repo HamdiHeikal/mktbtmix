@@ -295,13 +295,14 @@
             direction: rtl;
         }
         @keyframes truck-drive {
-            0% { transform: translateX(120px); opacity: 0; }
+            0% { transform: translateX(240px); opacity: 0; } /* زيادة المسافة من 120px إلى 240px */
             20% { opacity: 1; }
             100% { transform: translateX(0); opacity: 1; }
         }
         .animated-truck {
             display: inline-block;
-            animation: truck-drive 6s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+            font-size: 2em; /* بالحجم الأكبر للضعف  */
+            animation: truck-drive 6s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;/* 2s تبطيئ السرعه من اصل */
         }
         .back {
             display: block;
