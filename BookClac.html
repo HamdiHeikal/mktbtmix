@@ -648,139 +648,269 @@
         /* =====================================================
            الطباعة - فاتورة A5 صفحة واحدة
         ===================================================== */
-
+        
         @media print {
-
+        
             @page {
                 size: A5 portrait;
-                margin: 7mm;
+                margin: 5mm;
             }
-
+        
             html,
             body {
-                width: 148mm;
-                min-height: 210mm;
-                margin: 0;
-                padding: 0;
-                background: white !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
             }
-
-            body * {
-                visibility: hidden !important;
+        
+            /* إخفاء كل عناصر الصفحة */
+            body > * {
+                display: none !important;
             }
-
-            #invoiceArea,
-            #invoiceArea * {
-                visibility: visible !important;
-            }
-
+        
+            /* إظهار الفاتورة فقط */
             #invoiceArea {
                 display: block !important;
-                position: absolute;
-                top: 0;
-                right: 0;
-                width: 100%;
-                height: auto;
-                background: white;
-                color: #111;
-                direction: rtl;
-                overflow: visible;
+                position: static !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
+                color: #111 !important;
             }
-
+        
+            #invoiceArea * {
+                display: revert !important;
+            }
+        
+            /* الفاتورة */
             .invoice-page {
-                width: 100%;
-                padding: 0;
-                margin: 0;
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 0 !important;
+                max-height: 190mm !important;
+        
+                margin: 0 !important;
+                padding: 0 !important;
+        
                 direction: rtl;
                 font-family: 'Cairo', sans-serif;
+                box-sizing: border-box;
+        
+                overflow: hidden !important;
+        
+                page-break-before: avoid !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+        
+                break-before: avoid !important;
+                break-after: avoid !important;
+                break-inside: avoid !important;
             }
-
+        
+            /* اللوجو */
             .invoice-logo {
-                width: 75px !important;
-                height: auto;
-                display: block;
-                margin: 0 auto 3px auto;
+                width: 65px !important;
+                height: auto !important;
+                display: block !important;
+                margin: 0 auto 2px auto !important;
             }
-
+        
+            /* اسم المكتبة */
             .invoice-store {
-                text-align: center;
-                font-size: 12px;
-                font-weight: 800;
-                line-height: 1.35;
-                margin-bottom: 4px;
+                text-align: center !important;
+                font-size: 10px !important;
+                font-weight: 800 !important;
+                line-height: 1.2 !important;
+                margin-bottom: 2px !important;
             }
-
+        
+            /* التاريخ */
             .invoice-date {
-                text-align: center;
-                font-size: 9px;
-                color: #444;
-                margin-bottom: 6px;
+                text-align: center !important;
+                font-size: 7px !important;
+                color: #444 !important;
+                margin-bottom: 3px !important;
             }
-
+        
+            /* عنوان الفاتورة */
             .invoice-title {
-                text-align: center;
-                font-size: 15px;
-                font-weight: 800;
-                border-top: 1px solid #222;
-                border-bottom: 1px solid #222;
-                padding: 3px 0;
-                margin-bottom: 5px;
+                text-align: center !important;
+                font-size: 11px !important;
+                font-weight: 800 !important;
+        
+                border-top: 1px solid #222 !important;
+                border-bottom: 1px solid #222 !important;
+        
+                padding: 2px 0 !important;
+                margin-bottom: 3px !important;
+        
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
-
+        
+            /* =====================================================
+               جدول الكتب
+            ===================================================== */
+        
+            .invoice-no-break {
+                display: block !important;
+        
+                width: 100% !important;
+        
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+        
             .invoice-items {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 9px;
-                margin-bottom: 5px;
+                width: 100% !important;
+        
+                border-collapse: collapse !important;
+                border-spacing: 0 !important;
+        
+                font-size: 7px !important;
+        
+                margin: 0 0 3px 0 !important;
+        
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
-
+        
+            .invoice-items thead {
+                display: table-header-group !important;
+            }
+        
+            .invoice-items tbody {
+                display: table-row-group !important;
+            }
+        
+            .invoice-items tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+        
             .invoice-items th {
                 background: #eeeeee !important;
-                font-weight: 800;
-                border: 1px solid #777;
-                padding: 3px;
+        
+                font-weight: 800 !important;
+        
+                border: 1px solid #777 !important;
+        
+                padding: 2px 2px !important;
+        
+                line-height: 1.1 !important;
+        
+                height: auto !important;
             }
-
+        
             .invoice-items td {
-                border: 1px solid #aaa;
-                padding: 2px 3px;
-                vertical-align: middle;
+                border: 1px solid #aaa !important;
+        
+                padding: 1px 2px !important;
+        
+                vertical-align: middle !important;
+        
+                line-height: 1.15 !important;
+        
+                height: auto !important;
             }
-
+        
             .invoice-grade {
                 background: #f3f3f3 !important;
-                font-weight: 800;
+                font-weight: 800 !important;
             }
-
+        
+            /* =====================================================
+               الإجمالي
+            ===================================================== */
+        
             .invoice-total {
-                border: 1px solid #555;
-                padding: 4px 7px;
-                font-size: 10px;
-                font-weight: 800;
-                line-height: 1.5;
-                margin-bottom: 5px;
+                border: 1px solid #555 !important;
+        
+                padding: 2px 5px !important;
+        
+                font-size: 8px !important;
+        
+                font-weight: 800 !important;
+        
+                line-height: 1.25 !important;
+        
+                margin-bottom: 3px !important;
+        
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
-
+        
+            /* =====================================================
+               التوصيل
+            ===================================================== */
+        
             .invoice-delivery {
-                border: 1px solid #d97706;
-                padding: 4px 7px;
-                font-size: 9px;
-                line-height: 1.5;
-                margin-bottom: 5px;
+                border: 1px solid #d97706 !important;
+        
+                padding: 2px 5px !important;
+        
+                font-size: 7px !important;
+        
+                line-height: 1.25 !important;
+        
+                margin-bottom: 3px !important;
+        
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
-
+        
+            /* =====================================================
+               الفوتر
+            ===================================================== */
+        
             .invoice-footer {
-                text-align: center;
-                font-size: 8px;
-                line-height: 1.35;
-                border-top: 1px dashed #777;
-                padding-top: 4px;
+                text-align: center !important;
+        
+                font-size: 7px !important;
+        
+                line-height: 1.2 !important;
+        
+                border-top: 1px dashed #777 !important;
+        
+                padding-top: 2px !important;
+        
+                margin-top: 2px !important;
+        
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
-
+        
             .invoice-no-break {
-                page-break-inside: avoid;
-                break-inside: avoid;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
+            /* =====================================================
+               تصغير الفاتورة تلقائيًا حسب عدد الكتب
+            ===================================================== */
+            
+            .invoice-page.invoice-small {
+                zoom: 0.90 !important;
+            }
+            
+            .invoice-page.invoice-smaller {
+                zoom: 0.80 !important;
+            }
+            
+            .invoice-page.invoice-tiny {
+                zoom: 0.70 !important;
+            }
+            
+            .invoice-page.invoice-ultra-tiny {
+                zoom: 0.60 !important;
+            }
+        
         }
 
     </style>
@@ -2619,43 +2749,28 @@
                     'printInvoiceBtn'
                 );
 
-
             if (printInvoiceBtn) {
-
                 printInvoiceBtn.onclick =
                     function () {
-
                         const selectedBooks =
                             getSelectedBooks();
-
-
                         if (
                             selectedBooks.length === 0
                         ) {
-
                             alert(
                                 "من فضلك اختر كتابًا واحدًا على الأقل قبل طباعة الفاتورة."
                             );
-
                             return;
-
                         }
-
-
                         updateTotals();
-
-
                         setTimeout(
                             function () {
-
                                 window.print();
-
                             },
                             100
                         );
 
                     };
-
             }
 
 
@@ -2676,7 +2791,21 @@
             totalBefore,
             totalAfter
         ) {
-
+            const invoicePage =
+                document.querySelector(
+                    '#invoiceArea .invoice-page'
+                );
+        
+            if (invoicePage) {
+        
+                invoicePage.classList.remove(
+                    'invoice-small',
+                    'invoice-smaller',
+                    'invoice-tiny',
+                    'invoice-ultra-tiny'
+                );
+        
+            }
             const body =
                 document.getElementById(
                     'invoiceItemsBody'
@@ -2859,6 +2988,46 @@
                 }
             );
 
+                    /* =================================================
+           تصغير الفاتورة تلقائيًا حسب عدد الكتب
+        ================================================= */
+
+        if (invoicePage) {
+
+            const bookCount =
+                selectedBooks.length;
+            
+            if (bookCount <= 10) {
+
+                // الحجم الطبيعي
+
+            } else if (bookCount <= 15) {
+
+                invoicePage.classList.add(
+                    'invoice-small'
+                );
+
+            } else if (bookCount <= 20) {
+
+                invoicePage.classList.add(
+                    'invoice-smaller'
+                );
+
+            } else if (bookCount <= 28) {
+
+                invoicePage.classList.add(
+                    'invoice-tiny'
+                );
+
+            } else {
+
+                invoicePage.classList.add(
+                    'invoice-ultra-tiny'
+                );
+
+            }
+
+        }
 
             /* =================================================
                الإجماليات
