@@ -344,12 +344,21 @@
         </div>
 
         <div class="slider-wrapper">
-            <button class="scroll-btn scroll-right" id="scrollRight">&lt;</button>
-            <div class="cards-container" id="cardsContainer">
-                <!-- سيتم تعبئة المراحل والكتب تلقائياً بأمان من ملف الأكسيل -->
+            <!-- أزرار التحكم -->
+            <button class="scroll-btn scroll-right" id="scrollRight">&gt;</button>
+            <button class="scroll-btn scroll-left" id="scrollLeft">&lt;</button>
+            
+            <!-- هذا هو شريط التمرير العلوي الجديد -->
+            <div class="top-scrollbar-container" id="topScrollbar">
+                <div class="scrollbar-filler" id="scrollbarFiller"></div>
             </div>
-            <button class="scroll-btn scroll-left" id="scrollLeft">&gt;</button>
+        
+            <!-- الكروت -->
+            <div class="cards-container" id="cardsContainer">
+                <!-- الكروت الخاصة بك -->
+            </div>
         </div>
+        
 
         <a class="back" href="offers.html"> 🏠 العودة لباقى العروض </a>
         <button class="back" id="printInvoiceBtn" style="background:#16a34a;display:inline-block;width:auto;margin-right:10px;cursor:pointer;">
