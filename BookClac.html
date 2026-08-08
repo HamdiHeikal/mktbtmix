@@ -47,10 +47,12 @@
             -webkit-overflow-scrolling: touch;
             width: 100%;
             direction: rtl;
-             order: 1;
+            order: 1;
+            scrollbar-position: top;
         }
         .cards-container::-webkit-scrollbar {
             height: 10px;
+            position: absolute; top: 0;
         }
         .cards-container::-webkit-scrollbar-thumb {
             background: #cbd5e1;
