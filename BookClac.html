@@ -38,16 +38,14 @@
         /* نقل شريط التمرير للأعلى */
         .cards-container {
             display: flex;
+            flex-direction: row; /* هذا السطر يضمن عرض الكروت أفقياً بجوار بعضها */
             gap: 20px;
             overflow-x: auto;
-            padding-top: 50px; /* مساحة لأزرار التحكم */
+            padding-top: 50px; /* مساحة لأزرار التحكم في الأعلى */
             padding-bottom: 15px;
             scroll-behavior: smooth;
             width: 100%;
             direction: rtl;
-            /* لجعل السكرول بار يظهر في الأعلى */
-            display: flex;
-            flex-direction: column-reverse; 
         }
         /* تعديل موقع الأزرار */
         .slider-wrapper {
