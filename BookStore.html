@@ -493,7 +493,7 @@
             globalExcelData = globalExcelData.map((row, index) => {
                 return {
                     id: index,
-                    grade: row['الصف الدراسي'] || row['الصف'] || 'أخرى',
+                    grade: row['الصف'] || row['الصف الدراسي'] || 'أخرى',
                     publisher: row['دار نشر'] || 'غير محدد',
                     subject: row['مادة'] || 'عام',
                     title: (row['بيان الأصناف'] || '').replace(/\s*[\(\\{].*?[\)\\}]/g, '').trim() || 'كتاب بدون اسم',
