@@ -219,7 +219,10 @@
                 groups[key].push(item);
             });
 
-            for (let groupName in groups) {
+            // ترتيب أسماء الأعمدة أبجدياً (باللغة العربية)
+            let sortedGroupNames = Object.keys(groups).sort((a, b) => a.localeCompare(b, 'ar'));
+
+            sortedGroupNames.forEach(groupName => {
                 let columnDiv = document.createElement('div');
                 columnDiv.className = 'category-column';
                 let headerDiv = document.createElement('div');
@@ -259,7 +262,7 @@
                 });
                 columnDiv.appendChild(bodyDiv);
                 wrapper.appendChild(columnDiv);
-            }
+            });
             calculateTotals();
         }
 
