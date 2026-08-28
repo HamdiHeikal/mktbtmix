@@ -298,6 +298,8 @@
                 let bodyDiv = document.createElement('div');
                 bodyDiv.className = 'category-body';
 
+		groups[groupName].sort((a, b) => a.title.localeCompare(b.title, 'ar'));
+
                 groups[groupName].forEach(item => {
                     let card = document.createElement('div');
                     // إضافة كلاس selected-book تضاف ديناميكياً إذا كان الكتاب مختاراً
@@ -466,6 +468,72 @@
             let text = encodeURIComponent(document.getElementById('whatsappTextarea').value);
             if (!phone) { alert("يرجى كتابة رقم هاتف الواتساب أولاً!"); return; }
             window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+        }
+	
+	function renderStore(mode) {
+            let wrapper = document.getElementById('sectionsWrapper');
+            wrapper.innerHTML = '';
+            let groups = {};
+            
+            globalExcelData.forEach(item => {
+                let key = mode === 'publisher' ? item.publisher : (mode === 'subject' ? item.subject : item.grade2);
+                if (!groups[key]) groups[key] = [];
+                groups[key].push(item);
+            });
+
+            let sortedGroupNames = Object.keys(groups).sort((a, b) => a.localeCompare(b, 'ar'));
+
+            sortedGroupNames.forEach(groupName => {
+                if (groupName.toLowerCase().includes('اجمالى') || groupName.toLowerCase().includes('إجمالي')) {
+                    return;
+                }
+
+                let columnDiv = document.createElement('div');
+                columnDiv.className = 'category-column';
+                let headerDiv = document.createElement('div');
+                headerDiv.className = 'category-header';
+                headerDiv.innerHTML = `${groupName}`;
+                columnDiv.appendChild(headerDiv);
+
+                let bodyDiv = document.createElement('div');
+                bodyDiv.className = 'category-body';
+
+                // --- تمت إضافة هذا السطر لترتيب الأصناف داخل العمود أبجدياً بالعربية ---
+                groups[groupName].sort((a, b) => a.title.localeCompare(b.title, 'ar'));
+
+                groups[groupName].forEach(item => {
+                    let card = document.createElement('div');
+                    card.className = `book-card ${item.selected ? 'selected-book' : ''}`;
+                    card.onclick = (e) => {
+                        if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('.qty-controls')) return;
+                        let chk = card.querySelector('.book-checkbox');
+                        chk.checked = !chk.checked;
+                        toggleSelect(item.id, chk.checked);
+                    };
+                    card.innerHTML = `
+                        <div class="book-row-top">
+                            <span class="book-title">${item.title}</span>
+                            <input type="checkbox" class="book-checkbox" ${item.selected ? 'checked' : ''} onchange="toggleSelect(${item.id}, this.checked)">
+                        </div>
+                        <div class="book-row-bottom">
+                            <div class="book-price-info">
+                                <span>${item.originalPrice}ج</span> | بعد الخصم: <span>${item.discountPrice}ج</span>
+                            </div>
+                            <div class="qty-controls">
+                                <button type="button" class="qty-btn minus" onclick="updateQty(${item.id}, -1)">-</button>
+                                <input type="text" class="qty-input" value="${item.qty}" onchange="setQty(${item.id}, this.value)">
+                                <button type="button" class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+                            </div>
+                        </div>
+                    `;
+                    bodyDiv.appendChild(card);
+                });
+                columnDiv.appendChild(bodyDiv);
+                wrapper.appendChild(columnDiv);
+            });
+
+            updateTopScrollbarWidth();
+            calculateTotals();
         }
 
         function openWhatsAppChat() { sendWhatsApp(); }
