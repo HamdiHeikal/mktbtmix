@@ -182,7 +182,6 @@
         .btn-whatsapp { background: #25d366; }
         .btn-whatsapp:hover { background: #1ebd58; }
         
-        /* طباعة الفاتورة */
         @media print {
             body * {
                 visibility: hidden;
@@ -204,7 +203,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="loadEmbeddedExcel()">
 
     <header>
         <h2>مكتبة مكس - نظام طلبيات الكتب الخارجية</h2>
@@ -217,17 +216,13 @@
             <option value="all">الكل (جميع الأصناف)</option>
         </select>
         <input type="text" id="searchInput" placeholder="بحث عن كتاب..." onkeyup="filterProducts()">
-        <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="loadExcelData(event)" style="display:none">
-        <button class="btn btn-excel" onclick="document.getElementById('excelFile').click()">📂 تحميل ملف الاكسيل</button>
     </div>
 
     <div class="main-container">
-        <!-- شبكة عرض المنتجات -->
         <div class="products-grid" id="productsGrid">
-            <p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;">يرجى تحميل ملف الاكسيل (`BookClac.xlsx`) للبدء...</p>
+            <p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;">جاري تحميل البيانات من ملف الاكسيل...</p>
         </div>
 
-        <!-- اللوحة الجانبية الفاتورة السريعة -->
         <div class="sidebar-panel">
             <h3>🛒 سلة الطلبات الحالية</h3>
             <div style="max-height: 250px; overflow-y: auto;">
@@ -256,7 +251,6 @@
         </div>
     </div>
 
-    <!-- نموذج الفاتورة المخصص للطباعة -->
     <div id="printable-invoice">
         <h2 style="text-align: center; margin-bottom: 20px;">فاتورة طلب كتب خارجية - مكتبة مكس</h2>
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;" border="1">
@@ -277,26 +271,27 @@
     <script>
         let excelData = [];
         let workbookGlobal = null;
-        let cart = {}; // مفتاح: كود الصنف أو مؤشره، القيمة: العدد
+        let cart = {};
 
-        // تحميل ملف الاكسيل وقراءته تلقائياً أو عند الرفع
-        function loadExcelData(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                workbookGlobal = workbook;
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                excelData = XLSX.utils.sheet_to_json(worksheet);
-                initApp();
-            };
-            reader.readAsArrayBuffer(file);
+        // تحميل ملف الاكسيل المرفق تلقائياً عند فتح الصفحة
+        function loadEmbeddedExcel() {
+            // قراءة ملف BookClac.xlsx الموجود بنفس المجلد مباشرة عبر fetch
+            fetch('BookClac.xlsx')
+                .then(response => response.arrayBuffer())
+                .then(data => {
+                    const workbook = XLSX.read(new Uint8Array(data), {type: 'array'});
+                    workbookGlobal = workbook;
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    excelData = XLSX.utils.sheet_to_json(worksheet);
+                    initApp();
+                })
+                .catch(err => {
+                    console.error('خطأ في تحميل ملف الاكسيل:', err);
+                    document.getElementById('productsGrid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">تعسّر تحميل ملف "BookClac.xlsx". تأكد من وجوده بجوار الملف.</p>';
+                });
         }
 
-        // تهيئة الواجهة والتصنيفات
         function initApp() {
             populateComboBox();
             renderProducts(excelData);
@@ -306,7 +301,6 @@
             const combo = document.getElementById('comboBox_1');
             combo.innerHTML = '<option value="all">الكل (جميع الأصناف)</option>';
             
-            // جمع التصنيفات من الأعمدة: دار نشر، مادة، الصف الدراسي
             let categories = new Set();
             excelData.forEach(row => {
                 if(row['دار نشر']) categories.add(`دار نشر: ${row['دار نشر']}`);
@@ -399,9 +393,7 @@
             cart[index] += change;
             if(cart[index] < 0) cart[index] = 0;
             if(cart[index] === 0) delete cart[index];
-            
-            // تحديث حقل الإدخال في الواجهة مباشرة بدون إعادة رسم كاملة لعدم فقدان التركيز
-            renderProducts(excelData); // أو تحديث مخصص
+            renderProducts(excelData);
         }
 
         function setQty(index, val) {
@@ -444,7 +436,7 @@
                 totalCover += priceCover * qty;
                 totalDiscount += priceDiscount * qty;
 
-                previewTextArr.(`${sub} (${qty})`);
+                previewTextArr.push(`${sub} (${qty})`);
 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -501,26 +493,24 @@
             window.print();
         }
 
-        // إضافة عمود جديد في ملف الاكسيل بناءً على فواتير الشراء السابقة وحفظ الملف
+        // حفظ عمود جديد في ملف الاكسيل الأصلي باسم "فاتورة شراء [أكبر رقم + 1]"
         function saveToExcelColumn() {
             if(!workbookGlobal) {
-                alert('يرجى تحميل ملف الاكسيل أولاً!');
+                alert('لم يتم تحميل ملف الاكسيل بعد!');
                 return;
             }
 
             const firstSheetName = workbookGlobal.SheetNames[0];
             const worksheet = workbookGlobal.Sheets[firstSheetName];
             
-            // استخراج أكبر عدد من أعمدة "فاتورة شراء" الموجودة مسبقاً
-            let maxBillNum = 0;
             let range = XLSX.utils.decode_range(worksheet['!ref']);
-            
-            let headers = [];
+            let maxBillNum = 0;
+
+            // فحص الأعمدة في الصف الأول لاستخراج أعلى رقم لفاتورة شراء سابقة
             for (let C = range.s.c; C <= range.e.c; ++C) {
                 let cell = worksheet[XLSX.utils.encode_cell({c: C, r: 0})];
                 if (cell && cell.v) {
                     let hName = String(cell.v).trim();
-                    headers.push(hName);
                     if (hName.startsWith('فاتورة شراء')) {
                         let num = parseInt(hName.replace('فاتورة شراء', '').trim());
                         if (!isNaN(num) && num > maxBillNum) {
@@ -531,8 +521,6 @@
             }
 
             let newColumnName = `فاتورة شراء ${maxBillNum + 1}`;
-            
-            // إضافة العمود الجديد في صف العنوان (رقم 0)
             let newColIndex = range.e.c + 1;
             range.e.c = newColIndex;
             worksheet['!ref'] = XLSX.utils.encode_range(range);
@@ -540,18 +528,17 @@
             // كتابة عنوان العمود الجديد
             worksheet[XLSX.utils.encode_cell({c: newColIndex, r: 0})] = {t: 's', v: newColumnName};
 
-            // تعبئة قيم الكميات لكل صف صنف بناءً على الفاتورة الحالية
+            // إدراج الكميات الخاصة بالأصناف المختارة في الصفوف المقابلة
             excelData.forEach((row, index) => {
-                let rowIndex = index + 1; // الصف الأول هو العنوان
-                let qty = cart[index] || ''; // إذا لم يتم اختياره تكون فارغة أو صفر
-                let cellAddress = XLSX.utils.encode_cell({c: newColIndex, r: rowIndex});
-                if (qty !== '') {
-                    worksheet[cellAddress] = {t: 'n', v: qty};
+                let rowIndex = index + 1;
+                let qty = cart[index];
+                if (qty !== undefined && qty > 0) {
+                    worksheet[XLSX.utils.encode_cell({c: newColIndex, r: rowIndex})] = {t: 'n', v: qty};
                 }
             });
 
-            // تحميل الملف المحدث للمستخدم
-            XLSX.writeFile(workbookGlobal, 'BookClac_Updated.xlsx');
+            // حفظ وتحميل الملف المحدث باسم BookClac.xlsx
+            XLSX.writeFile(workbookGlobal, 'BookClac.xlsx');
             alert(`تم إنشاء العمود "${newColumnName}" وحفظ الملف بنجاح!`);
         }
 
