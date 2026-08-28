@@ -68,13 +68,10 @@
     <div class="top-header">
         <div><h2>حاسبة خصم الكتب بالـ 15%</h2></div>
         <div>
-            <label style="display:flex;align-items:center;gap:6px;font-weight:bold;cursor:pointer;background:rgba(255,255,255,0.2);padding:6px 12px;border-radius:6px;"><input type="checkbox" id="headerCheckbox" style="width:16px;height:16px;cursor:pointer;" onchange="toggleHeaderCheckbox(this.checked)"> تفعيل الكل</label>
             <button onclick="loadExcelFile()">📁 تحميل ملف Excel جديد</button>
             <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
             <button onclick="window.location.reload()">🔄 إعادة ضبط</button>
         </div>
-    </div>
-    <div class="sub-bar">
         <div class="controls-group">
             <label style="font-weight: bold; color: #374151;">تصنيف الأعمدة:</label>
             <select id="comboBox_1" class="combo-box" onchange="changeClassification(this.value)">
@@ -83,16 +80,18 @@
                 <option value="subject">نوع المادة</option>
             </select>
             <label class="delivery-label">
-                <input type="checkbox" id="priceTypeCheckbox" onchange="calculateTotals()"> الفاتورة بسعر الشراء (غير محدد للبيع)
+                <input type="checkbox" id="priceTypeCheckbox" onchange="calculateTotals()"> شراء
             </label>
             <label class="delivery-label">
-                <input type="checkbox" id="deliveryCheckbox" onchange="toggleDeliveryInputs()"> لو حابب التوصيل، فغّل هذا الخيار 🚚
+                <input type="checkbox" id="deliveryCheckbox" onchange="toggleDeliveryInputs()"> دليفرى 🚚
             </label>
             <div id="deliveryDetailsContainer">
                 <input type="text" id="clientNameInput" placeholder="اسم العميل" oninput="calculateTotals()">
                 <input type="text" id="clientAddressInput" placeholder="العنوان" oninput="calculateTotals()">
             </div>
-        </div>
+         </div>
+    </div>
+    <div class="sub-bar">
         <div class="mini-invoice-preview">
             <div class="mini-invoice-title">
                 <span>الفاتورة السريعة</span>
@@ -189,13 +188,6 @@
             let chk = document.getElementById('deliveryCheckbox').checked;
             document.getElementById('deliveryDetailsContainer').style.display = chk ? 'flex' : 'none';
             calculateTotals();
-        }
-        function toggleHeaderCheckbox(isChecked) {
-            globalExcelData.forEach(item => {
-                item.selected = isChecked;
-                item.qty = isChecked ? (item.qty === 0 ? 1 : item.qty) : 0;
-            });
-            renderStore(document.getElementById('comboBox_1').value);
         }
         function renderStore(mode) {
             let wrapper = document.getElementById('sectionsWrapper');
