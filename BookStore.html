@@ -14,7 +14,7 @@
             font-family: 'Cairo', sans-serif;
         }
         body {
-            background-color: #f0f2f5;
+            background-color: #dcd1da;
             color: #333;
             direction: rtl;
             padding-bottom: 50px;
@@ -53,7 +53,7 @@
 
         /* شريط التحكم العلوي الفرعي */
         .sub-bar {
-            background: #ffffff;
+            background: #fdf2f8;
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
@@ -98,7 +98,7 @@
 
         /* مصغر الفاتورة الأعلى */
         .mini-invoice-preview {
-            background: #ffffff;
+            background: #fdf2f8;
             border: 2px dashed #10b981;
             border-radius: 8px;
             padding: 8px 15px;
@@ -166,8 +166,8 @@
 
         /* كارت الصنف */
         .book-card {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
+            background: #dcd1da;
+            border: 1px solid #bccef1;
             border-radius: 10px;
             padding: 12px;
             display: flex;
@@ -496,7 +496,7 @@
                     grade: row['الصف الدراسي'] || row['الصف'] || 'أخرى',
                     publisher: row['دار نشر'] || 'غير محدد',
                     subject: row['مادة'] || 'عام',
-                    title: row['بيان الأصناف'] || 'كتاب بدون اسم',
+                    title: (row['بيان الأصناف'] || '').replace(/\s*[\(\\{].*?[\)\\}]/g, '').trim() || 'كتاب بدون اسم',
                     originalPrice: parseFloat(row['سعر الغلاف']) || 0,
                     discountPrice: parseFloat(row['بعد الخصم']) || parseFloat(row['سعر الغلاف']) || 0,
                     currentStock: parseFloat(row['الرصيد الحالي']) || 0,
