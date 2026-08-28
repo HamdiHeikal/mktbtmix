@@ -13,17 +13,26 @@
         .top-header div{display:flex;align-items:center;gap:15px;flex-wrap:wrap;}
         .top-header button{background:rgba(255,255,255,0.2);border:none;color:white;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;transition:0.2s;}
         .top-header button:hover{background:rgba(255,255,255,0.3);}
-        .sub-bar{background:#ccf0d8;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-bottom:20px;flex-wrap:wrap;gap:15px;}
+        .sub-bar{background:#ccf0d8;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-bottom:15px;flex-wrap:wrap;gap:15px;}
         .controls-group{display:flex;align-items:center;gap:15px;flex-wrap:wrap;}
         select.combo-box{padding:8px 15px;border-radius:8px;border:2px solid #10b981;font-size:15px;font-weight:bold;outline:none;background:#fff;color:#065f46;cursor:pointer;}
         .delivery-label{display:flex;align-items:center;gap:8px;font-weight:bold;color:#b45309;background:#fef3c7;padding:6px 12px;border-radius:8px;border:1px solid #f59e0b;}
         .delivery-label input{width:18px;height:18px;cursor:pointer;}
-        .mini-invoice-preview{background:#fdf2f8;border:2px dashed #10b981;border-radius:8px;padding:8px 15px;min-width:250px;max-height:70px;overflow-y:auto;font-size:12px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.05);}
-        .mini-invoice-title{font-weight:bold;color:#047857;margin-bottom:2px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;}
-        .mini-invoice-items{color:#4b5563;line-height:1.4;}
+        
+        .mini-invoice-preview{background:#fdf2f8;border:2px dashed #10b981;border-radius:8px;padding:6px 12px;min-width:300px;max-height:55px;overflow-y:auto;font-size:12px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center;gap:15px;}
+        .mini-invoice-items{color:#4b5563;line-height:1.3;flex:1;overflow-y:auto;max-height:40px;}
+        .mini-total-badge{font-weight:bold;color:#047857;background:#d1fae5;padding:4px 8px;border-radius:6px;white-space:nowrap;font-size:13px;}
+
         .main-container{max-width:1400px;margin:0 auto;padding:0 20px;}
-        .sections-wrapper{display:flex;gap:20px;overflow-x:auto;padding-bottom:20px;scroll-behavior:smooth;}
-        .category-column{background:#ffffff;border-radius:12px;min-width:350px;max-width:380px;flex:1;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);display:flex;flex-direction:column;border-top:5px solid #ec4899;}
+        
+        .scroll-nav-container{display:flex;align-items:center;gap:10px;margin-bottom:15px;}
+        
+        .sections-wrapper{display:flex;gap:20px;overflow-x:auto;padding-bottom:10px;scroll-behavior:smooth;flex:1;}
+        .sections-wrapper::-webkit-scrollbar{height:10px;}
+        .sections-wrapper::-webkit-scrollbar-track{background:#e5e7eb;border-radius:5px;}
+        .sections-wrapper::-webkit-scrollbar-thumb{background:#10b981;border-radius:5px;}
+
+        .category-column{background:#ffffff;border-radius:12px;min-width:350px;max-width:380px;flex:0 0 350px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);display:flex;flex-direction:column;border-top:5px solid #ec4899;}
         .category-header{padding:15px;background:#fdf2f8;color:#047857;font-size:18px;font-weight:800;text-align:center;border-bottom:1px solid #fce7f3;border-radius:12px 12px 0 0;}
         .category-body{padding:15px;display:flex;flex-direction:column;gap:12px;max-height:600px;overflow-y:auto;}
         .book-card{background:#dcd1da;border:1px solid #c5b8c3;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;transition:0.2s;cursor:pointer;}
@@ -92,15 +101,14 @@
     </div>
     <div class="sub-bar">
         <div class="mini-invoice-preview">
-            <div class="mini-invoice-title">
-                <span>الفاتورة السريعة</span>
-                <span id="mini-total-count">0 صنف</span>
-            </div>
             <div id="mini-invoice-items" class="mini-invoice-items">لم يتم اختيار أي كتب بعد...</div>
+            <div class="mini-total-badge" id="mini-total-count">0 صنف</div>
         </div>
     </div>
     <div class="main-container">
-        <div id="sectionsWrapper" class="sections-wrapper"></div>
+        <div class="scroll-nav-container">
+            <div id="sectionsWrapper" class="sections-wrapper"></div>
+        </div>
     </div>
     <div class="bottom-actions">
         <button class="btn-action btn-print" onclick="printInvoice()">🖨️ طباعة فاتورة</button>
@@ -261,10 +269,7 @@
                 item.selected = isChecked;
                 if (isChecked && item.qty === 0) item.qty = 1;
                 if (!isChecked) item.qty = 0;
-                
-                // تحديث واجهة الكارد مباشرة بدون إعادة بناء كاملة لتفادي فقدان التركيز
-                updateCardUI(id);
-                calculateTotals();
+                renderStore(document.getElementById('comboBox_1').value);
             }
         }
 
@@ -273,8 +278,7 @@
             if (item) {
                 item.qty = Math.max(0, item.qty + change);
                 item.selected = item.qty > 0;
-                updateCardUI(id);
-                calculateTotals();
+                renderStore(document.getElementById('comboBox_1').value);
             }
         }
 
@@ -284,23 +288,8 @@
                 let num = parseInt(val) || 0;
                 item.qty = Math.max(0, num);
                 item.selected = item.qty > 0;
-                updateCardUI(id);
-                calculateTotals();
+                renderStore(document.getElementById('comboBox_1').value);
             }
-        }
-
-        function updateCardUI(id) {
-            let item = globalExcelData.find(i => i.id === id);
-            if (!item) return;
-            // إيجاد الكارد الخاص بهذا العنصر وتحديث حالته سريعين
-            let cards = document.querySelectorAll('.book-card');
-            cards.forEach(card => {
-                let checkbox = card.querySelector('.book-checkbox');
-                let qtyInput = card.querySelector('.qty-input');
-                // نتحقق من خلال مطابقة البيانات المعروضة أو نلجأ لإعادة التحديث السلس
-                // الأبسط والأضمن هو إعادة بناء الـ DOM للتصنيف الحالي إذا لزم، أو تحديث العناصر مباشرة
-            });
-            renderStore(document.getElementById('comboBox_1').value);
         }
 
         function calculateTotals() {
@@ -384,11 +373,10 @@
 
             for (let i = 1; i < jsonData.length; i++) {
                 let row = jsonData[i];
-                // مطابقة الصف بالعنوان أو بيانات الصف
                 let matchingItem = globalExcelData.find(item => row.includes(item.title) || row.includes(item.publisher));
-                let valToInsert = matchingItem ? matchingItem.qty : 0;
+                let valToIntsert = matchingItem ? matchingItem.qty : 0;
                 while (row.length < headerRow.length) { row.push(''); }
-                row[newColIndex] = valToInsert;
+                row[newColIndex] = valToIntsert;
             }
 
             let newWorksheet = XLSX.utils.aoa_to_sheet(jsonData);
