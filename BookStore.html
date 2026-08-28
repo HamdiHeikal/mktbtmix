@@ -493,7 +493,8 @@
             globalExcelData = globalExcelData.map((row, index) => {
                 return {
                     id: index,
-                    grade: row['الصف'] || row['الصف الدراسي'] || 'أخرى',
+                    grade: row['الصف الدراسي'] || row['الصف'] || 'أخرى',
+                    grade2: row['الصف'] || row['الصف الدراسي'] || 'أخرى',
                     publisher: row['دار نشر'] || 'غير محدد',
                     subject: row['مادة'] || 'عام',
                     title: (row['بيان الأصناف'] || '').replace(/\s*[\(\\{].*?[\)\\}]/g, '').trim() || 'كتاب بدون اسم',
@@ -519,7 +520,7 @@
 
             let groups = {};
             globalExcelData.forEach(item => {
-                let key = mode === 'publisher' ? item.publisher : (mode === 'subject' ? item.subject : item.grade);
+                let key = mode === 'publisher' ? item.publisher : (mode === 'subject' ? item.subject : item.grade2);
                 if (!groups[key]) groups[key] = [];
                 groups[key].push(item);
             });
@@ -530,14 +531,7 @@
 
                 let headerDiv = document.createElement('div');
                 headerDiv.className = 'category-header';
-                if (mode === 'grade') {
-                    // البحث عن قيمة العمود الأول الأصلي (الصف أو الصف الدراسي) للمجموعة الحالية
-                    let firstRowInGroup = groups[groupName][0];
-                    let originalGradeName = firstRowInGroup.originalGrade || groupName;
-                    headerDiv.innerHTML = ` ${originalGradeName}`;
-                } else {
-                    headerDiv.innerHTML = ` ${groupName}`;
-                }
+                headerDiv.innerHTML = `${groupName}`;
                 columnDiv.appendChild(headerDiv);
 
                 let bodyDiv = document.createElement('div');
