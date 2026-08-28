@@ -148,7 +148,7 @@
         .category-header {
             padding: 15px;
             background: #fdf2f8;
-            color: #be185d;
+            color: #29cc5b;
             font-size: 18px;
             font-weight: 800;
             text-align: center;
@@ -540,6 +540,13 @@
                 groups[groupName].forEach(item => {
                     let card = document.createElement('div');
                     card.className = 'book-card';
+                    card.onclick = (e) => {
+                        // لتجنب تكرار التبديل إذا قام المستخدم بالنقر مباشرة على الـ checkbox أو أزرار الكمية أو حقل الإدخال
+                        if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('.qty-controls')) return;
+                        let chk = card.querySelector('.book-checkbox');
+                        chk.checked = !chk.checked;
+                        toggleSelect(item.id, chk.checked);
+                    };
                     card.innerHTML = `
                         <div class="book-row-top">
                             <span class="book-title">${item.publisher} ${item.subject} ${item.grade} </span>
