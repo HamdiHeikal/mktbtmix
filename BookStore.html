@@ -530,7 +530,14 @@
 
                 let headerDiv = document.createElement('div');
                 headerDiv.className = 'category-header';
-                headerDiv.innerHTML = `🎒 ${groupName}`;
+                if (mode === 'grade') {
+                    // البحث عن قيمة العمود الأول الأصلي (الصف أو الصف الدراسي) للمجموعة الحالية
+                    let firstRowInGroup = groups[groupName][0];
+                    let originalGradeName = firstRowInGroup.originalGrade || groupName;
+                    headerDiv.innerHTML = `🎒 ${originalGradeName}`;
+                } else {
+                    headerDiv.innerHTML = `🎒 ${groupName}`;
+                }
                 columnDiv.appendChild(headerDiv);
 
                 let bodyDiv = document.createElement('div');
