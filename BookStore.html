@@ -32,6 +32,7 @@
             padding: 4px 8px;
             border-radius: 6px;
             white-space: nowrap;
+            line-height: 1.4;
         }
 
         .main-container{max-width:1400px;margin:0 auto;padding:0 20px;}
@@ -111,7 +112,7 @@
             <div class="mini-invoice-preview">
                 <div id="mini-invoice-items" class="mini-invoice-items">لم يتم اختيار أي كتب بعد...</div>
                 <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
-                    <div class="discount-badge-small" id="mini-discount-display">خصم 15%</div>
+                    <div class="discount-badge-small" id="mini-discount-display">الإجمالي: 0.00 ج<br>خصم: 0.00 ج<br><span style="font-size: 15px; font-weight: 800; color: #b91c1c;">المطلوب: 0.00 ج</span></div>
                     <div class="mini-total-badge" id="mini-total-count">0 صنف</div>
                 </div>
             </div>
@@ -193,7 +194,7 @@
             </thead>
             <tbody id="printTableBody"></tbody>
         </table>
-        <div class="invoice-totals" id="printTotalsBox">إجمالي السعر قبل الخصم: 0.00 جنيه<br>إجمالي السعر بعد الخصم: 0.00 جنيه</div>
+        <div class="invoice-totals" id="printTotalsBox">الإجمالي: 0.00 جنيه<br>خصم: 0.00 جنيه<br>المطلوب: 0.00 جنيه</div>
     </div>
 
     <script>
@@ -400,7 +401,13 @@
             let deliveryAdded = document.getElementById('deliveryCheckbox').checked;
             if (deliveryAdded) totalFinal += 30;
 
+            let totalDiscountAmount = Math.max(0, totalOriginal - totalFinal);
+            if (deliveryAdded) {
+                totalDiscountAmount = Math.max(0, totalOriginal - (totalFinal - 30));
+            }
+
             document.getElementById('mini-total-count').innerText = `${totalCount} كتاب`;
+            document.getElementById('mini-discount-display').innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br><span style="font-size: 14px; font-weight: 800; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} ج</span>`;
             
             let miniItemsContainer = document.getElementById('mini-invoice-items');
             miniItemsContainer.innerHTML = miniItemsHtml;
@@ -419,8 +426,7 @@
             });
 
             if (deliveryAdded) msg += `\n🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب\n`;
-            msg += `\n💰 *إجمالي المبلغ قبل الخصم: ${totalOriginal.toFixed(2)} جنيه*`;
-            msg += `\n💰 *الإجمالي النهائي بعد الخصم: ${totalFinal.toFixed(2)} جنيه* (بدون التوصيل أو بالحد الأدنى)`;
+            msg += `\nالإجمالي: ${totalOriginal.toFixed(2)} ج - خصم ${totalDiscountAmount.toFixed(2)} ج - *المطلوب: ${totalFinal.toFixed(2)} ج* (بدون التوصيل أو بالحد الأدنى)`;
 
             let textarea = document.getElementById('whatsappTextarea');
             textarea.value = msg;
@@ -436,7 +442,7 @@
             });
 
             document.getElementById('printClientInfo').innerHTML = (clientName || clientAddress) ? `اسم العميل: ${clientName} | العنوان: ${clientAddress}` : '';
-            document.getElementById('printTotalsBox').innerHTML = `إجمالي السعر قبل الخصم: ${totalOriginal.toFixed(2)} جنيه<br>إجمالي السعر بعد الخصم: ${totalFinal.toFixed(2)} جنيه ${deliveryAdded ? '(رسوم التوصيل 30-35ج حسب المندوب)' : ''}`;
+            document.getElementById('printTotalsBox').innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} جنيه<br>خصم: ${totalDiscountAmount.toFixed(2)} جنيه<br><span style="font-size: 16px; font-weight: 900; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} جنيه</span> ${deliveryAdded ? '(رسوم التوصيل 30-35ج حسب المندوب)' : ''}`;
         }
 
         function printInvoice() { window.print(); }
