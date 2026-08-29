@@ -469,7 +469,7 @@
 
             discountBadgeEl.style.cssText = "font-size: 13px; font-weight: 700; color: #047857;";
             document.getElementById('mini-total-count').innerText = `${totalCount} كتاب`;
-            discountBadgeEl.innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br><span style="font-size: 15px; font-weight: 800; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} ج</span>`;
+            discountBadgeEl.innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br>المطلوب: ${totalFinal.toFixed(2)} ج`;
             
             miniItemsContainer.innerHTML = miniItemsHtml;
             miniItemsContainer.scrollTop = miniItemsContainer.scrollHeight;
