@@ -110,8 +110,10 @@
         <div class="controls-group">
             <div class="mini-invoice-preview">
                 <div id="mini-invoice-items" class="mini-invoice-items">لم يتم اختيار أي كتب بعد...</div>
-                <div class="mini-total-badge" id="mini-total-count">0 صنف</div>
-                <div class="discount-badge-small">خصم 15%</div>
+                <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
+                    <div class="discount-badge-small" id="mini-discount-display">خصم 15%</div>
+                    <div class="mini-total-badge" id="mini-total-count">0 صنف</div>
+                </div>
             </div>
         </div>
     </div>
@@ -164,7 +166,7 @@
         </label>
 
         <button class="btn-action btn-print" onclick="printInvoice()">🖨️ طباعة فاتورة</button>
-        <button class="btn-action btn-save-excel" onclick="()">📊 حفظ بالأكسيل</button>
+        <button class="btn-action btn-save-excel" onclick="addNewPurchaseInvoiceColumn()">📊 حفظ بالأكسيل</button>
     </div>
 
     <div class="whatsapp-preview-box">
@@ -223,7 +225,6 @@
             if (!file) return;
             excelFileName = file.name;
             
-            // إظهار رسالة الانتظار أثناء قراءة الملف اليدوي
             document.getElementById('sectionsWrapper').innerHTML = `
                 <div style="width:100%; text-align:center; font-weight:bold; color:#047857; font-size:18px; padding:20px;">
                     انتظر جارى تحميل الاصناف...[cite: 3]
@@ -449,12 +450,10 @@
             let firstSheetName = workbookData.SheetNames[0];
             let worksheet = workbookData.Sheets[firstSheetName];
             
-            // قراءة النطاق الحالي للشيت
             let range = XLSX.utils.decode_range(worksheet['!ref']);
             let maxCol = range.e.c;
             let maxRow = range.e.r;
 
-            // البحث عن أعمدة "فاتورة شراء" السابقة لمعرفة الرقم التسلسل التالي
             let maxNum = 0;
             for (let C = range.s.c; C <= maxCol; ++C) {
                 let cellAddress = XLSX.utils.encode_cell({r: 0, c: C});
@@ -469,14 +468,11 @@
             let newColumnName = `فاتورة شراء - ${maxNum + 1}`;
             let newColIndex = maxCol + 1;
 
-            // إضافة رأس العمود الجديد في الصف الأول (Index 0)
             let newHeaderAddress = XLSX.utils.encode_cell({r: 0, c: newColIndex});
             worksheet[newHeaderAddress] = { t: 's', v: newColumnName };
 
-            // تعبئة قيم الكميات للكتب المختارة في السطور المطابقة، وباقي الخلايا أصفار أو فارغة
             for (let R = 1; R <= maxRow; ++R) {
-                // محاولة مطابقة اسم الكتاب أو دار النشر لتعيين الكمية المختارة
-                let titleCellAddr = XLSX.utils.encode_cell({r: R, c: 1}); // غالباً عمود بيان الأصناف أو اسم الكتاب
+                let titleCellAddr = XLSX.utils.encode_cell({r: R, c: 1});
                 let publisherCellAddr = XLSX.utils.encode_cell({r: R, c: 4}); 
                 
                 let rowTitle = worksheet[titleCellAddr] ? worksheet[titleCellAddr].v : '';
@@ -493,11 +489,9 @@
                 worksheet[targetCellAddr] = { t: 'n', v: valToInsert };
             }
 
-            // تحديث نطاق الشيت ليشمل العمود الجديد
             range.e.c = newColIndex;
             worksheet['!ref'] = XLSX.utils.encode_range(range);
 
-            // إذا كان هناك جدول معرّف في أكسيل (مثل الجدول1)، يتم تحديث نطاقه (Table Range) ليغطي العمود الجديد
             if (worksheet['!tables']) {
                 Object.keys(worksheet['!tables']).forEach(tableName => {
                     let tbl = worksheet['!tables'][tableName];
@@ -507,7 +501,6 @@
                 });
             }
 
-            // كتابة وحفظ الملف بنفس الصيغة والتنسيق الأصلي
             XLSX.writeFile(workbookData, excelFileName);
             alert(`تم إضافة العمود "${newColumnName}" بنجاح وتحديث ملف الأكسيل مع المحافظة على المعادلات والجداول!`);
         }
