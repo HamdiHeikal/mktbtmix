@@ -504,17 +504,18 @@
             });
 
             let gradeOrder = ["🎒 الصف الأول الابتدائي", "🎒 الصف الثاني الابتدائي", "🎒 الصف الثالث الابتدائي", "🎒 الصف الرابع الابتدائي", "🎒 الصف الخامس الابتدائي", "🎒 الصف السادس الابتدائي", "🎒 الصف الأول الإعدادي", "🎒 الصف الثاني الإعدادي", "🎒 الصف الثالث الإعدادي", "🎓 الثانوية العامة (أولى ثانوي)", "🎓 الثانوية العامة (تانية ثانوي)", "🎓 الثانوية العامة (تالتة ثانوي)"];
-
+            let publisherOrder = ["سلاح", "اضواء", "امتحان", "معاصر", "بت", "ستب", "اوكسفورد", "برافو", "تأسيس سليم", "توب", "ذا بيست ستارت", "دار الرحمة", "زج", "سندباد", "شون", "فرانكو", "قناة السويس", "قران كريم", "كيان", "مراجعات", "معلم القراءة", "مندليف", "ميرسي"];                let indexA = gradeOrder.indexOf(a);
             let sortedGroupNames = Object.keys(groups).sort((a, b) => {
-                let indexA = gradeOrder.indexOf(a);
-                let indexB = gradeOrder.indexOf(b);
+                let orderList = mode === 'publisher' ? publisherOrder : gradeOrder;
+                let indexA = orderList.indexOf(a);
+                let indexB = orderList.indexOf(b);
                 
                 if (indexA !== -1 && indexB !== -1) return indexA - indexB;
                 if (indexA !== -1) return -1;
                 if (indexB !== -1) return 1;
                 
                 return a.localeCompare(b, 'ar');
-            });
+            });    
 
             sortedGroupNames.forEach(groupName => {
                 if (groupName.toLowerCase().includes('اجمالى') || groupName.toLowerCase().includes('إجمالي')) {
