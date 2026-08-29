@@ -34,24 +34,24 @@
         
         .scroll-nav-container{display:flex;align-items:center;gap:10px;margin-bottom:15px;}
         
-        .sections-wrapper{display:flex;gap:20px;overflow-x:auto;padding-bottom:10px;scroll-behavior:smooth;flex:1;}
+        .sections-wrapper{display:flex;gap:15px;overflow-x:auto;padding-bottom:10px;scroll-behavior:smooth;flex:1;}
         .sections-wrapper::-webkit-scrollbar{height:12px;}
         .sections-wrapper::-webkit-scrollbar-track{background:#e5e7eb;border-radius:6px;}
         .sections-wrapper::-webkit-scrollbar-thumb{background:#10b981;border-radius:6px;}
 
         .top-scrollbar-container{max-width:1400px;margin:0 auto 10px auto;padding:0 20px;display:flex;align-items:center;gap:10px;}
-        .top-scrollbar{display:flex;gap:20px;overflow-x:auto;overflow-y:hidden;flex:1;padding-bottom:5px;}
+        .top-scrollbar{display:flex;gap:15px;overflow-x:auto;overflow-y:hidden;flex:1;padding-bottom:5px;}
         .top-scrollbar::-webkit-scrollbar{height:12px;}
         .top-scrollbar::-webkit-scrollbar-track{background:#e5e7eb;border-radius:6px;}
         .top-scrollbar::-webkit-scrollbar-thumb{background:#f59e0b;border-radius:6px;}
         .top-scrollbar-dummy{height:1px;flex-shrink:0;}
 
-        .category-column{background:#ffffff;border-radius:12px;min-width:350px;max-width:380px;flex:0 0 350px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);display:flex;flex-direction:column;border-top:5px solid #ec4899;}
-        .category-header{padding:15px;background:#fdf2f8;color:#047857;font-size:18px;font-weight:800;text-align:center;border-bottom:1px solid #fce7f3;border-radius:12px 12px 0 0;}
-        .category-body{padding:15px;display:flex;flex-direction:column;gap:12px;max-height:600px;overflow-y:auto;}
+        /* تم تصغير عرض العمود ليناسب شاشات الموبايل بدقة (260px كحد أدنى) */
+        .category-column{background:#ffffff;border-radius:12px;min-width:260px;max-width:290px;flex:0 0 260px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);display:flex;flex-direction:column;border-top:5px solid #ec4899;}
+        .category-header{padding:12px;background:#fdf2f8;color:#047857;font-size:16px;font-weight:800;text-align:center;border-bottom:1px solid #fce7f3;border-radius:12px 12px 0 0;}
+        .category-body{padding:12px;display:flex;flex-direction:column;gap:10px;max-height:600px;overflow-y:auto;}
         
-        /* تصميم كارت الكتاب العادي والمحدد بشكل جذاب */
-        .book-card{background:#f1e7f9;border:2px solid #c5b8c3;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;transition:all 0.25s ease;cursor:pointer;}
+        .book-card{background:#f1e7f9;border:2px solid #c5b8c3;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;transition:all 0.25s ease;cursor:pointer;}
         .book-card.selected-book {
             background: #e6f9ed;
             border: 2px solid #10b981;
@@ -60,18 +60,27 @@
         }
         .book-card:hover{border-color:#10b981;box-shadow:0 2px 4px rgba(16, 185, 129, 0.1);}
 
-        .book-row-top{display:flex;justify-content:space-between;align-items:center;}
-        .book-title{font-weight:700;font-size:14px;color:#1f2937;}
-        .book-checkbox{width:18px;height:18px;cursor:pointer;accent-color:#10b981;}
-        .book-row-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:5px;}
+        .book-row-top{display:flex;justify-content:space-between;align-items:center;gap:5px;}
+        
+        /* تكبير حجم خط اسم الصنف/الكتاب ليكون أوضح */
+        .book-title{font-weight:800;font-size:15px;color:#1f2937;line-height:1.4;}
+        
+        .book-checkbox{width:20px;height:20px;cursor:pointer;accent-color:#10b981;flex-shrink:0;}
+        .book-row-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
+        
+        /* تنسيق وتكبير الأسعار */
         .book-price-info{font-size:13px;color:#6b7280;}
-        .book-price-info span{color:#059669;font-weight:bold;}
-        .qty-controls{display:flex;align-items:center;gap:6px;}
-        .qty-btn{background:#10b981;color:white;border:none;width:26px;height:26px;border-radius:6px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;}
+        .old-price{text-decoration: line-through;color:#9ca3af;font-weight:600;}
+        .separator-symbol{margin:0 4px;color:#9ca3af;font-weight:bold;}
+        .discount-price{color:#059669;font-weight:800;font-size:15px;}
+
+        .qty-controls{display:flex;align-items:center;gap:4px;}
+        .qty-btn{background:#10b981;color:white;border:none;width:28px;height:28px;border-radius:6px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;}
         .qty-btn:hover{background:#059669;}
         .qty-btn.minus{background:#10b981;}
         .qty-btn.minus:hover{background:#dc2626;}
-        .qty-input{width:45px;text-align:center;border:1px solid #d1d5db;border-radius:6px;padding:3px;font-weight:bold;font-size:14px;outline:none;}
+        .qty-input{width:40px;text-align:center;border:1px solid #d1d5db;border-radius:6px;padding:3px;font-weight:bold;font-size:14px;outline:none;}
+        
         .bottom-actions{display:flex;justify-content:center;gap:15px;margin-top:30px;flex-wrap:wrap;}
         .btn-action{padding:12px 25px;border-radius:10px;font-weight:bold;font-size:16px;border:none;cursor:pointer;color:white;display:flex;align-items:center;gap:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.2s;}
         .btn-print{background:#059669;}
@@ -243,7 +252,7 @@
 
         function scrollColumns(direction) {
             let wrapper = document.getElementById('sectionsWrapper');
-            let scrollAmount = 380;
+            let scrollAmount = 280;
             if (direction === 'right') {
                 wrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
             } else {
@@ -459,7 +468,9 @@
                         </div>
                         <div class="book-row-bottom">
                             <div class="book-price-info">
-                                <span>${item.originalPrice}ج</span> | بعد الخصم: <span>${item.discountPrice}ج</span>
+                                <span class="old-price">${item.originalPrice}ج</span>
+                                <span class="separator-symbol">|</span>
+                                <span class="discount-price">${item.discountPrice}ج</span>
                             </div>
                             <div class="qty-controls">
                                 <button type="button" class="qty-btn minus" onclick="updateQty(${item.id}, -1)">-</button>
