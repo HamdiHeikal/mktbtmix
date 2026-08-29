@@ -164,7 +164,7 @@
         </label>
 
         <button class="btn-action btn-print" onclick="printInvoice()">🖨️ طباعة فاتورة</button>
-        <button class="btn-action btn-save-excel" onclick="addNewPurchaseInvoiceColumn()">📊 حفظ بالأكسيل</button>
+        <button class="btn-action btn-save-excel" onclick="()">📊 حفظ بالأكسيل</button>
     </div>
 
     <div class="whatsapp-preview-box">
@@ -441,38 +441,75 @@
         function printInvoice() { window.print(); }
 
         function addNewPurchaseInvoiceColumn() {
-            if (!workbookData) { alert("يرجى تحميل ملف Excel أولاً!"); return; }
+            if (!workbookData) { 
+                alert("يرجى تحميل ملف Excel أولاً!"); 
+                return; 
+            }
+            
             let firstSheetName = workbookData.SheetNames[0];
             let worksheet = workbookData.Sheets[firstSheetName];
-            let jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-            if (jsonData.length === 0) return;
+            
+            // قراءة النطاق الحالي للشيت
+            let range = XLSX.utils.decode_range(worksheet['!ref']);
+            let maxCol = range.e.c;
+            let maxRow = range.e.r;
 
-            let headerRow = jsonData[0];
+            // البحث عن أعمدة "فاتورة شراء" السابقة لمعرفة الرقم التسلسل التالي
             let maxNum = 0;
-            headerRow.forEach(colName => {
-                if (typeof colName === 'string' && colName.includes('فاتورة شراء')) {
-                    let parts = colName.split('-');
-                    let num = parseInt(parts[parts.length - 1]) || parseInt(colName.replace(/\D/g, '')) || 0;
+            for (let C = range.s.c; C <= maxCol; ++C) {
+                let cellAddress = XLSX.utils.encode_cell({r: 0, c: C});
+                let cell = worksheet[cellAddress];
+                if (cell && cell.v && typeof cell.v === 'string' && cell.v.includes('فاتورة شراء')) {
+                    let parts = cell.v.split('-');
+                    let num = parseInt(parts[parts.length - 1]) || parseInt(cell.v.replace(/\D/g, '')) || 0;
                     if (num > maxNum) maxNum = num;
                 }
-            });
-
-            let newColumnName = `فاتورة شراء - ${maxNum + 1}`;
-            headerRow.push(newColumnName);
-            let newColIndex = headerRow.length - 1;
-
-            for (let i = 1; i < jsonData.length; i++) {
-                let row = jsonData[i];
-                let matchingItem = globalExcelData.find(item => row.includes(item.title) || row.includes(item.publisher));
-                let valToIntsert = matchingItem ? matchingItem.qty : 0;
-                while (row.length < headerRow.length) { row.push(''); }
-                row[newColIndex] = valToIntsert;
             }
 
-            let newWorksheet = XLSX.utils.aoa_to_sheet(jsonData);
-            workbookData.Sheets[firstSheetName] = newWorksheet;
+            let newColumnName = `فاتورة شراء - ${maxNum + 1}`;
+            let newColIndex = maxCol + 1;
+
+            // إضافة رأس العمود الجديد في الصف الأول (Index 0)
+            let newHeaderAddress = XLSX.utils.encode_cell({r: 0, c: newColIndex});
+            worksheet[newHeaderAddress] = { t: 's', v: newColumnName };
+
+            // تعبئة قيم الكميات للكتب المختارة في السطور المطابقة، وباقي الخلايا أصفار أو فارغة
+            for (let R = 1; R <= maxRow; ++R) {
+                // محاولة مطابقة اسم الكتاب أو دار النشر لتعيين الكمية المختارة
+                let titleCellAddr = XLSX.utils.encode_cell({r: R, c: 1}); // غالباً عمود بيان الأصناف أو اسم الكتاب
+                let publisherCellAddr = XLSX.utils.encode_cell({r: R, c: 4}); 
+                
+                let rowTitle = worksheet[titleCellAddr] ? worksheet[titleCellAddr].v : '';
+                let rowPublisher = worksheet[publisherCellAddr] ? worksheet[publisherCellAddr].v : '';
+
+                let matchingItem = globalExcelData.find(item => 
+                    (item.title && rowTitle && rowTitle.toString().trim() === item.title.toString().trim()) || 
+                    (item.publisher && rowPublisher && rowPublisher.toString().trim() === item.publisher.toString().trim())
+                );
+
+                let valToInsert = (matchingItem && matchingItem.qty > 0) ? matchingItem.qty : 0;
+                
+                let targetCellAddr = XLSX.utils.encode_cell({r: R, c: newColIndex});
+                worksheet[targetCellAddr] = { t: 'n', v: valToInsert };
+            }
+
+            // تحديث نطاق الشيت ليشمل العمود الجديد
+            range.e.c = newColIndex;
+            worksheet['!ref'] = XLSX.utils.encode_range(range);
+
+            // إذا كان هناك جدول معرّف في أكسيل (مثل الجدول1)، يتم تحديث نطاقه (Table Range) ليغطي العمود الجديد
+            if (worksheet['!tables']) {
+                Object.keys(worksheet['!tables']).forEach(tableName => {
+                    let tbl = worksheet['!tables'][tableName];
+                    let tblRange = XLSX.utils.decode_range(tbl.ref);
+                    tblRange.e.c = newColIndex;
+                    tbl.ref = XLSX.utils.encode_range(tblRange);
+                });
+            }
+
+            // كتابة وحفظ الملف بنفس الصيغة والتنسيق الأصلي
             XLSX.writeFile(workbookData, excelFileName);
-            alert(`تم إضافة العمود "${newColumnName}" بنجاح وحفظ ملف الاكسيل المحدث!`);
+            alert(`تم إضافة العمود "${newColumnName}" بنجاح وتحديث ملف الأكسيل مع المحافظة على المعادلات والجداول!`);
         }
 
         function cleanPhoneNumber(phone) {
