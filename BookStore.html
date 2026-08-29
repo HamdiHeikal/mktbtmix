@@ -117,18 +117,7 @@
     </div>
     <div class="sub-bar">
         <button class="scroll-arrow-btn" onclick="scrollColumns('right')">➡️</button>
-        <div class="sub-bar-center">
-            <button onclick="loadExcelFile()">📁 تحميل ملف Excel جديد</button>
-            <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
-            <button onclick="window.location.reload()">🔄 إعادة ضبط</button>
-            <select id="comboBox_1" class="combo-box" onchange="changeClassification(this.value)">
-                <option value="grade">الصف الدراسي</option>
-                <option value="publisher">دار النشر</option>
-                <option value="subject">نوع المادة</option>
-            </select>
-            <label>
-                <input type="checkbox" id="priceTypeCheckbox" onchange="calculateTotals()"> شراء
-            </label>
+        
             <label class="delivery-label">
                 <input type="checkbox" id="deliveryCheckbox" onchange="toggleDeliveryInputs()"> دليفرى 🚚
             </label>
@@ -155,6 +144,18 @@
     <div class="bottom-actions">
         <button class="btn-action btn-print" onclick="printInvoice()">🖨️ طباعة فاتورة</button>
         <button class="btn-action btn-save-excel" onclick="addNewPurchaseInvoiceColumn()">📊 حفظ فاتورة الشراء بالأكسيل</button>
+        <div class="sub-bar-center">
+            <button onclick="loadExcelFile()">📁</button>
+            <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
+            <button onclick="window.location.reload()">🔄</button>
+            <select id="comboBox_1" class="combo-box" onchange="changeClassification(this.value)">
+                <option value="grade">الصف الدراسي</option>
+                <option value="publisher">دار النشر</option>
+                <option value="subject">نوع المادة</option>
+            </select>
+            <label>
+                <input type="checkbox" id="priceTypeCheckbox" onchange="calculateTotals()"> شراء
+            </label>
     </div>
     <div class="whatsapp-preview-box">
         <h3>معاينة نص الرسالة (التي سأرسل للواتساب والفاتورة):</h3>
