@@ -64,7 +64,7 @@
         .book-title{font-weight:700;font-size:14px;color:#1f2937;}
         .book-checkbox{width:18px;height:18px;cursor:pointer;accent-color:#10b981;}
         .book-row-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:5px;}
-        .book-price-info{font-size:13px;color:#6b7280;
+        .book-price-info{font-size:13px;color:#6b7280;}
         .book-price-info span{color:#059669;font-weight:bold;}
         .qty-controls{display:flex;align-items:center;gap:6px;}
         .qty-btn{background:#10b981;color:white;border:none;width:26px;height:26px;border-radius:6px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;}
@@ -98,23 +98,19 @@
 </head>
 <body>
     <div class="top-header">
-        
         <div class="controls-group">
-     
-			<div class="mini-invoice-preview">
+            <div class="mini-invoice-preview">
                 <div id="mini-invoice-items" class="mini-invoice-items">لم يتم اختيار أي كتب بعد...</div>
                 <div class="mini-total-badge" id="mini-total-count">0 صنف</div>
-				<div class="mini-total-badge" ><h2>خصم الـ 15%</h2></div>
+                <div class="mini-total-badge"><h2>خصم الـ 15%</h2></div>
             </div>
-            
         </div>
     </div>
     <div class="sub-bar">
         <button class="scroll-arrow-btn" onclick="scrollColumns('right')">➡️</button>
         <div class="sub-bar-center">
-			<button onclick="loadExcelFile()">📁 تحميل ملف Excel جديد</button>
-
-			<input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
+            <button onclick="loadExcelFile()">📁 تحميل ملف Excel جديد</button>
+            <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
             <button onclick="window.location.reload()">🔄 إعادة ضبط</button>
             <select id="comboBox_1" class="combo-box" onchange="changeClassification(this.value)">
                 <option value="grade">الصف الدراسي</option>
@@ -124,8 +120,6 @@
             <label>
                 <input type="checkbox" id="priceTypeCheckbox" onchange="calculateTotals()"> شراء
             </label>
-			
-			
             <label class="delivery-label">
                 <input type="checkbox" id="deliveryCheckbox" onchange="toggleDeliveryInputs()"> دليفرى 🚚
             </label>
@@ -276,72 +270,6 @@
             dummy.style.width = wrapper.scrollWidth + 'px';
         }
 
-        function renderStore(mode) {
-            let wrapper = document.getElementById('sectionsWrapper');
-            wrapper.innerHTML = '';
-            let groups = {};
-            
-            globalExcelData.forEach(item => {
-                let key = mode === 'publisher' ? item.publisher : (mode === 'subject' ? item.subject : item.grade2);
-                if (!groups[key]) groups[key] = [];
-                groups[key].push(item);
-            });
-
-            let sortedGroupNames = Object.keys(groups).sort((a, b) => a.localeCompare(b, 'ar'));
-
-            sortedGroupNames.forEach(groupName => {
-                if (groupName.toLowerCase().includes('اجمالى') || groupName.toLowerCase().includes('إجمالي')) {
-                    return;
-                }
-
-                let columnDiv = document.createElement('div');
-                columnDiv.className = 'category-column';
-                let headerDiv = document.createElement('div');
-                headerDiv.className = 'category-header';
-                headerDiv.innerHTML = `${groupName}`;
-                columnDiv.appendChild(headerDiv);
-
-                let bodyDiv = document.createElement('div');
-                bodyDiv.className = 'category-body';
-
-		groups[groupName].sort((a, b) => a.title.localeCompare(b.title, 'ar'));
-
-                groups[groupName].forEach(item => {
-                    let card = document.createElement('div');
-                    // إضافة كلاس selected-book تضاف ديناميكياً إذا كان الكتاب مختاراً
-                    card.className = `book-card ${item.selected ? 'selected-book' : ''}`;
-                    card.onclick = (e) => {
-                        if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('.qty-controls')) return;
-                        let chk = card.querySelector('.book-checkbox');
-                        chk.checked = !chk.checked;
-                        toggleSelect(item.id, chk.checked);
-                    };
-                    card.innerHTML = `
-                        <div class="book-row-top">
-                            <span class="book-title">${item.title}</span>
-                            <input type="checkbox" class="book-checkbox" ${item.selected ? 'checked' : ''} onchange="toggleSelect(${item.id}, this.checked)">
-                        </div>
-                        <div class="book-row-bottom">
-                            <div class="book-price-info">
-                                <span>${item.originalPrice}ج</span> | بعد الخصم: <span>${item.discountPrice}ج</span>
-                            </div>
-                            <div class="qty-controls">
-                                <button type="button" class="qty-btn minus" onclick="updateQty(${item.id}, -1)">-</button>
-                                <input type="text" class="qty-input" value="${item.qty}" onchange="setQty(${item.id}, this.value)">
-                                <button type="button" class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
-                            </div>
-                        </div>
-                    `;
-                    bodyDiv.appendChild(card);
-                });
-                columnDiv.appendChild(bodyDiv);
-                wrapper.appendChild(columnDiv);
-            });
-
-            updateTopScrollbarWidth();
-            calculateTotals();
-        }
-
         function toggleSelect(id, isChecked) {
             let item = globalExcelData.find(i => i.id === id);
             if (item) {
@@ -372,38 +300,36 @@
         }
 
         function calculateTotals() {
-		let selectedItems = globalExcelData.filter(i => i.selected && i.qty > 0);
-    		let usePurchasePrice = document.getElementById('priceTypeCheckbox').checked;
-    		let totalOriginal = 0;
-    		let totalFinal = 0;
-		let totalCount = 0;
-		let miniItemsHtml = '';
+            let selectedItems = globalExcelData.filter(i => i.selected && i.qty > 0);
+            let usePurchasePrice = document.getElementById('priceTypeCheckbox').checked;
+            let totalOriginal = 0;
+            let totalFinal = 0;
+            let totalCount = 0;
+            let miniItemsHtml = '';
 
-    if (selectedItems.length === 0) {
-        miniItemsHtml = 'لم يتم اختيار أي كتب بعد...';
-    } else {
-        selectedItems.forEach(i => {
-            let activeUnitPrice = usePurchasePrice ? i.purchasePrice : i.discountPrice;
-            totalOriginal += i.originalPrice * i.qty;
-            totalFinal += activeUnitPrice * i.qty;
-            totalCount += i.qty;
-            miniItemsHtml += `<div>• ${i.title} (${i.qty})</div>`;
-        });
-    }
+            if (selectedItems.length === 0) {
+                miniItemsHtml = 'لم يتم اختيار أي كتب بعد...';
+            } else {
+                selectedItems.forEach(i => {
+                    let activeUnitPrice = usePurchasePrice ? i.purchasePrice : i.discountPrice;
+                    totalOriginal += i.originalPrice * i.qty;
+                    totalFinal += activeUnitPrice * i.qty;
+                    totalCount += i.qty;
+                    miniItemsHtml += `<div>• ${i.title} (${i.qty})</div>`;
+                });
+            }
 
-    let deliveryAdded = document.getElementById('deliveryCheckbox').checked;
-    if (deliveryAdded) totalFinal += 15;
+            let deliveryAdded = document.getElementById('deliveryCheckbox').checked;
+            if (deliveryAdded) totalFinal += 15;
 
-    document.getElementById('mini-total-count').innerText = `${totalCount} كتاب`;
-    
-    let miniItemsContainer = document.getElementById('mini-invoice-items');
-    miniItemsContainer.innerHTML = miniItemsHtml;
-    
-    // سطر التمرير التلقائي لأسفل ليوضح آخر صنف تمت إضافته
-    miniItemsContainer.scrollTop = miniItemsContainer.scrollHeight;
+            document.getElementById('mini-total-count').innerText = `${totalCount} كتاب`;
+            
+            let miniItemsContainer = document.getElementById('mini-invoice-items');
+            miniItemsContainer.innerHTML = miniItemsHtml;
+            miniItemsContainer.scrollTop = miniItemsContainer.scrollHeight;
 
-    let clientName = document.getElementById('clientNameInput').value.trim();
-    let clientAddress = document.getElementById('clientAddressInput').value.trim();
+            let clientName = document.getElementById('clientNameInput').value.trim();
+            let clientAddress = document.getElementById('clientAddressInput').value.trim();
 
             let msg = "📚 *فاتورة طلب كتب خارجية (مكتبة مكس)*:\n\n";
             if (clientName) msg += `👤 اسم العميل: ${clientName}\n`;
@@ -414,7 +340,7 @@
                 msg += `- ${i.title} (العدد: ${i.qty}) - السعر: ${activeUnitPrice * i.qty}ج\n`;
             });
 
-            if (deliveryAdded) msg += `\n🚚 رسوم التوصيل: ... جنيه\n`;
+            if (deliveryAdded) msg += `\n🚚 رسوم التوصيل: 15 جنيه\n`;
             msg += `\n💰 *الإجمالي النهائي: ${totalFinal.toFixed(2)} جنيه*`;
 
             document.getElementById('whatsappTextarea').value = msg;
@@ -475,8 +401,8 @@
             if (!phone) { alert("يرجى كتابة رقم هاتف الواتساب أولاً!"); return; }
             window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
         }
-	
-	function renderStore(mode) {
+
+        function renderStore(mode) {
             let wrapper = document.getElementById('sectionsWrapper');
             wrapper.innerHTML = '';
             let groups = {};
@@ -487,25 +413,18 @@
                 groups[key].push(item);
             });
 
-            //let sortedGroupNames = Object.keys(groups).sort((a, b) => a.localeCompare(b, 'ar'));
-
-		// مصفوفة لتحديد الترتيب المنصوح به للأنشطة والصفوف المدرسية
             let gradeOrder = ["🎒 الصف الأول الابتدائي", "🎒 الصف الثاني الابتدائي", "🎒 الصف الثالث الابتدائي", "🎒 الصف الرابع الابتدائي", "🎒 الصف الخامس الابتدائي", "🎒 الصف السادس الابتدائي", "🎒 الصف الأول الإعدادي", "🎒 الصف الثاني الإعدادي", "🎒 الصف الثالث الإعدادي", "🎓 الثانوية العامة (أولى ثانوي)", "🎓 الثانوية العامة (تانية ثانوي)", "🎓 الثانوية العامة (تالتة ثانوي)"];
 
             let sortedGroupNames = Object.keys(groups).sort((a, b) => {
                 let indexA = gradeOrder.indexOf(a);
                 let indexB = gradeOrder.indexOf(b);
                 
-                // إذا كان الصّفان موجودين في الجدول المخصص، يتم الترتيب بناءً عليهما
                 if (indexA !== -1 && indexB !== -1) return indexA - indexB;
                 if (indexA !== -1) return -1;
                 if (indexB !== -1) return 1;
                 
-                // لو صف غير موجود في القائمة، يترتب أبجدياً كاحتياطي
                 return a.localeCompare(b, 'ar');
             });
-
-
 
             sortedGroupNames.forEach(groupName => {
                 if (groupName.toLowerCase().includes('اجمالى') || groupName.toLowerCase().includes('إجمالي')) {
@@ -522,7 +441,6 @@
                 let bodyDiv = document.createElement('div');
                 bodyDiv.className = 'category-body';
 
-                // --- تمت إضافة هذا السطر لترتيب الأصناف داخل العمود أبجدياً بالعربية ---
                 groups[groupName].sort((a, b) => a.title.localeCompare(b.title, 'ar'));
 
                 groups[groupName].forEach(item => {
