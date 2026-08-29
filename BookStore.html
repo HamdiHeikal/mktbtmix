@@ -110,9 +110,9 @@
     <div class="top-header">
         <div class="controls-group">
             <div class="mini-invoice-preview">
-                <div id="mini-invoice-items" class="mini-invoice-items">لم يتم اختيار أي كتب بعد...</div>
+                <div id="mini-invoice-items" class="mini-invoice-items">خصم 15%</div>
                 <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
-                    <div class="discount-badge-small" id="mini-discount-display">الإجمالي: 0.00 ج<br>خصم: 0.00 ج<br><span style="font-size: 15px; font-weight: 800; color: #b91c1c;">المطلوب: 0.00 ج</span></div>
+                    <div class="discount-badge-small" id="mini-discount-display">خصم 15%</div>
                     <div class="mini-total-badge" id="mini-total-count">0 صنف</div>
                 </div>
             </div>
@@ -144,7 +144,7 @@
         <div class="scroll-nav-container">
             <div id="sectionsWrapper" class="sections-wrapper" onscroll="syncScroll('bottom')">
                 <div style="width:100%; text-align:center; font-weight:bold; color:#047857; font-size:18px; padding:20px;">
-                    انتظر جارى تحميل الاصناف...[cite: 3]
+                    انتظر جارى تحميل الاصناف...
                 </div>
             </div>
         </div>
@@ -176,7 +176,7 @@
             <input type="text" id="whatsappPhone" value="" placeholder="...رقم الهاتف (مثال: 010xxxxxxxx)">
             <button class="btn-action btn-whatsapp" style="padding: 8px 15px; font-size: 14px;" onclick="sendCustomWhatsApp()">📤 إرسال للرقم</button>
         </div>
-        <textarea id="whatsappTextarea" class="whatsapp-textarea" readonly oninput="autoResizeTextarea(this)">لم يتم اختيار أي كتب بعد...</textarea>
+        <textarea id="whatsappTextarea" class="whatsapp-textarea" readonly oninput="autoResizeTextarea(this)">خصم 15%</textarea>
     </div>
 
     <div id="printArea" class="print-area">
@@ -194,7 +194,7 @@
             </thead>
             <tbody id="printTableBody"></tbody>
         </table>
-        <div class="invoice-totals" id="printTotalsBox">الإجمالي: 0.00 جنيه<br>خصم: 0.00 جنيه<br>المطلوب: 0.00 جنيه</div>
+        <div class="invoice-totals" id="printTotalsBox">خصم 15%</div>
     </div>
 
     <script>
@@ -228,7 +228,7 @@
             
             document.getElementById('sectionsWrapper').innerHTML = `
                 <div style="width:100%; text-align:center; font-weight:bold; color:#047857; font-size:18px; padding:20px;">
-                    انتظر جارى تحميل الاصناف...[cite: 3]
+                    انتظر جارى تحميل الاصناف...
                 </div>
             `;
 
@@ -386,17 +386,45 @@
             let totalCount = 0;
             let miniItemsHtml = '';
 
+            let discountBadgeEl = document.getElementById('mini-discount-display');
+            let miniItemsContainer = document.getElementById('mini-invoice-items');
+            let textarea = document.getElementById('whatsappTextarea');
+            let printTotalsBox = document.getElementById('printTotalsBox');
+
             if (selectedItems.length === 0) {
-                miniItemsHtml = 'لم يتم اختيار أي كتب بعد...';
-            } else {
-                selectedItems.forEach(i => {
-                    let activeUnitPrice = usePurchasePrice ? i.purchasePrice : i.discountPrice;
-                    totalOriginal += i.originalPrice * i.qty;
-                    totalFinal += activeUnitPrice * i.qty;
-                    totalCount += i.qty;
-                    miniItemsHtml += `<div>• ${i.title} (${i.qty})</div>`;
-                });
+                discountBadgeEl.style.fontSize = "16px";
+                discountBadgeEl.style.fontWeight = "800";
+                discountBadgeEl.style.color = "#047857";
+                discountBadgeEl.innerText = "خصم 15%";
+                
+                miniItemsContainer.innerHTML = "خصم 15%";
+                
+                let defaultText = "خصم 15%";
+                textarea.value = defaultText;
+                autoResizeTextarea(textarea);
+
+                printTotalsBox.style.fontSize = "16px";
+                printTotalsBox.style.fontWeight = "800";
+                printTotalsBox.style.color = "#047857";
+                printTotalsBox.innerHTML = "خصم 15%";
+
+                document.getElementById('mini-total-count').innerText = "0 صنف";
+                document.getElementById('printTableBody').innerHTML = '';
+                document.getElementById('printClientInfo').innerHTML = '';
+                return;
             }
+
+            discountBadgeEl.style.fontSize = "13px";
+            discountBadgeEl.style.fontWeight = "700";
+            discountBadgeEl.style.color = "#047857";
+
+            selectedItems.forEach(i => {
+                let activeUnitPrice = usePurchasePrice ? i.purchasePrice : i.discountPrice;
+                totalOriginal += i.originalPrice * i.qty;
+                totalFinal += activeUnitPrice * i.qty;
+                totalCount += i.qty;
+                miniItemsHtml += `<div>• ${i.title} (${i.qty})</div>`;
+            });
 
             let deliveryAdded = document.getElementById('deliveryCheckbox').checked;
             if (deliveryAdded) totalFinal += 30;
@@ -407,9 +435,8 @@
             }
 
             document.getElementById('mini-total-count').innerText = `${totalCount} كتاب`;
-            document.getElementById('mini-discount-display').innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br><span style="font-size: 14px; font-weight: 800; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} ج</span>`;
+            discountBadgeEl.innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br><span style="font-size: 15px; font-weight: 800; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} ج</span>`;
             
-            let miniItemsContainer = document.getElementById('mini-invoice-items');
             miniItemsContainer.innerHTML = miniItemsHtml;
             miniItemsContainer.scrollTop = miniItemsContainer.scrollHeight;
 
@@ -426,9 +453,8 @@
             });
 
             if (deliveryAdded) msg += `\n🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب\n`;
-            msg += `\nالإجمالي: ${totalOriginal.toFixed(2)} ج - خصم ${totalDiscountAmount.toFixed(2)} ج - *المطلوب: ${totalFinal.toFixed(2)} ج* (بدون التوصيل أو بالحد الأدنى)`;
+            msg += `\nالإجمالي: ${totalOriginal.toFixed(2)} ج - خصم: ${totalDiscountAmount.toFixed(2)} ج - المطلوب: ${totalFinal.toFixed(2)} ج`;
 
-            let textarea = document.getElementById('whatsappTextarea');
             textarea.value = msg;
             autoResizeTextarea(textarea);
 
@@ -442,7 +468,7 @@
             });
 
             document.getElementById('printClientInfo').innerHTML = (clientName || clientAddress) ? `اسم العميل: ${clientName} | العنوان: ${clientAddress}` : '';
-            document.getElementById('printTotalsBox').innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} جنيه<br>خصم: ${totalDiscountAmount.toFixed(2)} جنيه<br><span style="font-size: 16px; font-weight: 900; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} جنيه</span> ${deliveryAdded ? '(رسوم التوصيل 30-35ج حسب المندوب)' : ''}`;
+            printTotalsBox.innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br><span style="font-size: 15px; font-weight: 800; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} ج</span> ${deliveryAdded ? '<br>(رسوم التوصيل 30-35ج حسب المندوب)' : ''}`;
         }
 
         function printInvoice() { window.print(); }
@@ -508,7 +534,7 @@
             }
 
             XLSX.writeFile(workbookData, excelFileName);
-            alert(`تم إضافة العمود "${newColumnName}" بنجاح وتحديث ملف الأكسيل مع المحافظة على المعادلات والجداول!`);
+            alert(`تم إضافة العمود "${newColumnName}" بنجاح وتحديث ملف الأكسيل مع والمحافظة على المعادلات والجداول!`);
         }
 
         function cleanPhoneNumber(phone) {
