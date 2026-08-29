@@ -37,7 +37,7 @@
         .main-container{max-width:1400px;margin:0 auto;padding:0 20px;}
         .scroll-nav-container{display:flex;align-items:center;gap:10px;margin-bottom:15px;}
         
-        .sections-wrapper{display:flex;gap:15px;overflow-x:auto;padding-bottom:10px;scroll-behavior:smooth;flex:1;}
+        .sections-wrapper{display:flex;gap:15px;overflow-x:auto;padding-bottom:10px;scroll-behavior:smooth;flex:1;min-height:150px;align-items:center;}
         .sections-wrapper::-webkit-scrollbar{height:12px;}
         .sections-wrapper::-webkit-scrollbar-track{background:#e5e7eb;border-radius:6px;}
         .sections-wrapper::-webkit-scrollbar-thumb{background:#10b981;border-radius:6px;}
@@ -140,7 +140,11 @@
 
     <div class="main-container">
         <div class="scroll-nav-container">
-            <div id="sectionsWrapper" class="sections-wrapper" onscroll="syncScroll('bottom')"></div>
+            <div id="sectionsWrapper" class="sections-wrapper" onscroll="syncScroll('bottom')">
+                <div style="width:100%; text-align:center; font-weight:bold; color:#047857; font-size:18px; padding:20px;">
+                    انتظر جارى تحميل الاصناف...[cite: 3]
+                </div>
+            </div>
         </div>
     </div>
 
@@ -200,10 +204,16 @@
         window.addEventListener('DOMContentLoaded', async () => {
             try {
                 let response = await fetch('BookClac.xlsx');
+                if (!response.ok) throw new Error("File not found");
                 let data = await response.arrayBuffer();
                 parseExcelData(data);
             } catch (e) {
                 console.log("لم يتم العثور على ملف BookClac.xlsx افتراضياً، يرجى تحميله يدوياً.");
+                document.getElementById('sectionsWrapper').innerHTML = `
+                    <div style="width:100%; text-align:center; font-weight:bold; color:#b91c1c; font-size:16px; padding:20px;">
+                        ⚠️ لم يتم العثور على ملف "BookClac.xlsx" تلقائياً. يرجى الضغط على زر "📁 تحميل ملف" لاختيار الملف يدويّاً.
+                    </div>
+                `;
             }
         });
 
@@ -213,6 +223,14 @@
             let file = e.target.files[0];
             if (!file) return;
             excelFileName = file.name;
+            
+            // إظهار رسالة الانتظار أثناء قراءة الملف اليدوي
+            document.getElementById('sectionsWrapper').innerHTML = `
+                <div style="width:100%; text-align:center; font-weight:bold; color:#047857; font-size:18px; padding:20px;">
+                    انتظر جارى تحميل الاصناف...[cite: 3]
+                </div>
+            `;
+
             let reader = new FileReader();
             reader.onload = function(e) {
                 let data = new Uint8Array(e.target.result);
@@ -296,7 +314,6 @@
                 if (isChecked && item.qty === 0) item.qty = 1;
                 if (!isChecked) item.qty = 0;
                 
-                // حفظ أماكن التمرير الحالية لكل عمود وعرض المحتوى لمنع الصعود لأعلى
                 let scrollPositions = {};
                 document.querySelectorAll('.category-body').forEach((body, idx) => {
                     scrollPositions[idx] = body.scrollTop;
@@ -381,8 +398,7 @@
             }
 
             let deliveryAdded = document.getElementById('deliveryCheckbox').checked;
-            // الدليفرى تضاف رسوم تقديرية رمزية إجمالية للاحتساب أو تُوضح كرسوم تترك للمندوب
-            if (deliveryAdded) totalFinal += 30; // الحد الأدنى للاحتساب المالي
+            if (deliveryAdded) totalFinal += 30;
 
             document.getElementById('mini-total-count').innerText = `${totalCount} كتاب`;
             
@@ -472,21 +488,18 @@
             return cleaned;
         }
 
-        // إرسال للرقم الثابت الخاص بالمكتبة
         function sendLibraryWhatsApp() {
             let phone = "+201093393975";
             let text = encodeURIComponent(document.getElementById('whatsappTextarea').value);
             window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
         }
 
-        // إرسال للرقم المكتوب في الخانة المجاورة فقط
         function sendCustomWhatsApp() {
             let rawPhone = document.getElementById('whatsappPhone').value.trim();
             if (!rawPhone) { 
                 alert("يرجى كتابة رقم هاتف صحيح في الخانة المخصصة أولاً!"); 
                 return; 
             }
-            
             let phone = cleanPhoneNumber(rawPhone);
             let text = encodeURIComponent(document.getElementById('whatsappTextarea').value);
             window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
@@ -504,7 +517,8 @@
             });
 
             let gradeOrder = ["🎒 الصف الأول الابتدائي", "🎒 الصف الثاني الابتدائي", "🎒 الصف الثالث الابتدائي", "🎒 الصف الرابع الابتدائي", "🎒 الصف الخامس الابتدائي", "🎒 الصف السادس الابتدائي", "🎒 الصف الأول الإعدادي", "🎒 الصف الثاني الإعدادي", "🎒 الصف الثالث الإعدادي", "🎓 الثانوية العامة (أولى ثانوي)", "🎓 الثانوية العامة (تانية ثانوي)", "🎓 الثانوية العامة (تالتة ثانوي)"];
-            let publisherOrder = ["سلاح", "اضواء", "امتحان", "معاصر", "بت", "ستب", "اوكسفورد", "برافو", "تأسيس سليم", "توب", "ذا بيست ستارت", "دار الرحمة", "زج", "سندباد", "شون", "فرانكو", "قناة السويس", "قران كريم", "كيان", "مراجعات", "معلم القراءة", "مندليف", "ميرسي"];                let indexA = gradeOrder.indexOf(a);
+            let publisherOrder = ["سلاح", "اضواء", "امتحان", "معاصر", "بت", "ستب", "اوكسفورد", "برافو", "تأسيس سليم", "توب", "ذا بيست ستارت", "دار الرحمة", "زج", "سندباد", "شون", "فرانكو", "قناة السويس", "قران كريم", "كيان", "مراجعات", "معلم القراءة", "مندليف", "ميرسي"];                
+            
             let sortedGroupNames = Object.keys(groups).sort((a, b) => {
                 let orderList = mode === 'publisher' ? publisherOrder : gradeOrder;
                 let indexA = orderList.indexOf(a);
