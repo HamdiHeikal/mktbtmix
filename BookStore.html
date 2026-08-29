@@ -99,9 +99,20 @@
 <body>
     <div class="top-header">
         <div><h2>خصم الـ 15%</h2></div>
-        <div>
+        <div class="controls-group">
             <button onclick="loadExcelFile()">📁 تحميل ملف Excel جديد</button>
-            <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
+			<div class="mini-invoice-preview">
+                <div id="mini-invoice-items" class="mini-invoice-items">لم يتم اختيار أي كتب بعد...</div>
+                <div class="mini-total-badge" id="mini-total-count">0 صنف</div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="sub-bar">
+        <button class="scroll-arrow-btn" onclick="scrollColumns('right')">➔</button>
+        <div class="sub-bar-center">
+
+			<input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
             <button onclick="window.location.reload()">🔄 إعادة ضبط</button>
             <select id="comboBox_1" class="combo-box" onchange="changeClassification(this.value)">
                 <option value="grade">الصف الدراسي</option>
@@ -111,15 +122,8 @@
             <label>
                 <input type="checkbox" id="priceTypeCheckbox" onchange="calculateTotals()"> شراء
             </label>
-        </div>
-    </div>
-    <div class="sub-bar">
-        <button class="scroll-arrow-btn" onclick="scrollColumns('right')">➔</button>
-        <div class="sub-bar-center">
-            <div class="mini-invoice-preview">
-                <div id="mini-invoice-items" class="mini-invoice-items">لم يتم اختيار أي كتب بعد...</div>
-                <div class="mini-total-badge" id="mini-total-count">0 صنف</div>
-            </div>
+			
+			
             <label class="delivery-label">
                 <input type="checkbox" id="deliveryCheckbox" onchange="toggleDeliveryInputs()"> دليفرى 🚚
             </label>
