@@ -11,8 +11,6 @@
         body{background-color:#dcd1da;color:#333;direction:rtl;padding-bottom:50px;}
         .top-header{background-color:#16a34a;color:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1);position:sticky;top:0;z-index:1000;flex-wrap:wrap;gap:10px;}
         .top-header div{display:flex;align-items:center;gap:15px;flex-wrap:wrap;}
-        .top-header button{background:rgba(255,255,255,0.2);border:none;color:white;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;transition:0.2s;}
-        .top-header button:hover{background:rgba(255,255,255,0.3);}
         .sub-bar{background:#ccf0d8;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-bottom:15px;flex-wrap:wrap;gap:15px;}
         .scroll-arrow-btn{background:#10b981;color:white;border:none;width:40px;height:40px;border-radius:50%;font-size:20px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;box-shadow:0 2px 4px rgba(0,0,0,0.1);flex-shrink:0;}
         .scroll-arrow-btn:hover{background:#059669;}
@@ -46,7 +44,6 @@
         .top-scrollbar::-webkit-scrollbar-thumb{background:#f59e0b;border-radius:6px;}
         .top-scrollbar-dummy{height:1px;flex-shrink:0;}
 
-        /* تم تصغير عرض العمود ليناسب شاشات الموبايل بدقة (260px كحد أدنى) */
         .category-column{background:#ffffff;border-radius:12px;min-width:260px;max-width:290px;flex:0 0 260px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);display:flex;flex-direction:column;border-top:5px solid #ec4899;}
         .category-header{padding:12px;background:#fdf2f8;color:#047857;font-size:16px;font-weight:800;text-align:center;border-bottom:1px solid #fce7f3;border-radius:12px 12px 0 0;}
         .category-body{padding:12px;display:flex;flex-direction:column;gap:10px;max-height:600px;overflow-y:auto;}
@@ -61,14 +58,10 @@
         .book-card:hover{border-color:#10b981;box-shadow:0 2px 4px rgba(16, 185, 129, 0.1);}
 
         .book-row-top{display:flex;justify-content:space-between;align-items:center;gap:5px;}
-        
-        /* تكبير حجم خط اسم الصنف/الكتاب ليكون أوضح */
         .book-title{font-weight:800;font-size:15px;color:#1f2937;line-height:1.4;}
-        
         .book-checkbox{width:20px;height:20px;cursor:pointer;accent-color:#10b981;flex-shrink:0;}
         .book-row-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
         
-        /* تنسيق وتكبير الأسعار */
         .book-price-info{font-size:13px;color:#6b7280;}
         .old-price{text-decoration: line-through;color:#9ca3af;font-weight:600;}
         .separator-symbol{margin:0 4px;color:#9ca3af;font-weight:bold;}
@@ -89,11 +82,15 @@
         .btn-save-excel:hover{background:#b45309;}
         .btn-whatsapp{background:#2563eb;}
         .btn-whatsapp:hover{background:#1d4ed8;}
+        
         .whatsapp-preview-box{max-width:1400px;margin:20px auto 0 auto;background:#ffffff;border-radius:12px;padding:20px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);}
         .whatsapp-preview-box h3{margin-bottom:10px;color:#1f2937;font-size:16px;}
         .whatsapp-input-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
         .whatsapp-input-row input{padding:8px 12px;border:1px solid #d1d5db;border-radius:8px;width:250px;outline:none;}
-        .whatsapp-textarea{width:100%;height:120px;padding:12px;border:1px solid #d1d5db;border-radius:8px;resize:vertical;font-size:14px;outline:none;background:#fdfdfd;}
+        
+        /* جعل صندوق الفاتورة/النص يمتد ويصغر حسب محتواه بدلاً من الثبات */
+        .whatsapp-textarea{width:100%;min-height:120px;max-height:none;padding:12px;border:1px solid #d1d5db;border-radius:8px;resize:vertical;font-size:14px;outline:none;background:#fdfdfd;overflow-y:hidden;}
+        
         .print-area{display:none;}
         @media print{body *{visibility:hidden;}.print-area,.print-area *{visibility:visible;}.print-area{display:block;position:absolute;top:0;right:0;width:100%;background:white;padding:20px;}}
         .invoice-table{width:100%;border-collapse:collapse;margin-top:20px;margin-bottom:20px;}
@@ -115,9 +112,22 @@
             </div>
         </div>
     </div>
+
+    <!-- الشريط الثانوي مع ضبط أزرار التحرك يميناً ويساراً -->
     <div class="sub-bar">
         <button class="scroll-arrow-btn" onclick="scrollColumns('right')">➡️</button>
-        
+        <div class="sub-bar-center">
+            <button class="btn-sub-action" style="background:#059669;" onclick="loadExcelFile()">📁 تحميل ملف</button>
+            <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
+            <button class="btn-sub-action" style="background:#4b5563;" onclick="window.location.reload()">🔄 إعادة ضبط</button>
+            <select id="comboBox_1" class="combo-box" onchange="changeClassification(this.value)">
+                <option value="grade">الصف الدراسي</option>
+                <option value="publisher">دار النشر</option>
+                <option value="subject">نوع المادة</option>
+            </select>
+            <label>
+                <input type="checkbox" id="priceTypeCheckbox" onchange="calculateTotals()"> شراء
+            </label>
             <label class="delivery-label">
                 <input type="checkbox" id="deliveryCheckbox" onchange="toggleDeliveryInputs()"> دليفرى 🚚
             </label>
@@ -131,40 +141,35 @@
         </div>
         <button class="scroll-arrow-btn" onclick="scrollColumns('left')">⬅️</button>
     </div>
+
     <div class="top-scrollbar-container">
         <div id="topScrollbar" class="top-scrollbar" onscroll="syncScroll('top')">
             <div id="topScrollDummy" class="top-scrollbar-dummy"></div>
         </div>
     </div>
+
     <div class="main-container">
         <div class="scroll-nav-container">
             <div id="sectionsWrapper" class="sections-wrapper" onscroll="syncScroll('bottom')"></div>
         </div>
     </div>
+
+    <!-- الأزرار بالأسفل قبل صندوق المعاينة -->
     <div class="bottom-actions">
         <button class="btn-action btn-print" onclick="printInvoice()">🖨️ طباعة فاتورة</button>
         <button class="btn-action btn-save-excel" onclick="addNewPurchaseInvoiceColumn()">📊 حفظ فاتورة الشراء بالأكسيل</button>
-        <div class="sub-bar-center">
-            <button onclick="loadExcelFile()">📁</button>
-            <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
-            <button onclick="window.location.reload()">🔄</button>
-            <select id="comboBox_1" class="combo-box" onchange="changeClassification(this.value)">
-                <option value="grade">الصف الدراسي</option>
-                <option value="publisher">دار النشر</option>
-                <option value="subject">نوع المادة</option>
-            </select>
-            <label>
-                <input type="checkbox" id="priceTypeCheckbox" onchange="calculateTotals()"> شراء
-            </label>
     </div>
+
+    <!-- صندوق معاينة الفاتورة والرسالة -->
     <div class="whatsapp-preview-box">
-        <h3>معاينة نص الرسالة (التي سأرسل للواتساب والفاتورة):</h3>
+        <h3>معاينة نص الرسالة والفاتورة (تمدد تلقائياً حسب المحتوى):</h3>
         <div class="whatsapp-input-row">
             <input type="text" id="whatsappPhone" placeholder="...رقم هاتف الصديق">
             <button class="btn-action btn-whatsapp" style="padding: 8px 15px; font-size: 14px;" onclick="openWhatsAppChat()">📤 مشاركة للصديق</button>
         </div>
-        <textarea id="whatsappTextarea" class="whatsapp-textarea" readonly>لم يتم اختيار أي كتب بعد...</textarea>
+        <textarea id="whatsappTextarea" class="whatsapp-textarea" readonly oninput="autoResizeTextarea(this)">لم يتم اختيار أي كتب بعد...</textarea>
     </div>
+
     <div id="printArea" class="print-area">
         <div class="invoice-header">فاتورة طلب كتب خارجية</div>
         <div id="printClientInfo" style="margin-bottom:10px;font-weight:bold;font-size:14px;"></div>
@@ -182,6 +187,7 @@
         </table>
         <div class="invoice-totals" id="printTotalsBox">إجمالي السعر قبل الخصم: 0.00 جنيه<br>إجمالي السعر بعد الخصم: 0.00 جنيه</div>
     </div>
+
     <script>
         let globalExcelData = [];
         let workbookData = null;
@@ -309,6 +315,12 @@
             }
         }
 
+        // دالة لتعديل ارتفاع صندوق النص تلقائياً ليمتد حسب المحتوى
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+        }
+
         function calculateTotals() {
             let selectedItems = globalExcelData.filter(i => i.selected && i.qty > 0);
             let usePurchasePrice = document.getElementById('priceTypeCheckbox').checked;
@@ -341,19 +353,26 @@
             let clientName = document.getElementById('clientNameInput').value.trim();
             let clientAddress = document.getElementById('clientAddressInput').value.trim();
 
+            // إنشاء نص الفاتورة متضمناً سعر كل صنف قبل وبعد الخصم والإجمالي الكلي
             let msg = "📚 *فاتورة طلب كتب خارجية (مكتبة مكس)*:\n\n";
             if (clientName) msg += `👤 اسم العميل: ${clientName}\n`;
             if (clientAddress) msg += `📍 العنوان: ${clientAddress}\n\n`;
 
             selectedItems.forEach(i => {
-                let activeUnitPrice = usePurchasePrice ? i.purchasePrice : i.discountPrice;
-                msg += `- ${i.title} (العدد: ${i.qty}) - السعر: ${activeUnitPrice * i.qty}ج\n`;
+                let itemTotalBefore = i.originalPrice * i.qty;
+                let itemTotalAfter = i.discountPrice * i.qty;
+                msg += `• ${i.title} (العدد: ${i.qty})\n`;
+                msg += `  - السعر قبل الخصم: ${itemTotalBefore} ج (${i.originalPrice} للوحدة)\n`;
+                msg += `  - السعر بعد الخصم: ${itemTotalAfter} ج (${i.discountPrice} للوحدة)\n\n`;
             });
 
-            if (deliveryAdded) msg += `\n🚚 رسوم التوصيل: 15 جنيه\n`;
-            msg += `\n💰 *الإجمالي النهائي: ${totalFinal.toFixed(2)} جنيه*`;
+            if (deliveryAdded) msg += `🚚 رسوم التوصيل: 15 جنيه\n`;
+            msg += `💰 *إجمالي المبلغ قبل الخصم: ${totalOriginal.toFixed(2)} جنيه*\n`;
+            msg += `💰 *الإجمالي النهائي بعد الخصم: ${totalFinal.toFixed(2)} جنيه*`;
 
-            document.getElementById('whatsappTextarea').value = msg;
+            let textarea = document.getElementById('whatsappTextarea');
+            textarea.value = msg;
+            autoResizeTextarea(textarea);
 
             let printBody = document.getElementById('printTableBody');
             printBody.innerHTML = '';
@@ -365,7 +384,7 @@
             });
 
             document.getElementById('printClientInfo').innerHTML = (clientName || clientAddress) ? `اسم العميل: ${clientName} | العنوان: ${clientAddress}` : '';
-            document.getElementById('printTotalsBox').innerHTML = `إجمالي السعر قبل الخصم: ${totalOriginal.toFixed(2)} جنيه<br>الإجمالي النهائي: ${totalFinal.toFixed(2)} جنيه ${deliveryAdded ? '(شامل التوصيل 15ج)' : ''}`;
+            document.getElementById('printTotalsBox').innerHTML = `إجمالي السعر قبل الخصم: ${totalOriginal.toFixed(2)} جنيه<br>إجمالي السعر بعد الخصم: ${totalFinal.toFixed(2)} جنيه ${deliveryAdded ? '(شامل التوصيل 15ج)' : ''}`;
         }
 
         function printInvoice() { window.print(); }
