@@ -11,25 +11,31 @@
         body{background-color:#dcd1da;color:#333;direction:rtl;padding-bottom:50px;}
         .top-header{background-color:#16a34a;color:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1);position:sticky;top:0;z-index:1000;flex-wrap:wrap;gap:10px;}
         .top-header div{display:flex;align-items:center;gap:15px;flex-wrap:wrap;}
+        
+        /* الشريط الثانوي */
         .sub-bar{background:#ccf0d8;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-bottom:15px;flex-wrap:wrap;gap:15px;}
         .scroll-arrow-btn{background:#10b981;color:white;border:none;width:40px;height:40px;border-radius:50%;font-size:20px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;box-shadow:0 2px 4px rgba(0,0,0,0.1);flex-shrink:0;}
         .scroll-arrow-btn:hover{background:#059669;}
         .sub-bar-center{display:flex;align-items:center;gap:15px;flex:1;justify-content:center;flex-wrap:wrap;}
-        .controls-group{display:flex;align-items:center;gap:15px;flex-wrap:wrap;}
-        select.combo-box{padding:8px 15px;border-radius:8px;border:2px solid #10b981;font-size:15px;font-weight:bold;outline:none;background:#fff;color:#065f46;cursor:pointer;}
+        
         .delivery-label{display:flex;align-items:center;gap:8px;font-weight:bold;color:#b45309;background:#fef3c7;padding:6px 12px;border-radius:8px;border:1px solid #f59e0b;}
         .delivery-label input{width:18px;height:18px;cursor:pointer;}
-        .sub-bar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-        .btn-sub-action{padding:8px 14px;border-radius:8px;font-weight:bold;font-size:14px;border:none;cursor:pointer;color:white;display:flex;align-items:center;gap:6px;box-shadow:0 2px 3px rgba(0,0,0,0.1);transition:0.2s;}
-        .btn-sub-whatsapp{background:#2563eb;}
-        .btn-sub-whatsapp:hover{background:#1d4ed8;}
         
         .mini-invoice-preview{background:#fdf2f8;border:2px dashed #10b981;border-radius:8px;padding:6px 12px;min-width:280px;max-height:85px;overflow-y:auto;font-size:12px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center;gap:15px;}
         .mini-invoice-items{color:#4b5563;line-height:1.3;flex:1;overflow-y:auto;max-height:65px;}
         .mini-total-badge{font-weight:bold;color:#047857;background:#d1fae5;padding:4px 8px;border-radius:6px;white-space:nowrap;font-size:13px;}
+        
+        .discount-badge-small {
+            font-size: 13px !important;
+            font-weight: 700;
+            color: #047857;
+            background: #d1fae5;
+            padding: 4px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
 
         .main-container{max-width:1400px;margin:0 auto;padding:0 20px;}
-        
         .scroll-nav-container{display:flex;align-items:center;gap:10px;margin-bottom:15px;}
         
         .sections-wrapper{display:flex;gap:15px;overflow-x:auto;padding-bottom:10px;scroll-behavior:smooth;flex:1;}
@@ -74,8 +80,9 @@
         .qty-btn.minus:hover{background:#dc2626;}
         .qty-input{width:40px;text-align:center;border:1px solid #d1d5db;border-radius:6px;padding:3px;font-weight:bold;font-size:14px;outline:none;}
         
-        .bottom-actions{display:flex;justify-content:center;gap:15px;margin-top:30px;flex-wrap:wrap;}
-        .btn-action{padding:12px 25px;border-radius:10px;font-weight:bold;font-size:16px;border:none;cursor:pointer;color:white;display:flex;align-items:center;gap:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.2s;}
+        /* الأزرار بالأسفل */
+        .bottom-actions{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:30px;flex-wrap:wrap;}
+        .btn-action{padding:10px 18px;border-radius:10px;font-weight:bold;font-size:15px;border:none;cursor:pointer;color:white;display:flex;align-items:center;gap:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.2s;}
         .btn-print{background:#059669;}
         .btn-print:hover{background:#047857;}
         .btn-save-excel{background:#d97706;}
@@ -88,7 +95,6 @@
         .whatsapp-input-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
         .whatsapp-input-row input{padding:8px 12px;border:1px solid #d1d5db;border-radius:8px;width:250px;outline:none;}
         
-        /* جعل صندوق الفاتورة/النص يمتد ويصغر حسب محتواه بدلاً من الثبات */
         .whatsapp-textarea{width:100%;min-height:120px;max-height:none;padding:12px;border:1px solid #d1d5db;border-radius:8px;resize:vertical;font-size:14px;outline:none;background:#fdfdfd;overflow-y:hidden;}
         
         .print-area{display:none;}
@@ -108,26 +114,15 @@
             <div class="mini-invoice-preview">
                 <div id="mini-invoice-items" class="mini-invoice-items">لم يتم اختيار أي كتب بعد...</div>
                 <div class="mini-total-badge" id="mini-total-count">0 صنف</div>
-                <div class="mini-total-badge"><h2>خصم الـ 15%</h2></div>
+                <div class="discount-badge-small">خصم 15%</div>
             </div>
         </div>
     </div>
 
-    <!-- الشريط الثانوي مع ضبط أزرار التحرك يميناً ويساراً -->
+    <!-- الشريط الثانوي: يحتوي على الدليفري وبياناته وبجواره مباشرة زر ارسل للواتس -->
     <div class="sub-bar">
         <button class="scroll-arrow-btn" onclick="scrollColumns('right')">➡️</button>
         <div class="sub-bar-center">
-            <button class="btn-sub-action" style="background:#059669;" onclick="loadExcelFile()">📁 تحميل ملف</button>
-            <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
-            <button class="btn-sub-action" style="background:#4b5563;" onclick="window.location.reload()">🔄 إعادة ضبط</button>
-            <select id="comboBox_1" class="combo-box" onchange="changeClassification(this.value)">
-                <option value="grade">الصف الدراسي</option>
-                <option value="publisher">دار النشر</option>
-                <option value="subject">نوع المادة</option>
-            </select>
-            <label>
-                <input type="checkbox" id="priceTypeCheckbox" onchange="calculateTotals()"> شراء
-            </label>
             <label class="delivery-label">
                 <input type="checkbox" id="deliveryCheckbox" onchange="toggleDeliveryInputs()"> دليفرى 🚚
             </label>
@@ -135,9 +130,8 @@
                 <input type="text" id="clientNameInput" placeholder="اسم العميل" oninput="calculateTotals()">
                 <input type="text" id="clientAddressInput" placeholder="العنوان" oninput="calculateTotals()">
             </div>
-            <div class="sub-bar-actions">
-                <button class="btn-sub-action btn-sub-whatsapp" onclick="sendWhatsApp()">ارسل للواتس</button>
-            </div>
+            <!-- زر إرسال الواتساب أصبح هنا بجوار الدليفري -->
+            <button class="btn-action btn-whatsapp" style="padding: 8px 14px; font-size: 14px;" onclick="sendWhatsApp()">📤 ارسل لواتس المكتبة</button>
         </div>
         <button class="scroll-arrow-btn" onclick="scrollColumns('left')">⬅️</button>
     </div>
@@ -154,18 +148,34 @@
         </div>
     </div>
 
-    <!-- الأزرار بالأسفل قبل صندوق المعاينة -->
+    <!-- الأزرار بالأسفل (تحميل، إعادة ضبط، تصنيف، شراء، طباعة، حفظ) -->
     <div class="bottom-actions">
+        <button class="btn-action" style="background:#059669;" onclick="loadExcelFile()">📁 تحميل ملف</button>
+        <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
+        
+        <button class="btn-action" style="background:#4b5563;" onclick="window.location.reload()">🔄 إعادة ضبط</button>
+        
+        <select id="comboBox_1" class="combo-box" onchange="changeClassification(this.value)">
+            <option value="grade">الصف الدراسي</option>
+            <option value="publisher">دار النشر</option>
+            <option value="subject">نوع المادة</option>
+        </select>
+        
+        <label style="font-weight: bold; background: #fff; padding: 6px 10px; border-radius: 8px; border: 1px solid #d1d5db; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+            <input type="checkbox" id="priceTypeCheckbox" onchange="calculateTotals()" style="width:16px;height:16px;"> شراء
+        </label>
+
         <button class="btn-action btn-print" onclick="printInvoice()">🖨️ طباعة فاتورة</button>
-        <button class="btn-action btn-save-excel" onclick="addNewPurchaseInvoiceColumn()">📊 حفظ فاتورة الشراء بالأكسيل</button>
+        <button class="btn-action btn-save-excel" onclick="addNewPurchaseInvoiceColumn()">📊 حفظ بالأكسيل</button>
     </div>
 
     <!-- صندوق معاينة الفاتورة والرسالة -->
     <div class="whatsapp-preview-box">
         <h3>معاينة نص الرسالة والفاتورة (تمدد تلقائياً حسب المحتوى):</h3>
         <div class="whatsapp-input-row">
-            <input type="text" id="whatsappPhone" placeholder="...رقم هاتف الصديق">
-            <button class="btn-action btn-whatsapp" style="padding: 8px 15px; font-size: 14px;" onclick="openWhatsAppChat()">📤 مشاركة للصديق</button>
+            <!-- تم تعيين رقم هاتف المكتبة افتراضياً هنا -->
+            <input type="text" id="whatsappPhone" value="+201093393975" placeholder="...رقم الهاتف">
+            <button class="btn-action btn-whatsapp" style="padding: 8px 15px; font-size: 14px;" onclick="openWhatsAppChat()">📤 إرسال للرقم</button>
         </div>
         <textarea id="whatsappTextarea" class="whatsapp-textarea" readonly oninput="autoResizeTextarea(this)">لم يتم اختيار أي كتب بعد...</textarea>
     </div>
@@ -315,7 +325,6 @@
             }
         }
 
-        // دالة لتعديل ارتفاع صندوق النص تلقائياً ليمتد حسب المحتوى
         function autoResizeTextarea(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = (textarea.scrollHeight) + 'px';
@@ -353,7 +362,6 @@
             let clientName = document.getElementById('clientNameInput').value.trim();
             let clientAddress = document.getElementById('clientAddressInput').value.trim();
 
-            // إنشاء نص الفاتورة متضمناً سعر كل صنف قبل وبعد الخصم والإجمالي الكلي
             let msg = "📚 *فاتورة طلب كتب خارجية (مكتبة مكس)*:\n\n";
             if (clientName) msg += `👤 اسم العميل: ${clientName}\n`;
             if (clientAddress) msg += `📍 العنوان: ${clientAddress}\n\n`;
