@@ -379,19 +379,73 @@
         }
 
         function calculateTotals() {
-            let selectedItems = globalExcelData.filter(i => i.selected && i.qty > 0);
             let usePurchasePrice = document.getElementById('priceTypeCheckbox').checked;
-            let totalOriginal = 0;
-            let totalFinal = 0;
-            let totalCount = 0;
-            let miniItemsHtml = '';
-
             let discountBadgeEl = document.getElementById('mini-discount-display');
             let miniItemsContainer = document.getElementById('mini-invoice-items');
             let textarea = document.getElementById('whatsappTextarea');
             let printTotalsBox = document.getElementById('printTotalsBox');
+            let clientNameInput = document.getElementById('clientNameInput');
+            let clientAddressInput = document.getElementById('clientAddressInput');
+            let clientPhoneInput = document.getElementById('clientPhoneInput');
+            let deliveryCheckbox = document.getElementById('deliveryCheckbox');
 
-            if (selectedItems.length === 0) {
+            const checkboxes = container.querySelectorAll('.book-chk');
+            
+            let totalOriginal = 0;
+            let totalFinal = 0;
+            let totalCount = 0;
+            let groupedBooks = {};
+            let miniItemsHtml = '';
+
+            checkboxes.forEach(chk => {
+                const item = chk.closest('.book-item');
+                if (!chk.checked) {
+                    item.classList.remove('selected-book');
+                    return;
+                }
+
+                item.classList.add('selected-book');
+                
+                let originalPrice = parsePrice(chk.dataset.price);
+                let discountPrice = parsePrice(chk.dataset.discounted);
+                let purchasePrice = parsePrice(chk.dataset.purchasePrice);
+                let activeUnitPrice = usePurchasePrice ? purchasePrice : discountPrice;
+                let grade = chk.dataset.grade || "أخرى";
+                let bookName = chk.dataset.name;
+
+                const qty = parseInt(item.querySelector('.qty-display').textContent, 10) || 1;
+
+                if (Number.isFinite(originalPrice)) {
+                    totalOriginal += originalPrice * qty;
+                }
+                if (Number.isFinite(activeUnitPrice)) {
+                    totalFinal += activeUnitPrice * qty;
+                }
+                totalCount += qty;
+
+                miniItemsHtml += `<div>• ${bookName} (${qty})</div>`;
+
+                if (!groupedBooks[grade]) {
+                    groupedBooks[grade] = [];
+                }
+                groupedBooks[grade].push({
+                    name: bookName,
+                    qty: qty,
+                    price: activeUnitPrice,
+                    originalPrice: originalPrice,
+                    discountPrice: discountPrice
+                });
+            });
+
+            let deliveryAdded = deliveryCheckbox ? deliveryCheckbox.checked : false;
+            if (deliveryAdded) totalFinal += 30;
+
+            let totalDiscountAmount = Math.max(0, totalOriginal - totalFinal);
+            if (deliveryAdded) {
+                totalDiscountAmount = Math.max(0, totalOriginal - (totalFinal - 30));
+            }
+
+            if (checkboxes.length === 0 || totalCount === 0) {
                 discountBadgeEl.style.fontSize = "16px";
                 discountBadgeEl.style.fontWeight = "800";
                 discountBadgeEl.style.color = "#047857";
@@ -417,58 +471,118 @@
             discountBadgeEl.style.fontSize = "13px";
             discountBadgeEl.style.fontWeight = "700";
             discountBadgeEl.style.color = "#047857";
-
-            selectedItems.forEach(i => {
-                let activeUnitPrice = usePurchasePrice ? i.purchasePrice : i.discountPrice;
-                totalOriginal += i.originalPrice * i.qty;
-                totalFinal += activeUnitPrice * i.qty;
-                totalCount += i.qty;
-                miniItemsHtml += `<div>• ${i.title} (${i.qty})</div>`;
-            });
-
-            let deliveryAdded = document.getElementById('deliveryCheckbox').checked;
-            if (deliveryAdded) totalFinal += 30;
-
-            let totalDiscountAmount = Math.max(0, totalOriginal - totalFinal);
-            if (deliveryAdded) {
-                totalDiscountAmount = Math.max(0, totalOriginal - (totalFinal - 30));
-            }
-
             document.getElementById('mini-total-count').innerText = `${totalCount} كتاب`;
             discountBadgeEl.innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br><span style="font-size: 15px; font-weight: 800; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} ج</span>`;
             
             miniItemsContainer.innerHTML = miniItemsHtml;
             miniItemsContainer.scrollTop = miniItemsContainer.scrollHeight;
 
-            let clientName = document.getElementById('clientNameInput').value.trim();
-            let clientAddress = document.getElementById('clientAddressInput').value.trim();
+            let clientName = clientNameInput ? clientNameInput.value.trim() : '';
+            let clientAddress = clientAddressInput ? clientAddressInput.value.trim() : '';
 
-            let msg = "📚 *فاتورة طلب كتب خارجية (مكتبة مكس)*:\n\n";
-            if (clientName) msg += `👤 اسم العميل: ${clientName}\n`;
-            if (clientAddress) msg += `📍 العنوان: ${clientAddress}\n\n`;
+            let message = "📚 *فاتورة طلب كتب خارجية (مكتبة مكس)*:\n\n";
+            if (clientName) message += `👤 اسم العميل: ${clientName}\n`;
+            if (clientAddress) message += `📍 العنوان: ${clientAddress}\n\n`;
 
-            selectedItems.forEach(i => {
-                let itemTotalAfter = (i.discountPrice * i.qty).toFixed(2);
-                msg += `• ${i.title} (العدد: ${i.qty}) السعر ${i.originalPrice} ج (${i.discountPrice} بعد الخصم) = ${itemTotalAfter} ج\n`;
-            });
+            let plainTextMessage = "📚 طلب حجز كتب خارجية\n";
+            if (clientName) plainTextMessage += `👤 اسم العميل: ${clientName}\n`;
+            if (clientAddress) plainTextMessage += `📍 العنوان: ${clientAddress}\n`;
 
-            if (deliveryAdded) msg += `\n🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب\n`;
-            msg += `\nالإجمالي: ${totalOriginal.toFixed(2)} ج - خصم: ${totalDiscountAmount.toFixed(2)} ج - المطلوب: ${totalFinal.toFixed(2)} ج`;
+            let hasItems = false;
+            for (let grade in groupedBooks) {
+                hasItems = true;
+                message += `%0A📌 *${grade}*:%0A`;
+                plainTextMessage += `\n📌 ${grade}:\n`;
 
-            textarea.value = msg;
+                groupedBooks[grade].forEach((book, index) => {
+                    let itemTotalAfter = (book.price * book.qty).toFixed(2);
+                    message += `${index + 1}- ${book.name} (العدد: ${book.qty}) السعر ${book.originalPrice} ج (${book.discountPrice} بعد الخصم) = ${itemTotalAfter} ج%0A`;
+                    plainTextMessage += `${index + 1}- ${book.name} (العدد: ${book.qty}) السعر ${book.originalPrice} ج (${book.discountPrice} بعد الخصم) = ${itemTotalAfter} ج\n`;
+                });
+            }
+
+            message += `%0Aالإجمالي: ${totalOriginal.toFixed(2)} ج - خصم: ${totalDiscountAmount.toFixed(2)} ج - المطلوب: ${totalFinal.toFixed(2)} ج`;
+            plainTextMessage += `\nالإجمالي: ${totalOriginal.toFixed(2)} ج - خصم: ${totalDiscountAmount.toFixed(2)} ج - المطلوب: ${totalFinal.toFixed(2)} ج`;
+
+            if (deliveryAdded) {
+                message += `%0A%0A🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب`;
+                plainTextMessage += `\n\n🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب`;
+                
+                if (clientAddressInput && clientPhoneInput) {
+                    message += `%0A📍 العنوان: ${clientAddress || "لم يكتب"}%0A📞 التليفون: ${clientPhoneInput.value.trim() || "لم يكتب"}`;
+                    plainTextMessage += `\n📍 العنوان: ${clientAddress || "لم يكتب"}\n📞 التليفون: ${clientPhoneInput.value.trim() || "لم يكتب"}`;
+                }
+            }
+
+            message += `%0A%0A📚 موقع خاص بمكتبة مكس 📚%0Aاطلب كتبك فى 3 خطوات:%0A1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A💻 ⭐ أسهل / أسرع / ومعرفة اللى لسه منزلش.%0A🌹 مستنى تجربتكم وتشجيعكم. 🌹`;
+            plainTextMessage += `\n\n📚 موقع خاص بمكتبة مكس 📚\nاطلب كتبك فى 3 خطوات:\n1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n💻 الموقع برمجتى الشخصية | ⭐ أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.\n🌹 مستنى تجربتكم وتشجيعكم. 🌹`;
+
+            textarea.value = plainTextMessage;
             autoResizeTextarea(textarea);
 
             let printBody = document.getElementById('printTableBody');
-            printBody.innerHTML = '';
-            selectedItems.forEach(i => {
-                let activeUnitPrice = usePurchasePrice ? i.purchasePrice : i.discountPrice;
-                let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${i.title}</td><td>${i.grade}</td><td>${i.qty}</td><td>${activeUnitPrice} ج</td><td>${(activeUnitPrice * i.qty).toFixed(2)} ج</td>`;
-                printBody.appendChild(tr);
-            });
+            if (printBody) {
+                printBody.innerHTML = '';
+                let globalSelectedItems = [];
+                for (let grade in groupedBooks) {
+                    groupedBooks[grade].forEach(b => {
+                        globalSelectedItems.push({ ...b, grade: grade });
+                    });
+                }
+                globalSelectedItems.forEach(i => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${i.name}</td><td>${i.grade}</td><td>${i.qty}</td><td>${i.price} ج</td><td>${(i.price * i.qty).toFixed(2)} ج</td>`;
+                    printBody.appendChild(tr);
+                });
+            }
 
-            document.getElementById('printClientInfo').innerHTML = (clientName || clientAddress) ? `اسم العميل: ${clientName} | العنوان: ${clientAddress}` : '';
-            printTotalsBox.innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br><span style="font-size: 15px; font-weight: 800; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} ج</span> ${deliveryAdded ? '<br>(رسوم التوصيل 30-35ج حسب المندوب)' : ''}`;
+            let printClientInfo = document.getElementById('printClientInfo');
+            if (printClientInfo) {
+                printClientInfo.innerHTML = (clientName || clientAddress) ? `اسم العميل: ${clientName} | العنوان: ${clientAddress}` : '';
+            }
+
+            if (printTotalsBox) {
+                printTotalsBox.innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br><span style="font-size: 15px; font-weight: 800; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} ج</span> ${deliveryAdded ? '<br>(رسوم التوصيل 30-35ج حسب المندوب)' : ''}`;
+            }
+
+            if (whatsappSendBtn) {
+                whatsappSendBtn.target = '_blank';
+                whatsappSendBtn.rel = 'noopener noreferrer';
+                if (hasItems) {
+                    whatsappSendBtn.href = "https://wa.me/201093393975?text=" + message;
+                    whatsappSendBtn.classList.remove('disabled');
+                    whatsappSendBtn.removeAttribute('aria-disabled');
+                    whatsappSendBtn.style.opacity = "1";
+                    whatsappSendBtn.style.pointerEvents = "auto";
+                } else {
+                    whatsappSendBtn.removeAttribute('href');
+                    whatsappSendBtn.classList.add('disabled');
+                    whatsappSendBtn.setAttribute('aria-disabled', 'true');
+                    whatsappSendBtn.style.opacity = "0.6";
+                    whatsappSendBtn.style.pointerEvents = "none";
+                }
+            }
+
+            if (shareFriendBtn && friendPhoneInput) {
+                shareFriendBtn.target = '_blank';
+                shareFriendBtn.rel = 'noopener noreferrer';
+                const rawFriendPhone = friendPhoneInput.value.trim();
+                const normalizedPhone = normalizePhone ? normalizePhone(rawFriendPhone) : rawFriendPhone;
+
+                if (hasItems && normalizedPhone) {
+                    shareFriendBtn.href = "https://wa.me/" + normalizedPhone + "?text=" + message;
+                    shareFriendBtn.style.opacity = "1";
+                    shareFriendBtn.style.pointerEvents = "auto";
+                } else {
+                    shareFriendBtn.href = "#";
+                    shareFriendBtn.style.opacity = "0.6";
+                    shareFriendBtn.style.pointerEvents = "none";
+                }
+            }
+
+            if (typeof prepareInvoice === 'function') {
+                prepareInvoice(totalOriginal, totalFinal);
+            }
         }
 
         function printInvoice() { window.print(); }
