@@ -12,7 +12,6 @@
         .top-header{background-color:#16a34a;color:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1);position:sticky;top:0;z-index:1000;flex-wrap:wrap;gap:10px;}
         .top-header div{display:flex;align-items:center;gap:15px;flex-wrap:wrap;}
         
-        /* الشريط الثانوي */
         .sub-bar{background:#ccf0d8;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-bottom:15px;flex-wrap:wrap;gap:15px;}
         .scroll-arrow-btn{background:#10b981;color:white;border:none;width:40px;height:40px;border-radius:50%;font-size:20px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;box-shadow:0 2px 4px rgba(0,0,0,0.1);flex-shrink:0;}
         .scroll-arrow-btn:hover{background:#059669;}
@@ -80,7 +79,6 @@
         .qty-btn.minus:hover{background:#dc2626;}
         .qty-input{width:40px;text-align:center;border:1px solid #d1d5db;border-radius:6px;padding:3px;font-weight:bold;font-size:14px;outline:none;}
         
-        /* الأزرار بالأسفل */
         .bottom-actions{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:30px;flex-wrap:wrap;}
         .btn-action{padding:10px 18px;border-radius:10px;font-weight:bold;font-size:15px;border:none;cursor:pointer;color:white;display:flex;align-items:center;gap:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.2s;}
         .btn-print{background:#059669;}
@@ -119,7 +117,6 @@
         </div>
     </div>
 
-    <!-- الشريط الثانوي: يحتوي على الدليفري وبياناته وبجواره مباشرة زر ارسل للواتس -->
     <div class="sub-bar">
         <button class="scroll-arrow-btn" onclick="scrollColumns('right')">➡️</button>
         <div class="sub-bar-center">
@@ -130,7 +127,6 @@
                 <input type="text" id="clientNameInput" placeholder="اسم العميل" oninput="calculateTotals()">
                 <input type="text" id="clientAddressInput" placeholder="العنوان" oninput="calculateTotals()">
             </div>
-            <!-- زر إرسال الواتساب أصبح هنا بجوار الدليفري -->
             <button class="btn-action btn-whatsapp" style="padding: 8px 14px; font-size: 14px;" onclick="sendWhatsApp()">📤 ارسل لواتس المكتبة</button>
         </div>
         <button class="scroll-arrow-btn" onclick="scrollColumns('left')">⬅️</button>
@@ -148,7 +144,6 @@
         </div>
     </div>
 
-    <!-- الأزرار بالأسفل (تحميل، إعادة ضبط، تصنيف، شراء، طباعة، حفظ) -->
     <div class="bottom-actions">
         <button class="btn-action" style="background:#059669;" onclick="loadExcelFile()">📁 تحميل ملف</button>
         <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
@@ -169,11 +164,9 @@
         <button class="btn-action btn-save-excel" onclick="addNewPurchaseInvoiceColumn()">📊 حفظ بالأكسيل</button>
     </div>
 
-    <!-- صندوق معاينة الفاتورة والرسالة -->
     <div class="whatsapp-preview-box">
         <h3>معاينة نص الرسالة والفاتورة (تمدد تلقائياً حسب المحتوى):</h3>
         <div class="whatsapp-input-row">
-            <!-- تم تعيين رقم هاتف المكتبة افتراضياً هنا -->
             <input type="text" id="whatsappPhone" value="+201093393975" placeholder="...رقم الهاتف">
             <button class="btn-action btn-whatsapp" style="padding: 8px 15px; font-size: 14px;" onclick="openWhatsAppChat()">📤 إرسال للرقم</button>
         </div>
@@ -362,21 +355,19 @@
             let clientName = document.getElementById('clientNameInput').value.trim();
             let clientAddress = document.getElementById('clientAddressInput').value.trim();
 
+            // الصيغة الجديدة المختصرة لرسالة الواتساب
             let msg = "📚 *فاتورة طلب كتب خارجية (مكتبة مكس)*:\n\n";
             if (clientName) msg += `👤 اسم العميل: ${clientName}\n`;
             if (clientAddress) msg += `📍 العنوان: ${clientAddress}\n\n`;
 
             selectedItems.forEach(i => {
-                let itemTotalBefore = i.originalPrice * i.qty;
-                let itemTotalAfter = i.discountPrice * i.qty;
-                msg += `• ${i.title} (العدد: ${i.qty})\n`;
-                msg += `  - السعر قبل الخصم: ${itemTotalBefore} ج (${i.originalPrice} للوحدة)\n`;
-                msg += `  - السعر بعد الخصم: ${itemTotalAfter} ج (${i.discountPrice} للوحدة)\n\n`;
+                let itemTotalAfter = (i.discountPrice * i.qty).toFixed(2);
+                msg += `• ${i.title} (العدد: ${i.qty}) السعر ${i.originalPrice} ج (${i.discountPrice} بعد الخصم) = ${itemTotalAfter} ج\n`;
             });
 
-            if (deliveryAdded) msg += `🚚 رسوم التوصيل: 15 جنيه\n`;
-            msg += `💰 *إجمالي المبلغ قبل الخصم: ${totalOriginal.toFixed(2)} جنيه*\n`;
-            msg += `💰 *الإجمالي النهائي بعد الخصم: ${totalFinal.toFixed(2)} جنيه*`;
+            if (deliveryAdded) msg += `\n🚚 رسوم التوصيل: 15 جنيه\n`;
+            msg += `\n💰 *إجمالي المبلغ قبل الخصم: ${totalOriginal.toFixed(2)} جنيه*`;
+            msg += `\n💰 *الإجمالي النهائي بعد الخصم: ${totalFinal.toFixed(2)} جنيه*`;
 
             let textarea = document.getElementById('whatsappTextarea');
             textarea.value = msg;
