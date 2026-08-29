@@ -378,49 +378,55 @@
             textarea.style.height = (textarea.scrollHeight) + 'px';
         }
 
-        function calculateTotals() {
-            let usePurchasePrice = document.getElementById('priceTypeCheckbox').checked;
-            let discountBadgeEl = document.getElementById('mini-discount-display');
-            let miniItemsContainer = document.getElementById('mini-invoice-items');
-            let textarea = document.getElementById('whatsappTextarea');
-            let printTotalsBox = document.getElementById('printTotalsBox');
-            let clientNameInput = document.getElementById('clientNameInput');
-            let clientAddressInput = document.getElementById('clientAddressInput');
-            let clientPhoneInput = document.getElementById('clientPhoneInput');
-            let deliveryCheckbox = document.getElementById('deliveryCheckbox');
+        function parsePrice(val) {
+            let num = parseFloat(val);
+            return isNaN(num) ? 0 : num;
+        }
 
-            const checkboxes = container.querySelectorAll('.book-chk');
-            
+        function normalizePhone(phone) {
+            let cleaned = phone.replace(/[^\d+]/g, '');
+            if (cleaned.startsWith('01')) {
+                cleaned = '+2' + cleaned;
+            } else if (cleaned.startsWith('1') && cleaned.length === 10) {
+                cleaned = '+20' + cleaned;
+            } else if (!cleaned.startsWith('+') && cleaned.length > 0) {
+                cleaned = '+2' + cleaned;
+            }
+            return cleaned;
+        }
+
+        function calculateTotals() {
+            const usePurchasePrice = document.getElementById('priceTypeCheckbox').checked;
+            const discountBadgeEl = document.getElementById('mini-discount-display');
+            const miniItemsContainer = document.getElementById('mini-invoice-items');
+            const textarea = document.getElementById('whatsappTextarea');
+            const printTotalsBox = document.getElementById('printTotalsBox');
+            const clientNameInput = document.getElementById('clientNameInput');
+            const clientAddressInput = document.getElementById('clientAddressInput');
+            const clientPhoneInput = document.getElementById('clientPhoneInput');
+            const deliveryCheckbox = document.getElementById('deliveryCheckbox');
+            const whatsappSendBtn = document.querySelector('.btn-whatsapp');
+            const friendPhoneInput = document.getElementById('whatsappPhone');
+
             let totalOriginal = 0;
             let totalFinal = 0;
             let totalCount = 0;
-            let groupedBooks = {};
+            const groupedBooks = {};
             let miniItemsHtml = '';
 
-            checkboxes.forEach(chk => {
-                const item = chk.closest('.book-item');
-                if (!chk.checked) {
-                    item.classList.remove('selected-book');
-                    return;
-                }
+            const selectedItems = globalExcelData.filter(i => i.selected && i.qty > 0);
 
-                item.classList.add('selected-book');
-                
-                let originalPrice = parsePrice(chk.dataset.price);
-                let discountPrice = parsePrice(chk.dataset.discounted);
-                let purchasePrice = parsePrice(chk.dataset.purchasePrice);
+            selectedItems.forEach(item => {
+                let originalPrice = parsePrice(item.originalPrice);
+                let discountPrice = parsePrice(item.discountPrice);
+                let purchasePrice = parsePrice(item.purchasePrice);
                 let activeUnitPrice = usePurchasePrice ? purchasePrice : discountPrice;
-                let grade = chk.dataset.grade || "أخرى";
-                let bookName = chk.dataset.name;
+                let grade = item.grade2 || "أخرى";
+                let bookName = item.title;
+                let qty = item.qty;
 
-                const qty = parseInt(item.querySelector('.qty-display').textContent, 10) || 1;
-
-                if (Number.isFinite(originalPrice)) {
-                    totalOriginal += originalPrice * qty;
-                }
-                if (Number.isFinite(activeUnitPrice)) {
-                    totalFinal += activeUnitPrice * qty;
-                }
+                totalOriginal += originalPrice * qty;
+                totalFinal += activeUnitPrice * qty;
                 totalCount += qty;
 
                 miniItemsHtml += `<div>• ${bookName} (${qty})</div>`;
@@ -437,7 +443,7 @@
                 });
             });
 
-            let deliveryAdded = deliveryCheckbox ? deliveryCheckbox.checked : false;
+            const deliveryAdded = deliveryCheckbox ? deliveryCheckbox.checked : false;
             if (deliveryAdded) totalFinal += 30;
 
             let totalDiscountAmount = Math.max(0, totalOriginal - totalFinal);
@@ -445,21 +451,14 @@
                 totalDiscountAmount = Math.max(0, totalOriginal - (totalFinal - 30));
             }
 
-            if (checkboxes.length === 0 || totalCount === 0) {
-                discountBadgeEl.style.fontSize = "16px";
-                discountBadgeEl.style.fontWeight = "800";
-                discountBadgeEl.style.color = "#047857";
+            if (selectedItems.length === 0 || totalCount === 0) {
+                discountBadgeEl.style.cssText = "font-size: 16px; font-weight: 800; color: #047857;";
                 discountBadgeEl.innerText = "خصم 15%";
-                
                 miniItemsContainer.innerHTML = "خصم 15%";
-                
-                let defaultText = "خصم 15%";
-                textarea.value = defaultText;
+                textarea.value = "خصم 15%";
                 autoResizeTextarea(textarea);
 
-                printTotalsBox.style.fontSize = "16px";
-                printTotalsBox.style.fontWeight = "800";
-                printTotalsBox.style.color = "#047857";
+                printTotalsBox.style.cssText = "font-size: 16px; font-weight: 800; color: #047857;";
                 printTotalsBox.innerHTML = "خصم 15%";
 
                 document.getElementById('mini-total-count').innerText = "0 صنف";
@@ -468,116 +467,83 @@
                 return;
             }
 
-            discountBadgeEl.style.fontSize = "13px";
-            discountBadgeEl.style.fontWeight = "700";
-            discountBadgeEl.style.color = "#047857";
+            discountBadgeEl.style.cssText = "font-size: 13px; font-weight: 700; color: #047857;";
             document.getElementById('mini-total-count').innerText = `${totalCount} كتاب`;
             discountBadgeEl.innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br><span style="font-size: 15px; font-weight: 800; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} ج</span>`;
             
             miniItemsContainer.innerHTML = miniItemsHtml;
             miniItemsContainer.scrollTop = miniItemsContainer.scrollHeight;
 
-            let clientName = clientNameInput ? clientNameInput.value.trim() : '';
-            let clientAddress = clientAddressInput ? clientAddressInput.value.trim() : '';
+            const clientName = clientNameInput ? clientNameInput.value.trim() : '';
+            const clientAddress = clientAddressInput ? clientAddressInput.value.trim() : '';
+            const clientPhone = clientPhoneInput ? clientPhoneInput.value.trim() : '';
 
-            let message = "📚 *فاتورة طلب كتب خارجية (مكتبة مكس)*:\n\n";
-            if (clientName) message += `👤 اسم العميل: ${clientName}\n`;
-            if (clientAddress) message += `📍 العنوان: ${clientAddress}\n\n`;
+            let messageLines = ["📚 *فاتورة طلب كتب خارجية (مكتبة مكس)*:\n"];
+            if (clientName) messageLines.push(`👤 اسم العميل: ${clientName}`);
+            if (clientAddress) messageLines.push(`📍 العنوان: ${clientAddress}`);
+            if (clientName || clientAddress) messageLines.push(""); 
 
-            let plainTextMessage = "📚 طلب حجز كتب خارجية\n";
-            if (clientName) plainTextMessage += `👤 اسم العميل: ${clientName}\n`;
-            if (clientAddress) plainTextMessage += `📍 العنوان: ${clientAddress}\n`;
+            let plainTextLines = ["📚 طلب حجز كتب خارجية"];
+            if (clientName) plainTextLines.push(`👤 اسم العميل: ${clientName}`);
+            if (clientAddress) plainTextLines.push(`📍 العنوان: ${clientAddress}`);
 
             let hasItems = false;
-            for (let grade in groupedBooks) {
+            for (const grade in groupedBooks) {
                 hasItems = true;
-                message += `%0A📌 *${grade}*:%0A`;
-                plainTextMessage += `\n📌 ${grade}:\n`;
+                messageLines.push(`%0A📌 *${grade}*:%0A`);
+                plainTextLines.push(`\n📌 ${grade}:`);
 
                 groupedBooks[grade].forEach((book, index) => {
-                    let itemTotalAfter = (book.price * book.qty).toFixed(2);
-                    message += `${index + 1}- ${book.name} (العدد: ${book.qty}) السعر ${book.originalPrice} ج (${book.discountPrice} بعد الخصم) = ${itemTotalAfter} ج%0A`;
-                    plainTextMessage += `${index + 1}- ${book.name} (العدد: ${book.qty}) السعر ${book.originalPrice} ج (${book.discountPrice} بعد الخصم) = ${itemTotalAfter} ج\n`;
+                    const itemTotalAfter = (book.price * book.qty).toFixed(2);
+                    messageLines.push(`${index + 1}- ${book.name} (العدد: ${book.qty}) السعر ${book.originalPrice} ج (${book.discountPrice} بعد الخصم) = ${itemTotalAfter} ج%0A`);
+                    plainTextLines.push(`${index + 1}- ${book.name} (العدد: ${book.qty}) السعر ${book.originalPrice} ج (${book.discountPrice} بعد الخصم) = ${itemTotalAfter} ج`);
                 });
             }
 
-            message += `%0Aالإجمالي: ${totalOriginal.toFixed(2)} ج - خصم: ${totalDiscountAmount.toFixed(2)} ج - المطلوب: ${totalFinal.toFixed(2)} ج`;
-            plainTextMessage += `\nالإجمالي: ${totalOriginal.toFixed(2)} ج - خصم: ${totalDiscountAmount.toFixed(2)} ج - المطلوب: ${totalFinal.toFixed(2)} ج`;
+            const totalsSummary = `الإجمالي: ${totalOriginal.toFixed(2)} ج - خصم: ${totalDiscountAmount.toFixed(2)} ج - المطلوب: ${totalFinal.toFixed(2)} ج`;
+            messageLines.push(`%0A${totalsSummary}`);
+            plainTextLines.push(`\n${totalsSummary}`);
 
             if (deliveryAdded) {
-                message += `%0A%0A🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب`;
-                plainTextMessage += `\n\n🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب`;
+                messageLines.push(`%0A%0A🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب`);
+                plainTextLines.push(`\n\n🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب`);
                 
-                if (clientAddressInput && clientPhoneInput) {
-                    message += `%0A📍 العنوان: ${clientAddress || "لم يكتب"}%0A📞 التليفون: ${clientPhoneInput.value.trim() || "لم يكتب"}`;
-                    plainTextMessage += `\n📍 العنوان: ${clientAddress || "لم يكتب"}\n📞 التليفون: ${clientPhoneInput.value.trim() || "لم يكتب"}`;
+                if (clientAddress || clientPhone) {
+                    messageLines.push(`%0A📍 العنوان: ${clientAddress || "لم يكتب"}%0A📞 التليفون: ${clientPhone || "لم يكتب"}`);
+                    plainTextLines.push(`\n📍 العنوان: ${clientAddress || "لم يكتب"}\n📞 التليفون: ${clientPhone || "لم يكتب"}`);
                 }
             }
 
-            message += `%0A%0A📚 موقع خاص بمكتبة مكس 📚%0Aاطلب كتبك فى 3 خطوات:%0A1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A💻 ⭐ أسهل / أسرع / ومعرفة اللى لسه منزلش.%0A🌹 مستنى تجربتكم وتشجيعكم. 🌹`;
-            plainTextMessage += `\n\n📚 موقع خاص بمكتبة مكس 📚\nاطلب كتبك فى 3 خطوات:\n1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n💻 الموقع برمجتى الشخصية | ⭐ أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.\n🌹 مستنى تجربتكم وتشجيعكم. 🌹`;
+            const footerNoteUrl = `%0A%0A📚 موقع خاص بمكتبة مكس 📚%0Aاطلب كتبك فى 3 خطوات:%0A1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.%0Ahttps://hamdiheikal.github.io/mktbtmix/BookClac.html%0A💻 ⭐ أسهل / أسرع / ومعرفة اللى لسه منزلش.%0A🌹 مستنى تجربتكم وتشجيعكم. 🌹`;
+            const footerNotePlain = `\n\n📚 موقع خاص بمكتبة مكس 📚\nاطلب كتبك فى 3 خطوات:\n1- ادخل على الرابط. 2- اختار الكتب. 3- اضغط إرسال للواتس.\nhttps://hamdiheikal.github.io/mktbtmix/BookClac.html\n💻 الموقع برمجتى الشخصية | ⭐ أسهل لاختيار الكتب ومعرفة اللى لسة منزلش.\n🌹 مستنى تجربتكم وتشجيعكم. 🌹`;
 
-            textarea.value = plainTextMessage;
+            messageLines.push(footerNoteUrl);
+            plainTextLines.push(footerNotePlain);
+
+            textarea.value = plainTextLines.join('\n');
             autoResizeTextarea(textarea);
 
-            let printBody = document.getElementById('printTableBody');
+            const printBody = document.getElementById('printTableBody');
             if (printBody) {
                 printBody.innerHTML = '';
-                let globalSelectedItems = [];
-                for (let grade in groupedBooks) {
-                    groupedBooks[grade].forEach(b => {
-                        globalSelectedItems.push({ ...b, grade: grade });
-                    });
+                const globalSelectedItems = [];
+                for (const grade in groupedBooks) {
+                    groupedBooks[grade].forEach(b => globalSelectedItems.push({ ...b, grade }));
                 }
                 globalSelectedItems.forEach(i => {
-                    let tr = document.createElement('tr');
+                    const tr = document.createElement('tr');
                     tr.innerHTML = `<td>${i.name}</td><td>${i.grade}</td><td>${i.qty}</td><td>${i.price} ج</td><td>${(i.price * i.qty).toFixed(2)} ج</td>`;
                     printBody.appendChild(tr);
                 });
             }
 
-            let printClientInfo = document.getElementById('printClientInfo');
+            const printClientInfo = document.getElementById('printClientInfo');
             if (printClientInfo) {
                 printClientInfo.innerHTML = (clientName || clientAddress) ? `اسم العميل: ${clientName} | العنوان: ${clientAddress}` : '';
             }
 
             if (printTotalsBox) {
                 printTotalsBox.innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br><span style="font-size: 15px; font-weight: 800; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} ج</span> ${deliveryAdded ? '<br>(رسوم التوصيل 30-35ج حسب المندوب)' : ''}`;
-            }
-
-            if (whatsappSendBtn) {
-                whatsappSendBtn.target = '_blank';
-                whatsappSendBtn.rel = 'noopener noreferrer';
-                if (hasItems) {
-                    whatsappSendBtn.href = "https://wa.me/201093393975?text=" + message;
-                    whatsappSendBtn.classList.remove('disabled');
-                    whatsappSendBtn.removeAttribute('aria-disabled');
-                    whatsappSendBtn.style.opacity = "1";
-                    whatsappSendBtn.style.pointerEvents = "auto";
-                } else {
-                    whatsappSendBtn.removeAttribute('href');
-                    whatsappSendBtn.classList.add('disabled');
-                    whatsappSendBtn.setAttribute('aria-disabled', 'true');
-                    whatsappSendBtn.style.opacity = "0.6";
-                    whatsappSendBtn.style.pointerEvents = "none";
-                }
-            }
-
-            if (shareFriendBtn && friendPhoneInput) {
-                shareFriendBtn.target = '_blank';
-                shareFriendBtn.rel = 'noopener noreferrer';
-                const rawFriendPhone = friendPhoneInput.value.trim();
-                const normalizedPhone = normalizePhone ? normalizePhone(rawFriendPhone) : rawFriendPhone;
-
-                if (hasItems && normalizedPhone) {
-                    shareFriendBtn.href = "https://wa.me/" + normalizedPhone + "?text=" + message;
-                    shareFriendBtn.style.opacity = "1";
-                    shareFriendBtn.style.pointerEvents = "auto";
-                } else {
-                    shareFriendBtn.href = "#";
-                    shareFriendBtn.style.opacity = "0.6";
-                    shareFriendBtn.style.pointerEvents = "none";
-                }
             }
 
             if (typeof prepareInvoice === 'function') {
