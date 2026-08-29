@@ -127,7 +127,7 @@
                 <input type="text" id="clientNameInput" placeholder="اسم العميل" oninput="calculateTotals()">
                 <input type="text" id="clientAddressInput" placeholder="العنوان" oninput="calculateTotals()">
             </div>
-            <button class="btn-action btn-whatsapp" style="padding: 8px 14px; font-size: 14px;" onclick="sendWhatsApp()">📤 ارسل لواتس المكتبة</button>
+            <button class="btn-action btn-whatsapp" style="padding: 8px 14px; font-size: 14px;" onclick="sendLibraryWhatsApp()">📤 ارسل لواتس المكتبة</button>
         </div>
         <button class="scroll-arrow-btn" onclick="scrollColumns('left')">⬅️</button>
     </div>
@@ -167,8 +167,8 @@
     <div class="whatsapp-preview-box">
         <h3>معاينة نص الرسالة والفاتورة (تمدد تلقائياً حسب المحتوى):</h3>
         <div class="whatsapp-input-row">
-            <input type="text" id="whatsappPhone" value="+201093393975" placeholder="...رقم الهاتف">
-            <button class="btn-action btn-whatsapp" style="padding: 8px 15px; font-size: 14px;" onclick="openWhatsAppChat()">📤 إرسال للرقم</button>
+            <input type="text" id="whatsappPhone" value="" placeholder="...رقم الهاتف (مثال: 010xxxxxxxx)">
+            <button class="btn-action btn-whatsapp" style="padding: 8px 15px; font-size: 14px;" onclick="sendCustomWhatsApp()">📤 إرسال للرقم</button>
         </div>
         <textarea id="whatsappTextarea" class="whatsapp-textarea" readonly oninput="autoResizeTextarea(this)">لم يتم اختيار أي كتب بعد...</textarea>
     </div>
@@ -295,7 +295,20 @@
                 item.selected = isChecked;
                 if (isChecked && item.qty === 0) item.qty = 1;
                 if (!isChecked) item.qty = 0;
+                
+                // حفظ أماكن التمرير الحالية لكل عمود وعرض المحتوى لمنع الصعود لأعلى
+                let scrollPositions = {};
+                document.querySelectorAll('.category-body').forEach((body, idx) => {
+                    scrollPositions[idx] = body.scrollTop;
+                });
+
                 renderStore(document.getElementById('comboBox_1').value);
+
+                document.querySelectorAll('.category-body').forEach((body, idx) => {
+                    if (scrollPositions[idx] !== undefined) {
+                        body.scrollTop = scrollPositions[idx];
+                    }
+                });
             }
         }
 
@@ -304,7 +317,19 @@
             if (item) {
                 item.qty = Math.max(0, item.qty + change);
                 item.selected = item.qty > 0;
+                
+                let scrollPositions = {};
+                document.querySelectorAll('.category-body').forEach((body, idx) => {
+                    scrollPositions[idx] = body.scrollTop;
+                });
+
                 renderStore(document.getElementById('comboBox_1').value);
+
+                document.querySelectorAll('.category-body').forEach((body, idx) => {
+                    if (scrollPositions[idx] !== undefined) {
+                        body.scrollTop = scrollPositions[idx];
+                    }
+                });
             }
         }
 
@@ -314,7 +339,19 @@
                 let num = parseInt(val) || 0;
                 item.qty = Math.max(0, num);
                 item.selected = item.qty > 0;
+                
+                let scrollPositions = {};
+                document.querySelectorAll('.category-body').forEach((body, idx) => {
+                    scrollPositions[idx] = body.scrollTop;
+                });
+
                 renderStore(document.getElementById('comboBox_1').value);
+
+                document.querySelectorAll('.category-body').forEach((body, idx) => {
+                    if (scrollPositions[idx] !== undefined) {
+                        body.scrollTop = scrollPositions[idx];
+                    }
+                });
             }
         }
 
@@ -344,7 +381,8 @@
             }
 
             let deliveryAdded = document.getElementById('deliveryCheckbox').checked;
-            if (deliveryAdded) totalFinal += 15;
+            // الدليفرى تضاف رسوم تقديرية رمزية إجمالية للاحتساب أو تُوضح كرسوم تترك للمندوب
+            if (deliveryAdded) totalFinal += 30; // الحد الأدنى للاحتساب المالي
 
             document.getElementById('mini-total-count').innerText = `${totalCount} كتاب`;
             
@@ -364,9 +402,9 @@
                 msg += `• ${i.title} (العدد: ${i.qty}) السعر ${i.originalPrice} ج (${i.discountPrice} بعد الخصم) = ${itemTotalAfter} ج\n`;
             });
 
-            if (deliveryAdded) msg += `\n🚚 رسوم التوصيل: 15 جنيه\n`;
+            if (deliveryAdded) msg += `\n🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب\n`;
             msg += `\n💰 *إجمالي المبلغ قبل الخصم: ${totalOriginal.toFixed(2)} جنيه*`;
-            msg += `\n💰 *الإجمالي النهائي بعد الخصم: ${totalFinal.toFixed(2)} جنيه*`;
+            msg += `\n💰 *الإجمالي النهائي بعد الخصم: ${totalFinal.toFixed(2)} جنيه* (بدون التوصيل أو بالحد الأدنى)`;
 
             let textarea = document.getElementById('whatsappTextarea');
             textarea.value = msg;
@@ -382,7 +420,7 @@
             });
 
             document.getElementById('printClientInfo').innerHTML = (clientName || clientAddress) ? `اسم العميل: ${clientName} | العنوان: ${clientAddress}` : '';
-            document.getElementById('printTotalsBox').innerHTML = `إجمالي السعر قبل الخصم: ${totalOriginal.toFixed(2)} جنيه<br>إجمالي السعر بعد الخصم: ${totalFinal.toFixed(2)} جنيه ${deliveryAdded ? '(شامل التوصيل 15ج)' : ''}`;
+            document.getElementById('printTotalsBox').innerHTML = `إجمالي السعر قبل الخصم: ${totalOriginal.toFixed(2)} جنيه<br>إجمالي السعر بعد الخصم: ${totalFinal.toFixed(2)} جنيه ${deliveryAdded ? '(رسوم التوصيل 30-35ج حسب المندوب)' : ''}`;
         }
 
         function printInvoice() { window.print(); }
@@ -422,27 +460,30 @@
             alert(`تم إضافة العمود "${newColumnName}" بنجاح وحفظ ملف الاكسيل المحدث!`);
         }
 
-        // --- دوال معالجة والتحقق من رقم الواتساب ---
         function cleanPhoneNumber(phone) {
-            // إزالة أي رموز غير أرقام ما عدا علامة الزائد (+) في البداية إن وجدت
             let cleaned = phone.replace(/[^\d+]/g, '');
-            
-            // التعامل مع الأرقام المصرية المحلية وإضافة كود الدولة تلقائياً
             if (cleaned.startsWith('01')) {
                 cleaned = '+2' + cleaned;
             } else if (cleaned.startsWith('1') && cleaned.length === 10) {
                 cleaned = '+20' + cleaned;
             } else if (!cleaned.startsWith('+') && cleaned.length > 0) {
-                // إذا لم تبدأ بعلامة زائد، افترض إضافة كود مصر افتراضياً للأرقام المحلية
                 cleaned = '+2' + cleaned;
             }
             return cleaned;
         }
 
-        function sendWhatsApp() {
+        // إرسال للرقم الثابت الخاص بالمكتبة
+        function sendLibraryWhatsApp() {
+            let phone = "+201093393975";
+            let text = encodeURIComponent(document.getElementById('whatsappTextarea').value);
+            window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+        }
+
+        // إرسال للرقم المكتوب في الخانة المجاورة فقط
+        function sendCustomWhatsApp() {
             let rawPhone = document.getElementById('whatsappPhone').value.trim();
             if (!rawPhone) { 
-                alert("يرجى كتابة رقم هاتف الواتساب أولاً!"); 
+                alert("يرجى كتابة رقم هاتف صحيح في الخانة المخصصة أولاً!"); 
                 return; 
             }
             
@@ -450,11 +491,6 @@
             let text = encodeURIComponent(document.getElementById('whatsappTextarea').value);
             window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
         }
-
-        function openWhatsAppChat() { 
-            sendWhatsApp(); 
-        }
-        // ------------------------------------------
 
         function renderStore(mode) {
             let wrapper = document.getElementById('sectionsWrapper');
