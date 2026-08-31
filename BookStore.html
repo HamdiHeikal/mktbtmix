@@ -718,8 +718,10 @@
                     // 2. خلصان (السعر بعد الخصم 0)
                     // 3. بدون خصم (سعر الغلاف يساوي سعر الخصم)
                     let statusBadgeHtml = '';
-                    let isUnreleased = !Number.isFinite(item.originalPrice) || rawBeforeStr === '0' || rawBeforeStr === '0.0' || rawBeforeStr === '0.00' || rawBeforeStr === 'لسة منزلش' || rawBeforeStr === 'ما نزلش';
-                    let isSoldOut = item.originalPrice > 0 && (item.discountPrice === 0 || rawAfterStr === '0' || rawAfterStr === 'خلصان');
+                    let isUnreleased = (item.originalPrice === 0 && item.discountPrice === 0) || 
+                        rawBeforeStr === '0' || rawBeforeStr === '0.0' || rawBeforeStr === '0.00' || 
+                        rawBeforeStr === '' || rawAfterStr === '' || 
+                        rawBeforeStr.includes('لسة منزلش') || rawBeforeStr.includes('ما نزلش') || rawBeforeStr.includes('لم ينزل') || rawBeforeStr.includes('قريباً');                    let isSoldOut = item.originalPrice > 0 && (item.discountPrice === 0 || rawAfterStr === '0' || rawAfterStr === 'خلصان');
                     let isNoDiscount = item.originalPrice > 0 && item.discountPrice > 0 && item.originalPrice === item.discountPrice;
                     if (isUnreleased) {
                         statusBadgeHtml = `<span class="status-badge status-unreleased">⬅️ ما نزلش</span>`;
