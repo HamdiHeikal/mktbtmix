@@ -104,6 +104,18 @@
         .invoice-totals{border:1px solid #333;padding:10px;margin-top:10px;font-weight:bold;font-size:15px;}
         #deliveryDetailsContainer{display:none;gap:10px;align-items:center;}
         #deliveryDetailsContainer input{padding:6px 10px;border:1px solid #f59e0b;border-radius:6px;outline:none;font-size:13px;width:160px;}
+        /* ===== الحالات الخاصة (خلصان / منزلش / بدون خصم) مع السهم ⬅️ ===== */
+        .status-badge {
+            font-size: 13px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .status-unreleased { color: #b45309; background: #fff7ed; border: 1px solid #fed7aa; }
+        .status-soldout { color: #dc2626; background: #fee2e2; border: 1px solid #fca5a5; }
+        .status-nodiscount { color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; }
+        
     </style>
 </head>
 <body>
