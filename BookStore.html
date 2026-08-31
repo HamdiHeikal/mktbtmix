@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif;}
-        body{background-color:#16a34a;color:#333;direction:rtl;padding-bottom:50px;}
+        body{background-color:#dde3eb;color:#333;direction:rtl;padding-bottom:50px;}
         .top-header{background-color:#16a34a;color:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1);position:sticky;top:0;z-index:1000;flex-wrap:wrap;gap:10px;}
         .top-header div{display:flex;align-items:center;gap:15px;flex-wrap:wrap;}
         
@@ -698,6 +698,25 @@
                         chk.checked = !chk.checked;
                         toggleSelect(item.id, chk.checked);
                     };
+                    
+                    let rawBeforeStr = String(item.rawPriceBefore ?? '').trim();
+                    let rawAfterStr = String(item.rawPriceAfter ?? '').trim();
+                    // التحقق من الحالات الثلاث المطلوبة لإضافة السهم ⬅️:
+                    // 1. منزلش (سعر الغلاف 0 أو نص دلالي)
+                    // 2. خلصان (السعر بعد الخصم 0)
+                    // 3. بدون خصم (سعر الغلاف يساوي سعر الخصم)
+                    let statusBadgeHtml = '';
+                    let isUnreleased = !Number.isFinite(item.originalPrice) || rawBeforeStr === '0' || rawBeforeStr === '0.0' || rawBeforeStr === '0.00' || rawBeforeStr === 'لسة منزلش' || rawBeforeStr === 'ما نزلش';
+                    let isSoldOut = item.originalPrice > 0 && (item.discountPrice === 0 || rawAfterStr === '0' || rawAfterStr === 'خلصان');
+                    let isNoDiscount = item.originalPrice > 0 && item.discountPrice > 0 && item.originalPrice === item.discountPrice;
+                    if (isUnreleased) {
+                        statusBadgeHtml = `<span class="status-badge status-unreleased">⬅️ ما نزلش</span>`;
+                    } else if (isSoldOut) {
+                        statusBadgeHtml = `<span class="status-badge status-soldout">⬅️ خلصان</span>`;
+                    } else if (isNoDiscount) {
+                        statusBadgeHtml = `<span class="status-badge status-nodiscount">⬅️ بدون خصم</span>`;
+                    }
+                    
                     card.innerHTML = `
                         <div class="book-row-top">
                             <span class="book-title">${item.title}</span>
