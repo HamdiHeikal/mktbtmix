@@ -264,6 +264,9 @@
                 let subjectVal = row['مادة'] || row['المادة'] || 'عام';
                 let titleVal = row['اسم الكتاب'] || row['الكتاب'] || `${publisherVal} ${subjectVal} ${gradeVal}`.trim();
 
+                let rawBefore = row['سعر الغلاف'];
+                let rawAfter = row['بعد الخصم'];
+
                 return {
                     id: index,
                     originalGrade: gradeVal,
@@ -272,8 +275,12 @@
                     publisher: publisherVal,
                     subject: subjectVal,
                     title: titleVal,
-                    originalPrice: parseFloat(row['سعر الغلاف']) || 0,
-                    discountPrice: parseFloat(row['بعد الخصم']) || parseFloat(row['سعر الغلاف']) || 0,
+                    rawPriceBefore: rawBefore,
+                    rawPriceAfter: rawAfter,
+                    originalPrice: parseFloat(rawBefore) || 0,
+                    discountPrice: parseFloat(rawAfter) || parseFloat(rawBefore) || 0,
+                    priceBefore: parseFloat(rawBefore),
+                    priceAfter: parseFloat(rawAfter),
                     purchasePrice: parseFloat(row['سعر الشراء']) || 0,
                     currentStock: parseFloat(row['الرصيد الحالي']) || 0,
                     qty: 0,
@@ -713,10 +720,7 @@
                     
                     let rawBeforeStr = String(item.rawPriceBefore ?? '').trim();
                     let rawAfterStr = String(item.rawPriceAfter ?? '').trim();
-                    // التحقق من الحالات الثلاث المطلوبة لإضافة السهم ⬅️:
-                    // 1. منزلش (سعر الغلاف 0 أو نص دلالي)
-                    // 2. خلصان (السعر بعد الخصم 0)
-                    // 3. بدون خصم (سعر الغلاف يساوي سعر الخصم)
+                    
                     let statusBadgeHtml = '';
                     let isUnreleased = !Number.isFinite(item.priceBefore) ||
                                        rawBeforeStr === '0' ||
