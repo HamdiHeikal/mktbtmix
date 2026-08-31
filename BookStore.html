@@ -718,22 +718,26 @@
                     // 2. خلصان (السعر بعد الخصم 0)
                     // 3. بدون خصم (سعر الغلاف يساوي سعر الخصم)
                     let statusBadgeHtml = '';
-                    let isUnreleased = !Number.isFinite(book.priceBefore) ||
+                    let rawAfterStr = String(item.rawPriceAfter ?? '').trim();
+                    
+                    let isUnreleased = !Number.isFinite(item.priceBefore) ||
                                        rawBeforeStr === '0' ||
                                        rawBeforeStr === '0.0' ||
                                        rawBeforeStr === '0.00' ||
                                        rawBeforeStr === 'لسة منزلش' ||
                                        rawBeforeStr === 'ما نزلش';
+                    
                     let isSoldOut = !isUnreleased && (
-                                       book.priceAfter === 0 ||
-                                       rawAfterStr === '0' ||
-                                       rawAfterStr === '0.0' ||
-                                       rawAfterStr === '0.00' ||
-                                       rawAfterStr === 'خلصان'
-                                    );
+                                    item.priceAfter === 0 ||
+                                    rawAfterStr === '0' ||
+                                    rawAfterStr === '0.0' ||
+                                    rawAfterStr === '0.00' ||
+                                    rawAfterStr === 'خلصان'
+                                );
+                    
                     let isNoDiscount = !isUnreleased && !isSoldOut && (
-                                       book.priceBefore === book.priceAfter
-                                    );
+                                    item.priceBefore === item.priceAfter
+                                );
                     if (isUnreleased) {
                         statusBadgeHtml = `<span class="status-badge status-unreleased">⬅️ ما نزلش</span>`;
                     } else if (isSoldOut) {
