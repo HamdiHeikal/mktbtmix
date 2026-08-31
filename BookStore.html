@@ -734,11 +734,14 @@
                             <span class="book-title">${item.title}</span>
                             <input type="checkbox" class="book-checkbox" ${item.selected ? 'checked' : ''} onchange="toggleSelect(${item.id}, this.checked)">
                         </div>
+                        ${statusBadgeHtml ? `<div style="margin-top:2px;">${statusBadgeHtml}</div>` : ''}
                         <div class="book-row-bottom">
                             <div class="book-price-info">
-                                <span class="old-price">${item.originalPrice}ج</span>
-                                <span class="separator-symbol">|</span>
-                                <span class="discount-price">${item.discountPrice}ج</span>
+                                ${isUnreleased ? `<span class="discount-price" style="color:#b45309;">غير متوفر</span>` : `
+                                    <span class="old-price">${item.originalPrice}ج</span>
+                                    <span class="separator-symbol">|</span>
+                                    <span class="discount-price">${item.discountPrice}ج</span>
+                                `}
                             </div>
                             <div class="qty-controls">
                                 <button type="button" class="qty-btn minus" onclick="updateQty(${item.id}, -1)">-</button>
