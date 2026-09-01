@@ -9,8 +9,8 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif;}
         body{background-color:#dde3eb;color:#333;direction:rtl;padding-bottom:50px;}
-        .top-header{background-color:#16a34a;color:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1);position:sticky;top:0;z-index:1000;flex-wrap:wrap;gap:10px;}
-        .top-header div{display:flex;align-items:center;gap:15px;flex-wrap:wrap;}
+        .top-header{background-color:#16a34a;color:white;padding:8px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1);position:sticky;top:0;z-index:1000;flex-wrap:wrap;gap:10px;}
+        .top-header div{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
         
         .sub-bar{background:#ccf0d8;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-bottom:15px;flex-wrap:wrap;gap:15px;}
         .scroll-arrow-btn{background:#10b981;color:white;border:none;width:40px;height:40px;border-radius:50%;font-size:20px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;box-shadow:0 2px 4px rgba(0,0,0,0.1);flex-shrink:0;}
@@ -20,8 +20,9 @@
         .delivery-label{display:flex;align-items:center;gap:8px;font-weight:bold;color:#b45309;background:#fef3c7;padding:6px 12px;border-radius:8px;border:1px solid #f59e0b;}
         .delivery-label input{width:18px;height:18px;cursor:pointer;}
         
-        .mini-invoice-preview{background:#fdf2f8;border:2px dashed #10b981;border-radius:8px;padding:6px 12px;min-width:280px;max-height:85px;overflow-y:auto;font-size:12px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center;gap:15px;}
-        .mini-invoice-items{color:#4b5563;line-height:1.3;flex:1;overflow-y:auto;max-height:65px;}
+        .mini-invoice-preview{background:#fdf2f8;border:2px dashed #10b981;border-radius:8px;padding:8px 12px;min-width:280px;max-height:115px;overflow-y:auto;font-size:12px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center;gap:15px;}
+        .mini-invoice-items{color:#1f2937;font-size:14px;font-weight:700;line-height:1.3;flex:1;overflow-y:auto;max-height:95px;}
+        .mini-invoice-items .last-added-item{background-color:#bae6fd;padding:2px 4px;border-radius:4px;}       
         .mini-total-badge{font-weight:bold;color:#047857;background:#d1fae5;padding:4px 8px;border-radius:6px;white-space:nowrap;font-size:13px;}
         
         .discount-badge-small {
@@ -214,6 +215,7 @@
         let workbookData = null;
         let excelFileName = "BookClac.xlsx";
         let isSyncing = false;
+        let lastModifiedItemId = null; // لتخزين ID آخر صنف تم تعديل عدده أو إضافته
 
         window.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -333,7 +335,12 @@
                 item.selected = isChecked;
                 if (isChecked && item.qty === 0) item.qty = 1;
                 if (!isChecked) item.qty = 0;
-                
+
+                if (isChecked) {
+                    lastModifiedItemId = id; // تحديد هذا الكتاب كآخر عنصر تم التفاعل معه
+                }
+
+                // ... باقي كود الحفاظ على مكان التمرير والـ renderStore
                 let scrollPositions = {};
                 document.querySelectorAll('.category-body').forEach((body, idx) => {
                     scrollPositions[idx] = body.scrollTop;
@@ -354,7 +361,12 @@
             if (item) {
                 item.qty = Math.max(0, item.qty + change);
                 item.selected = item.qty > 0;
-                
+
+                if (item.selected) {
+                    lastModifiedItemId = id; // حفظ المعرف لتظليله في الفاتورة المصغرة
+                }
+
+                // ... باقي كود الحفاظ على التمرير وإعادة الرسم
                 let scrollPositions = {};
                 document.querySelectorAll('.category-body').forEach((body, idx) => {
                     scrollPositions[idx] = body.scrollTop;
@@ -376,7 +388,12 @@
                 let num = parseInt(val) || 0;
                 item.qty = Math.max(0, num);
                 item.selected = item.qty > 0;
-                
+
+                if (item.selected) {
+                    lastModifiedItemId = id; // حفظ المعرف لتظليله
+                }
+
+                // ... باقي كود الحفاظ على التمرير وإعادة الرسم
                 let scrollPositions = {};
                 document.querySelectorAll('.category-body').forEach((body, idx) => {
                     scrollPositions[idx] = body.scrollTop;
@@ -435,7 +452,7 @@
 
             const selectedItems = globalExcelData.filter(i => i.selected && i.qty > 0);
 
-            selectedItems.forEach(item => {
+            selectedItems.forEach((item, idx) => {
                 let originalPrice = parsePrice(item.originalPrice);
                 let discountPrice = parsePrice(item.discountPrice);
                 let purchasePrice = parsePrice(item.purchasePrice);
@@ -448,7 +465,8 @@
                 totalFinal += activeUnitPrice * qty;
                 totalCount += qty;
 
-                miniItemsHtml += `<div>• ${bookName} (${qty})</div>`;
+                let isLastModified = (item.id === lastModifiedItemId);
+                miniItemsHtml += `<div ${isLastModified ? 'id="last-modified-invoice-item" class="last-added-item"' : ''}>• ${bookName} (${qty})</div>`;
 
                 if (!groupedBooks[grade]) {
                     groupedBooks[grade] = [];
@@ -568,6 +586,16 @@
             if (typeof prepareInvoice === 'function') {
                 prepareInvoice(totalOriginal, totalFinal);
             }
+            // اجعل الكود ينفذ بعد اكتمال رسم العناصر في الـ DOM
+            setTimeout(() => {
+                let targetElement = document.getElementById('last-modified-invoice-item');
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth', // حركة تمرير سلسة وناعمة
+                        block: 'nearest'    // يقف أمامه مباشرة داخل الصندوق الخاص بالفاتورة
+                    });
+                }
+            }, 50);
         }
 
         function printInvoice() { window.print(); }
