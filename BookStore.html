@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -349,6 +350,63 @@
         .status-soldout { color: #dc2626; background: #fee2e2; border: 1px solid #fca5a5; }
         .status-nodiscount { color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; }
         
+        /* تصميم نافذة تسجيل الدخول (BoxMessage) */
+        #loginModalOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-box {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+        .login-box h3 {
+            color: #1f2937;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .login-box input {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            width: 100%;
+            text-align: center;
+        }
+        .login-box-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 5px;
+        }
+        .login-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-size: 14px;
+        }
+        .btn-login-submit { background: #10b981; }
+        .btn-login-submit:hover { background: #059669; }
+        .btn-login-cancel { background: #6b7280; }
+        .btn-login-cancel:hover { background: #4b5563; }
     </style>
 </head>
 <body>
@@ -397,7 +455,7 @@
     </div>
 
     <div class="bottom-actions">
-        <button class="btn-action" style="background:#059669;" onclick="loadExcelFile()">📁 تحميل ملف</button>
+        <button id="loadExcelBtn" class="btn-action" style="background:#059669; display:none;" onclick="loadExcelFile()">📁 تحميل ملف</button>
         <input type="file" id="excel-file-input" style="display: none;" accept=".xlsx, .xls">
         
         <button class="btn-action" style="background:#4b5563;" onclick="window.location.reload()">🔄 إعادة ضبط</button>
@@ -409,11 +467,25 @@
         </select>
         
         <label style="font-weight: bold; background: #fff; padding: 6px 10px; border-radius: 8px; border: 1px solid #d1d5db; display: flex; align-items: center; gap: 5px; cursor: pointer;">
-            <input type="checkbox" id="priceTypeCheckbox" onchange="calculateTotals()" style="width:16px;height:16px;"> شراء
+            <input type="checkbox" id="priceTypeCheckbox" onchange="handlePriceTypeChange(this)" style="width:16px;height:16px;"> شراء
         </label>
 
-        <button class="btn-action btn-print" onclick="printInvoice()">🖨️ طباعة فاتورة</button>
-        <button class="btn-action btn-save-excel" onclick="addNewPurchaseInvoiceColumn()">📊 حفظ بالأكسيل</button>
+        <button id="PrntBtn" class="btn-action btn-print" style="background:#047857; display:none;" onclick="printInvoice()">🖨️ طباعة فاتورة</button>
+        <button id="saveExcelBtn" class="btn-action btn-save-excel" style="display:none;" onclick="addNewPurchaseInvoiceColumn()">📊 حفظ بالأكسيل</button>
+    </div>
+
+    <!-- نافذة تسجيل الدخول (BoxMessage) -->
+    <div id="loginModalOverlay">
+        <div class="login-box">
+            <h3>تسجيل دخول قسم الشراء</h3>
+            <p style="font-size:13px; color:#6b7280;">يرجى إدخال اسم المستخدم وكلمة المرور</p>
+            <input type="text" id="loginUsername" placeholder="اسم المستخدم">
+            <input type="password" id="loginPassword" placeholder="كلمة المرور">
+            <div class="login-box-btns">
+                <button class="login-btn btn-login-submit" onclick="submitLogin()">دخول</button>
+                <button class="login-btn btn-login-cancel" onclick="cancelLogin()">إلغاء</button>
+            </div>
+        </div>
     </div>
 
     <div class="whatsapp-preview-box">
@@ -463,6 +535,7 @@
         let excelFileName = "BookClac.xlsx";
         let isSyncing = false;
         let lastModifiedItemId = null;
+        let isAuthorizedForPurchase = false;
 
         window.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -479,6 +552,43 @@
                 `;
             }
         });
+
+        function handlePriceTypeChange(checkbox) {
+            if (checkbox.checked && !isAuthorizedForPurchase) {
+                checkbox.checked = false;
+                document.getElementById('loginModalOverlay').style.display = 'flex';
+                document.getElementById('loginUsername').value = '';
+                document.getElementById('loginPassword').value = '';
+                document.getElementById('loginUsername').focus();
+                return;
+            }
+            calculateTotals();
+        }
+
+        function submitLogin() {
+            let user = document.getElementById('loginUsername').value.trim();
+            let pass = document.getElementById('loginPassword').value.trim();
+
+            if (user === 'admin' && pass === 'admin') {
+                isAuthorizedForPurchase = true;
+                document.getElementById('priceTypeCheckbox').checked = true;
+                document.getElementById('loginModalOverlay').style.display = 'none';
+                
+                // إظهار الأزرار المطلوبة
+                document.getElementById('loadExcelBtn').style.display = 'flex';
+                document.getElementById('saveExcelBtn').style.display = 'flex';
+                document.getElementById('PrntBtn').style.display = 'flex';
+
+                calculateTotals();
+            } else {
+                alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+            }
+        }
+
+        function cancelLogin() {
+            document.getElementById('priceTypeCheckbox').checked = false;
+            document.getElementById('loginModalOverlay').style.display = 'none';
+        }
 
         function loadExcelFile() { document.getElementById('excel-file-input').click(); }
 
