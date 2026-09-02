@@ -122,7 +122,214 @@
         .whatsapp-textarea{width:100%;min-height:120px;max-height:none;padding:12px;border:1px solid #d1d5db;border-radius:8px;resize:vertical;font-size:14px;outline:none;background:#fdfdfd;overflow-y:hidden;}
         
         .print-area{display:none;}
-        @media print{body *{visibility:hidden;}.print-area,.print-area *{visibility:visible;}.print-area{display:block;position:absolute;top:0;right:0;width:100%;background:white;padding:20px;}}
+
+
+        @media print {
+
+                @page {
+                    size: A5 portrait;
+                    margin: 5mm;
+                }
+
+                html,
+                body {
+                    width: 100% !important;
+                    height: auto !important;
+                    min-height: 0 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    background: #fff !important;
+                }
+
+                /* إخفاء كل عناصر الصفحة العادية */
+                body > * {
+                    display: none !important;
+                }
+
+                /* إظهار الفاتورة فقط عند الطباعة */
+                #invoiceArea {
+                    display: block !important;
+                    position: static !important;
+                    width: 100% !important;
+                    height: auto !important;
+                    min-height: 0 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    background: #fff !important;
+                    color: #111 !important;
+                }
+
+                #invoiceArea * {
+                    display: revert !important;
+                }
+
+                /* تصميم صفحة الفاتورة */
+                .invoice-page {
+                    display: block !important;
+                    width: 100% !important;
+                    height: auto !important;
+                    min-height: 0 !important;
+                    max-height: 190mm !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    direction: rtl;
+                    font-family: 'Cairo', sans-serif;
+                    font-size: 16px !important; 
+                    font-weight: 800 !important;
+                    box-sizing: border-box;
+                    overflow: hidden !important;
+                    page-break-before: avoid !important;
+                    page-break-after: avoid !important;
+                    page-break-inside: avoid !important;
+                    break-before: avoid !important;
+                    break-after: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                /* اللوجو داخل الفاتورة */
+                .invoice-logo {
+                    width: 65px !important;
+                    height: auto !important;
+                    display: block !important;
+                    margin: 0 auto 2px auto !important;
+                }
+
+                /* اسم المكتبة */
+                .invoice-store {
+                    text-align: center !important;
+                    font-size: 10px !important;
+                    font-weight: 800 !important;
+                    line-height: 1.2 !important;
+                    margin-bottom: 2px !important;
+                }
+
+                /* التاريخ */
+                .invoice-date {
+                    text-align: center !important;
+                    font-size: 7px !important;
+                    color: #444 !important;
+                    margin-bottom: 3px !important;
+                }
+
+                /* عنوان الفاتورة */
+                .invoice-title {
+                    text-align: center !important;
+                    font-size: 11px !important;
+                    font-weight: 800 !important;
+                    border-top: 1px solid #222 !important;
+                    border-bottom: 1px solid #222 !important;
+                    padding: 2px 0 !important;
+                    margin-bottom: 3px !important;
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                /* جدول الكتب */
+                .invoice-no-break {
+                    display: block !important;
+                    width: 100% !important;
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                .invoice-items {
+                    width: 100% !important;
+                    border-collapse: collapse !important;
+                    border-spacing: 0 !important;
+                    font-size: 7px !important;
+                    margin: 0 0 3px 0 !important;
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                .invoice-items thead {
+                    display: table-header-group !important;
+                }
+
+                .invoice-items tbody {
+                    display: table-row-group !important;
+                }
+
+                .invoice-items tr {
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                .invoice-items th {
+                    background: #eeeeee !important;
+                    font-weight: 800 !important;
+                    border: 1px solid #777 !important;
+                    padding: 2px 2px !important;
+                    line-height: 1.1 !important;
+                    height: auto !important;
+                }
+
+                .invoice-items td {
+                    border: 1px solid #aaa !important;
+                    padding: 1px 2px !important;
+                    vertical-align: middle !important;
+                    line-height: 1.15 !important;
+                    height: auto !important;
+                }
+
+                .invoice-grade {
+                    background: #f3f3f3 !important;
+                    font-weight: 800 !important;
+                }
+
+                /* الإجمالي */
+                .invoice-total {
+                    border: 1px solid #555 !important;
+                    padding: 2px 5px !important;
+                    font-size: 8px !important;
+                    font-weight: 800 !important;
+                    line-height: 1.25 !important;
+                    margin-bottom: 3px !important;
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                /* التوصيل */
+                .invoice-delivery {
+                    border: 1px solid #d97706 !important;
+                    padding: 2px 5px !important;
+                    font-size: 7px !important;
+                    line-height: 1.25 !important;
+                    margin-bottom: 3px !important;
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                /* الفوتر */
+                .invoice-footer {
+                    text-align: center !important;
+                    font-size: 7px !important;
+                    line-height: 1.2 !important;
+                    border-top: 1px dashed #777 !important;
+                    padding-top: 2px !important;
+                    margin-top: 2px !important;
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+
+                /* فئات التصغير التلقائي حسب عدد الكتب */
+                .invoice-page.invoice-small {
+                    zoom: 0.90 !important;
+                }
+                
+                .invoice-page.invoice-smaller {
+                    zoom: 0.80 !important;
+                }
+                
+                .invoice-page.invoice-tiny {
+                    zoom: 0.70 !important;
+                }
+                
+                .invoice-page.invoice-ultra-tiny {
+                    zoom: 0.60 !important;
+                }
+            }
+
         .invoice-table{width:100%;border-collapse:collapse;margin-top:20px;margin-bottom:20px;}
         .invoice-table th,.invoice-table td{border:1px solid #333;padding:10px;text-align:center;font-size:14px;}
         .invoice-table th{background-color:#f3f4f6;}
@@ -218,22 +425,36 @@
         <textarea id="whatsappTextarea" class="whatsapp-textarea" readonly oninput="autoResizeTextarea(this)">خصم 15%</textarea>
     </div>
 
-    <div id="printArea" class="print-area">
-        <div class="invoice-header">فاتورة طلب كتب خارجية</div>
-        <div id="printClientInfo" style="margin-bottom:10px;font-weight:bold;font-size:14px;"></div>
-        <table class="invoice-table">
-            <thead>
-                <tr>
-                    <th>الكتاب</th>
-                    <th>الصف</th>
-                    <th>العدد</th>
-                    <th>السعر</th>
-                    <th>الإجمالي</th>
-                </tr>
-            </thead>
-            <tbody id="printTableBody"></tbody>
-        </table>
-        <div class="invoice-totals" id="printTotalsBox">خصم 15%</div>
+    <div id="invoiceArea">
+        <div class="invoice-page">
+            <img src="logo.png" class="invoice-logo">
+            <div class="invoice-store" id="invoiceStore">
+                مكتبة مكس - ش الأوبرج<br>01093393975
+            </div>
+            <div class="invoice-date" id="invoiceDate"></div>
+            <div class="invoice-title">فاتورة طلب كتب خارجية</div>
+            
+            <div class="invoice-no-break">
+                <table class="invoice-items">
+                    <thead>
+                        <tr>
+                            <th style="width:45%;">اسم الصنف</th>
+                            <th style="width:15%;">عدد القطع</th>
+                            <th style="width:20%;">سعر الغلاف</th>
+                            <th style="width:20%;">السعر بالخصم</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceItemsBody"></tbody>
+                </table>
+            </div>
+
+            <div class="invoice-total" id="invoiceTotals"></div>
+            <div class="invoice-delivery" id="invoiceDelivery" style="display:none;"></div>
+
+            <div class="invoice-footer">
+                📚 مكتبة مكس_MKTBTmix 📚<br>ش الأوبرج - 01093393975
+            </div>
+        </div>
     </div>
 
     <script>
@@ -241,7 +462,7 @@
         let workbookData = null;
         let excelFileName = "BookClac.xlsx";
         let isSyncing = false;
-        let lastModifiedItemId = null; // لتخزين ID آخر صنف تم تعديل عدده أو إضافته
+        let lastModifiedItemId = null;
 
         window.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -363,10 +584,9 @@
                 if (!isChecked) item.qty = 0;
 
                 if (isChecked) {
-                    lastModifiedItemId = id; // تحديد هذا الكتاب كآخر عنصر تم التفاعل معه
+                    lastModifiedItemId = id;
                 }
 
-                // ... باقي كود الحفاظ على مكان التمرير والـ renderStore
                 let scrollPositions = {};
                 document.querySelectorAll('.category-body').forEach((body, idx) => {
                     scrollPositions[idx] = body.scrollTop;
@@ -389,10 +609,9 @@
                 item.selected = item.qty > 0;
 
                 if (item.selected) {
-                    lastModifiedItemId = id; // حفظ المعرف لتظليله في الفاتورة المصغرة
+                    lastModifiedItemId = id;
                 }
 
-                // ... باقي كود الحفاظ على التمرير وإعادة الرسم
                 let scrollPositions = {};
                 document.querySelectorAll('.category-body').forEach((body, idx) => {
                     scrollPositions[idx] = body.scrollTop;
@@ -416,10 +635,9 @@
                 item.selected = item.qty > 0;
 
                 if (item.selected) {
-                    lastModifiedItemId = id; // حفظ المعرف لتظليله
+                    lastModifiedItemId = id;
                 }
 
-                // ... باقي كود الحفاظ على التمرير وإعادة الرسم
                 let scrollPositions = {};
                 document.querySelectorAll('.category-body').forEach((body, idx) => {
                     scrollPositions[idx] = body.scrollTop;
@@ -445,6 +663,10 @@
             return isNaN(num) ? 0 : num;
         }
 
+        function formatCurrency(val) {
+            return Number(val).toFixed(2);
+        }
+
         function normalizePhone(phone) {
             let cleaned = phone.replace(/[^\d+]/g, '');
             if (cleaned.startsWith('01')) {
@@ -457,18 +679,160 @@
             return cleaned;
         }
 
+        const printInvoiceBtn = document.getElementById('printInvoiceBtn');
+
+        if (printInvoiceBtn) {
+            printInvoiceBtn.onclick = function () {
+                const selectedBooks = getSelectedBooks();
+                if (selectedBooks.length === 0) {
+                    alert("من فضلك اختر كتابًا واحدًا على الأقل قبل طباعة الفاتورة.");
+                    return;
+                }
+                updateTotals();
+                setTimeout(function () {
+                    window.print();
+                }, 100);
+            };
+        }
+
+        function getSelectedBooks() {
+            return globalExcelData.filter(i => i.selected && i.qty > 0).map(item => {
+                let baseCompositeName = `${item.publisher} - ${item.subject} - ${item.grade}`.trim();
+                
+                let rawBeforeStr = String(item.rawPriceBefore ?? '').trim();
+                let rawAfterStr = String(item.rawPriceAfter ?? '').trim();
+                
+                let isUnreleased = !Number.isFinite(item.priceBefore) ||
+                                   rawBeforeStr === '0' ||
+                                   rawBeforeStr === '0.0' ||
+                                   rawBeforeStr === '0.00' ||
+                                   rawBeforeStr === 'لسة منزلش' ||
+                                   rawBeforeStr === 'ما نزلش';
+                
+                let isNoDiscount = item.priceBefore === item.priceAfter;
+                
+                let isSoldOut = item.priceAfter === 0 ||
+                                rawAfterStr === '0' ||
+                                rawAfterStr === '0.0' ||
+                                rawAfterStr === '0.00' ||
+                                rawAfterStr === 'خلصان';
+
+                let statusSuffix = "";
+                if (isUnreleased) {
+                    statusSuffix = " - منزلش";
+                } else if (isNoDiscount) {
+                    statusSuffix = " - بدون خصم";
+                } else if (isSoldOut) {
+                    statusSuffix = " - خلصان من السوق وبدون خصم";
+                }
+
+                let finalCompositeName = baseCompositeName + statusSuffix;
+
+                return {
+                    name: finalCompositeName,
+                    grade: item.grade2 || item.grade,
+                    qty: item.qty,
+                    priceBefore: item.originalPrice,
+                    priceAfter: item.discountPrice
+                };
+            });
+        }
+
+        function prepareInvoice(totalBefore, totalAfter) {
+            const invoicePage = document.querySelector('#invoiceArea .invoice-page');
+        
+            if (invoicePage) {
+                invoicePage.classList.remove(
+                    'invoice-small',
+                    'invoice-smaller',
+                    'invoice-tiny',
+                    'invoice-ultra-tiny'
+                );
+            }
+
+            const body = document.getElementById('invoiceItemsBody');
+            const totals = document.getElementById('invoiceTotals');
+            const delivery = document.getElementById('invoiceDelivery');
+            const dateEl = document.getElementById('invoiceDate');
+
+            body.innerHTML = "";
+            const selectedBooks = getSelectedBooks();
+
+            const now = new Date();
+            const date = now.toLocaleDateString('ar-EG');
+            const time = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            dateEl.textContent = "التاريخ: " + date + " - " + time;
+
+            selectedBooks.forEach(book => {
+                const tr = document.createElement('tr');
+
+                const tdName = document.createElement('td');
+                tdName.textContent = book.name;
+
+                const tdQty = document.createElement('td');
+                tdQty.textContent = book.qty;
+
+                const tdPriceBefore = document.createElement('td');
+                tdPriceBefore.textContent = Number.isFinite(book.priceBefore) ? formatCurrency(book.priceBefore) + " ج" : "-";
+
+                const tdPriceAfter = document.createElement('td');
+                tdPriceAfter.textContent = Number.isFinite(book.priceAfter) ? formatCurrency(book.priceAfter) + " ج" : "-";
+
+                tr.appendChild(tdName);
+                tr.appendChild(tdQty);
+                tr.appendChild(tdPriceBefore);
+                tr.appendChild(tdPriceAfter);
+                body.appendChild(tr);
+            });
+
+            if (invoicePage) {
+                const bookCount = selectedBooks.length;
+                
+                if (bookCount <= 10) {
+                } else if (bookCount <= 15) {
+                    invoicePage.classList.add('invoice-small');
+                } else if (bookCount <= 20) {
+                    invoicePage.classList.add('invoice-smaller');
+                } else if (bookCount <= 28) {
+                    invoicePage.classList.add('invoice-tiny');
+                } else {
+                    invoicePage.classList.add('invoice-ultra-tiny');
+                }
+            }
+
+            totals.innerHTML = "إجمالي السعر قبل الخصم: " + formatCurrency(totalBefore) + " جنيه<br>" +
+                               "إجمالي السعر بعد الخصم: " + formatCurrency(totalAfter) + " جنيه";
+
+            const deliveryCheckbox = document.getElementById('deliveryCheckbox');
+            const clientAddress = document.getElementById('clientAddressInput');
+            const clientPhone = document.getElementById('clientPhoneInput');
+
+            if (deliveryCheckbox && deliveryCheckbox.checked) {
+                delivery.style.display = 'block';
+                delivery.innerHTML = "<strong>🚚 طلب توصيل للمنزل</strong><br>" +
+                                     "📍 العنوان: " + (clientAddress && clientAddress.value.trim() ? escapeHtml(clientAddress.value.trim()) : "لم يكتب") + "<br>" +
+                                     "📞 التليفون: " + (clientPhone && clientPhone.value.trim() ? escapeHtml(clientPhone.value.trim()) : "لم يكتب");
+            } else {
+                delivery.style.display = 'none';
+                delivery.innerHTML = "";
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
         function calculateTotals() {
             const usePurchasePrice = document.getElementById('priceTypeCheckbox').checked;
             const discountBadgeEl = document.getElementById('mini-discount-display');
             const miniItemsContainer = document.getElementById('mini-invoice-items');
             const textarea = document.getElementById('whatsappTextarea');
-            const printTotalsBox = document.getElementById('printTotalsBox');
             const clientNameInput = document.getElementById('clientNameInput');
             const clientAddressInput = document.getElementById('clientAddressInput');
             const clientPhoneInput = document.getElementById('clientPhoneInput');
             const deliveryCheckbox = document.getElementById('deliveryCheckbox');
-            const whatsappSendBtn = document.querySelector('.btn-whatsapp');
-            const friendPhoneInput = document.getElementById('whatsappPhone');
 
             let totalOriginal = 0;
             let totalFinal = 0;
@@ -521,12 +885,7 @@
                 textarea.value = "خصم 15%";
                 autoResizeTextarea(textarea);
 
-                printTotalsBox.style.cssText = "font-size: 16px; font-weight: 800; color: #047857;";
-                printTotalsBox.innerHTML = "خصم 15%";
-
                 document.getElementById('mini-total-count').innerText = "0 صنف";
-                document.getElementById('printTableBody').innerHTML = '';
-                document.getElementById('printClientInfo').innerHTML = '';
                 return;
             }
 
@@ -539,7 +898,6 @@
 
             const clientName = clientNameInput ? clientNameInput.value.trim() : '';
             const clientAddress = clientAddressInput ? clientAddressInput.value.trim() : '';
-            const clientPhone = clientPhoneInput ? clientPhoneInput.value.trim() : '';
 
             let messageLines = ["📚 *فاتورة طلب كتب خارجية (مكتبة مكس)*:\n"];
             if (clientName) messageLines.push(`👤 اسم العميل: ${clientName}`);
@@ -550,9 +908,7 @@
             if (clientName) plainTextLines.push(`👤 اسم العميل: ${clientName}`);
             if (clientAddress) plainTextLines.push(`📍 العنوان: ${clientAddress}`);
 
-            let hasItems = false;
             for (const grade in groupedBooks) {
-                hasItems = true;
                 messageLines.push(`%0A📌 *${grade}*:%0A`);
                 plainTextLines.push(`\n📌 ${grade}:`);
 
@@ -571,9 +927,10 @@
                 messageLines.push(`%0A%0A🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب`);
                 plainTextLines.push(`\n\n🚚 رسوم التوصيل: من 30 إلى 35 جنيه حسب ما يحدد المندوب`);
                 
-                if (clientAddress || clientPhone) {
-                    messageLines.push(`%0A📍 العنوان: ${clientAddress || "لم يكتب"}%0A📞 التليفون: ${clientPhone || "لم يكتب"}`);
-                    plainTextLines.push(`\n📍 العنوان: ${clientAddress || "لم يكتب"}\n📞 التليفون: ${clientPhone || "لم يكتب"}`);
+                if (clientAddress || (clientPhoneInput && clientPhoneInput.value.trim())) {
+                    let cPhone = clientPhoneInput ? clientPhoneInput.value.trim() : '';
+                    messageLines.push(`%0A📍 العنوان: ${clientAddress || "لم يكتب"}%0A📞 التليفون: ${cPhone || "لم يكتب"}`);
+                    plainTextLines.push(`\n📍 العنوان: ${clientAddress || "لم يكتب"}\n📞 التليفون: ${cPhone || "لم يكتب"}`);
                 }
             }
 
@@ -586,39 +943,15 @@
             textarea.value = plainTextLines.join('\n');
             autoResizeTextarea(textarea);
 
-            const printBody = document.getElementById('printTableBody');
-            if (printBody) {
-                printBody.innerHTML = '';
-                const globalSelectedItems = [];
-                for (const grade in groupedBooks) {
-                    groupedBooks[grade].forEach(b => globalSelectedItems.push({ ...b, grade }));
-                }
-                globalSelectedItems.forEach(i => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${i.name}</td><td>${i.grade}</td><td>${i.qty}</td><td>${i.price} ج</td><td>${(i.price * i.qty).toFixed(2)} ج</td>`;
-                    printBody.appendChild(tr);
-                });
-            }
-
-            const printClientInfo = document.getElementById('printClientInfo');
-            if (printClientInfo) {
-                printClientInfo.innerHTML = (clientName || clientAddress) ? `اسم العميل: ${clientName} | العنوان: ${clientAddress}` : '';
-            }
-
-            if (printTotalsBox) {
-                printTotalsBox.innerHTML = `الإجمالي: ${totalOriginal.toFixed(2)} ج<br>خصم: ${totalDiscountAmount.toFixed(2)} ج<br><span style="font-size: 15px; font-weight: 800; color: #b91c1c;">المطلوب: ${totalFinal.toFixed(2)} ج</span> ${deliveryAdded ? '<br>(رسوم التوصيل 30-35ج حسب المندوب)' : ''}`;
-            }
-
             if (typeof prepareInvoice === 'function') {
                 prepareInvoice(totalOriginal, totalFinal);
             }
-            // اجعل الكود ينفذ بعد اكتمال رسم العناصر في الـ DOM
             setTimeout(() => {
                 let targetElement = document.getElementById('last-modified-invoice-item');
                 if (targetElement) {
                     targetElement.scrollIntoView({
-                        behavior: 'smooth', // حركة تمرير سلسة وناعمة
-                        block: 'nearest'    // يقف أمامه مباشرة داخل الصندوق الخاص بالفاتورة
+                        behavior: 'smooth',
+                        block: 'nearest'
                     });
                 }
             }, 50);
@@ -690,18 +1023,6 @@
             alert(`تم إضافة العمود "${newColumnName}" بنجاح وتحديث ملف الأكسيل مع والمحافظة على المعادلات والجداول!`);
         }
 
-        function cleanPhoneNumber(phone) {
-            let cleaned = phone.replace(/[^\d+]/g, '');
-            if (cleaned.startsWith('01')) {
-                cleaned = '+2' + cleaned;
-            } else if (cleaned.startsWith('1') && cleaned.length === 10) {
-                cleaned = '+20' + cleaned;
-            } else if (!cleaned.startsWith('+') && cleaned.length > 0) {
-                cleaned = '+2' + cleaned;
-            }
-            return cleaned;
-        }
-
         function sendLibraryWhatsApp() {
             let phone = "+201093393975";
             let text = encodeURIComponent(document.getElementById('whatsappTextarea').value);
@@ -714,7 +1035,7 @@
                 alert("يرجى كتابة رقم هاتف صحيح في الخانة المخصصة أولاً!"); 
                 return; 
             }
-            let phone = cleanPhoneNumber(rawPhone);
+            let phone = normalizePhone(rawPhone);
             let text = encodeURIComponent(document.getElementById('whatsappTextarea').value);
             window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
         }
@@ -789,8 +1110,7 @@
                                     rawAfterStr === '0' ||
                                     rawAfterStr === '0.0' ||
                                     rawAfterStr === '0.00' ||
-                                    rawAfterStr === 'خلصان'
-                                ;
+                                    rawAfterStr === 'خلصان';
                     
                     if (isUnreleased) {
                         statusBadgeHtml = `<span class="status-badge status-unreleased">⬅️ ما نزلش</span>`;
@@ -813,7 +1133,7 @@
                                   isSoldOut ? 
                                       ` <span class="discount-price">${item.originalPrice}ج</span>
                                         <span class="separator-symbol">|</span>
-                                        <span class="discount-price" style="color:#dc2626dc2626;">بالحجز</span>` :  
+                                        <span class="discount-price" style="color:#dc2626;">بالحجز</span>` :  
                                      ` <span class="old-price">${item.originalPrice}ج</span>
                                         <span class="separator-symbol">|</span>
                                         <span class="discount-price">${item.discountPrice}ج</span>`
