@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -6,6 +7,8 @@
     <title>حاسبة خصم الكتب بالـ 15%</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif;}
         body{background-color:#dde3eb;color:#333;direction:rtl;padding-bottom:50px;}
@@ -371,6 +374,7 @@
         <label style="font-weight: bold; background: #fff; padding: 6px 10px; border-radius: 8px; border: 1px solid #d1d5db; display: flex; align-items: center; gap: 5px; cursor: pointer;">
             <input type="checkbox" id="priceTypeCheckbox" onchange="handlePriceTypeChange(this)" style="width:16px;height:16px;"> شراء
         </label>
+        <input type="number" id="extraDiscountInput" min="0" step="0.01" placeholder="خصم إضافي %" oninput="calculateTotals()" style="display:none; width:105px; padding:6px 8px; border:1px solid #d1d5db; border-radius:8px; outline:none; font-weight:bold; text-align:center;">
 
         <button id="PrntBtn" class="btn-action btn-print" style="background:#047857; display:none;" onclick="printInvoice()">🖨️ طباعة فاتورة</button>
         <button id="saveExcelBtn" class="btn-action btn-save-excel" style="display:none;" onclick="addNewPurchaseInvoiceColumn()">📊 حفظ بالأكسيل</button>
@@ -433,6 +437,9 @@
     <script>
         let globalExcelData = [];
         let workbookData = null;
+        let excelJSWorkbook = null;
+        let excelJSWorksheet = null;
+        let originalExcelData = null;
         let excelFileName = "BookClac.xlsx";
         let isSyncing = false;
         let lastModifiedItemId = null;
@@ -457,12 +464,14 @@
         function handlePriceTypeChange(checkbox) {
             if (checkbox.checked && !isAuthorizedForPurchase) {
                 checkbox.checked = false;
+                document.getElementById('extraDiscountInput').style.display = 'none';
                 document.getElementById('loginModalOverlay').style.display = 'flex';
                 document.getElementById('loginUsername').value = '';
                 document.getElementById('loginPassword').value = '';
                 document.getElementById('loginUsername').focus();
                 return;
             }
+            document.getElementById('extraDiscountInput').style.display = checkbox.checked ? 'block' : 'none';
             calculateTotals();
         }
 
@@ -473,6 +482,7 @@
             if (user === 'admin' && pass === 'admin') {
                 isAuthorizedForPurchase = true;
                 document.getElementById('priceTypeCheckbox').checked = true;
+                document.getElementById('extraDiscountInput').style.display = 'block';
                 document.getElementById('loginModalOverlay').style.display = 'none';
                 
                 document.getElementById('loadExcelBtn').style.display = 'flex';
@@ -487,6 +497,7 @@
 
         function cancelLogin() {
             document.getElementById('priceTypeCheckbox').checked = false;
+            document.getElementById('extraDiscountInput').style.display = 'none';
             document.getElementById('loginModalOverlay').style.display = 'none';
         }
 
@@ -511,11 +522,16 @@
             reader.readAsArrayBuffer(file);
         });
 
-        function parseExcelData(data) {
+        async function parseExcelData(data) {
+            originalExcelData = new Uint8Array(data.slice(0));
             workbookData = XLSX.read(data, {type: 'array'});
             let firstSheetName = workbookData.SheetNames[0];
             let worksheet = workbookData.Sheets[firstSheetName];
             globalExcelData = XLSX.utils.sheet_to_json(worksheet);
+
+            excelJSWorkbook = new ExcelJS.Workbook();
+            await excelJSWorkbook.xlsx.load(data);
+            excelJSWorksheet = excelJSWorkbook.worksheets[0];
             
             globalExcelData = globalExcelData.map((row, index) => {
                 let gradeVal = row['الصف الدراسي'] || row['الصف'] || 'أخرى';
@@ -690,6 +706,9 @@
         }
 
         function getSelectedBooks() {
+            const usePurchasePrice = document.getElementById('priceTypeCheckbox').checked;
+            const extraDiscount = usePurchasePrice ? parsePrice(document.getElementById('extraDiscountInput').value) : 0;
+
             return globalExcelData.filter(i => i.selected && i.qty > 0).map(item => {
                 let baseCompositeName = `${item.publisher} - ${item.subject} - ${item.grade}`.trim();
                 
@@ -715,12 +734,15 @@
                     statusSuffix = " - خلصان من السوق وبدون خصم";
                 }
 
+                let activeBasePrice = usePurchasePrice ? item.purchasePrice : item.discountPrice;
+                let activePriceAfter = parsePrice(activeBasePrice) * (1 - (extraDiscount / 100));
+
                 return {
                     name: baseCompositeName + statusSuffix,
                     grade: item.grade2 || item.grade,
                     qty: item.qty,
                     priceBefore: item.originalPrice,
-                    priceAfter: item.discountPrice
+                    priceAfter: activePriceAfter
                 };
             });
         }
@@ -809,7 +831,9 @@
                 let originalPrice = parsePrice(item.originalPrice);
                 let discountPrice = parsePrice(item.discountPrice);
                 let purchasePrice = parsePrice(item.purchasePrice);
-                let activeUnitPrice = usePurchasePrice ? purchasePrice : discountPrice;
+                let extraDiscount = usePurchasePrice ? parsePrice(document.getElementById('extraDiscountInput').value) : 0;
+                let activeBasePrice = usePurchasePrice ? purchasePrice : discountPrice;
+                let activeUnitPrice = activeBasePrice * (1 - (extraDiscount / 100));
                 let grade = item.grade2 || "أخرى";
                 let bookName = item.title;
                 let qty = item.qty;
@@ -899,49 +923,289 @@
 
         function printInvoice() { window.print(); }
 
-        function addNewPurchaseInvoiceColumn() {
-            if (!workbookData) { alert("يرجى تحميل ملف Excel أولاً!"); return; }
-            
-            let firstSheetName = workbookData.SheetNames[0];
-            let worksheet = workbookData.Sheets[firstSheetName];
-            
-            let range = XLSX.utils.decode_range(worksheet['!ref']);
-            let maxCol = range.e.c;
-            let maxRow = range.e.r;
-
-            let maxNum = 0;
-            for (let C = range.s.c; C <= maxCol; ++C) {
-                let cell = worksheet[XLSX.utils.encode_cell({r: 0, c: C})];
-                if (cell && cell.v && typeof cell.v === 'string' && cell.v.includes('فاتورة شراء')) {
-                    let parts = cell.v.split('-');
-                    let num = parseInt(parts[parts.length - 1]) || parseInt(cell.v.replace(/\D/g, '')) || 0;
-                    if (num > maxNum) maxNum = num;
-                }
+        async function addNewPurchaseInvoiceColumn() {
+            if (!originalExcelData) {
+                alert("يرجى تحميل ملف Excel أولاً!");
+                return;
             }
 
-            let newColumnName = `فاتورة شراء - ${maxNum + 1}`;
-            let newColIndex = maxCol + 1;
+            try {
+                if (typeof JSZip === 'undefined') {
+                    throw new Error('JSZip library is not loaded.');
+                }
 
-            worksheet[XLSX.utils.encode_cell({r: 0, c: newColIndex})] = { t: 's', v: newColumnName };
+                let zip = await JSZip.loadAsync(originalExcelData);
+                let sheetPath = 'xl/worksheets/sheet1.xml';
+                let sheetFile = zip.file(sheetPath);
 
-            for (let R = 1; R <= maxRow; ++R) {
-                let rowTitle = worksheet[XLSX.utils.encode_cell({r: R, c: 1})] ? worksheet[XLSX.utils.encode_cell({r: R, c: 1})].v : '';
-                let rowPublisher = worksheet[XLSX.utils.encode_cell({r: R, c: 4})] ? worksheet[XLSX.utils.encode_cell({r: R, c: 4})].v : '';
+                if (!sheetFile) {
+                    alert('⚠️ لم يتم العثور على ورقة Excel الأساسية، لذلك لم يتم حفظ الملف.');
+                    return;
+                }
 
-                let matchingItem = globalExcelData.find(item => 
-                    (item.title && rowTitle && rowTitle.toString().trim() === item.title.toString().trim()) || 
-                    (item.publisher && rowPublisher && rowPublisher.toString().trim() === item.publisher.toString().trim())
+                let sheetXml = await sheetFile.async('string');
+                let tableName = 'الجدول1';
+                let tablePath = null;
+                let tableFile = null;
+                let tableCandidates = [];
+
+                zip.forEach((relativePath, file) => {
+                    if (/^xl\/tables\/table\d+\.xml$/i.test(relativePath)) {
+                        tableCandidates.push({ path: relativePath, file: file });
+                    }
+                });
+
+                for (const candidate of tableCandidates) {
+                    let candidateXml = await candidate.file.async('string');
+                    let nameMatch = candidateXml.match(/<table\b[^>]*\bname="([^"]*)"/i);
+                    if (nameMatch && nameMatch[1] === tableName) {
+                        tablePath = candidate.path;
+                        tableFile = candidate.file;
+                        break;
+                    }
+                }
+
+                if (!tableFile) {
+                    alert('⚠️ لم يتم العثور على تعريف الجدول "الجدول1" داخل ملف Excel، لذلك لم يتم حفظ الملف.');
+                    return;
+                }
+
+                let tableXml = await tableFile.async('string');
+                let tableRefMatch = tableXml.match(/<table\b[^>]*\bref="([A-Z]+)(\d+):([A-Z]+)(\d+)"/i);
+                if (!tableRefMatch) {
+                    alert('⚠️ تعريف الجدول "الجدول1" غير مكتمل، لذلك لم يتم حفظ الملف.');
+                    return;
+                }
+
+                let startColLetters = tableRefMatch[1].toUpperCase();
+                let startRow = parseInt(tableRefMatch[2], 10);
+                let endColLetters = tableRefMatch[3].toUpperCase();
+                let endRow = parseInt(tableRefMatch[4], 10);
+
+                function excelColumnNumber(colLetters) {
+                    let result = 0;
+                    for (let i = 0; i < colLetters.length; i++) {
+                        result = result * 26 + (colLetters.charCodeAt(i) - 64);
+                    }
+                    return result;
+                }
+
+                function excelColumnLetters(number) {
+                    let result = '';
+                    while (number > 0) {
+                        let remainder = (number - 1) % 26;
+                        result = String.fromCharCode(65 + remainder) + result;
+                        number = Math.floor((number - 1) / 26);
+                    }
+                    return result;
+                }
+
+                let startCol = excelColumnNumber(startColLetters);
+                let endCol = excelColumnNumber(endColLetters);
+
+                if (!startCol || !startRow || !endCol || !endRow || endCol < startCol || endRow < startRow) {
+                    alert('⚠️ تعريف الجدول "الجدول1" غير مكتمل، لذلك لم يتم حفظ الملف.');
+                    return;
+                }
+
+                let expectedHeaderRow = startRow;
+                let dataRowStart = startRow + 1;
+                let dataRowEnd = endRow;
+                let totalsRowCountMatch = tableXml.match(/\btotalsRowCount="(\d+)"/i);
+                let totalsRowCount = totalsRowCountMatch ? parseInt(totalsRowCountMatch[1], 10) : 0;
+                if (totalsRowCount > 0) dataRowEnd = endRow - totalsRowCount;
+
+                // نقرأ أعمدة الجدول من تعريفه الحقيقي، وندعم الشكلين
+                // self-closing و opening tag.
+                let tableColumnNames = [];
+                let tableColumnRegex = /<tableColumn\b([^>]*?)(?:\/>|>)/gi;
+                let columnMatch;
+                while ((columnMatch = tableColumnRegex.exec(tableXml)) !== null) {
+                    let nameMatch = columnMatch[1].match(/\bname="([^"]*)"/i);
+                    tableColumnNames.push(nameMatch ? nameMatch[1] : '');
+                }
+
+                if (tableColumnNames.length === 0) {
+                    alert('⚠️ تعريف رؤوس الجدول "الجدول1" غير مكتمل، لذلك لم يتم حفظ الملف.');
+                    return;
+                }
+
+                let maxNum = 0;
+                tableColumnNames.forEach(columnName => {
+                    if (columnName.includes('فاتورة شراء')) {
+                        let matches = columnName.match(/(\d+)\s*$/);
+                        let num = matches ? parseInt(matches[1], 10) : 0;
+                        if (num > maxNum) maxNum = num;
+                    }
+                });
+
+                let newColumnName = `فاتورة شراء - ${maxNum + 1}`;
+                let newCol = endCol + 1;
+                let newColLetters = excelColumnLetters(newCol);
+
+                // أهم نقطة: لا نبحث بالاسم أو دار النشر.
+                // globalExcelData بنفس ترتيب صفوف البيانات في Excel، لذلك
+                // row 2 يقابل العنصر 0، row 3 يقابل العنصر 1 ... وهكذا.
+                let values = [];
+                for (let rowNumber = dataRowStart; rowNumber <= dataRowEnd; rowNumber++) {
+                    let itemIndex = rowNumber - dataRowStart;
+                    let item = globalExcelData[itemIndex];
+                    let quantity = item && Number(item.qty) > 0 ? Number(item.qty) : 0;
+                    values.push(quantity);
+                }
+
+                function getCellStyle(cellXml) {
+                    if (!cellXml) return '';
+                    let match = cellXml.match(/\bs="(\d+)"/i);
+                    return match ? match[1] : '';
+                }
+
+                function getCellXml(rowContent, cellRef) {
+                    let escapedRef = cellRef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    let regex = new RegExp(`<c\\b[^>]*\\br="${escapedRef}"[^>]*>[\\s\\S]*?<\\/c>|<c\\b[^>]*\\br="${escapedRef}"[^>]*/>`, 'i');
+                    let match = rowContent.match(regex);
+                    return match ? match[0] : '';
+                }
+
+                function escapeXml(text) {
+                    return String(text)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&apos;');
+                }
+
+                function buildInlineStringCell(ref, style, text) {
+                    return `<c r="${ref}"${style ? ` s="${style}"` : ''} t="inlineStr"><is><t>${escapeXml(text)}</t></is></c>`;
+                }
+
+                function buildNumberCell(ref, style, value) {
+                    return `<c r="${ref}"${style ? ` s="${style}"` : ''}><v>${Number(value) || 0}</v></c>`;
+                }
+
+                function buildFormulaCell(ref, style, formula) {
+                    return `<c r="${ref}"${style ? ` s="${style}"` : ''}><f>${escapeXml(formula)}</f><v>0</v></c>`;
+                }
+
+                let updatedSheetXml = sheetXml;
+                let headerRowRegex = new RegExp(`<row\\b[^>]*\\br="${expectedHeaderRow}"[^>]*>[\\s\\S]*?<\\/row>`, 'i');
+                let headerRowMatch = updatedSheetXml.match(headerRowRegex);
+                if (!headerRowMatch) {
+                    alert('⚠️ لم يتم العثور على صف رؤوس الجدول، لذلك لم يتم حفظ الملف.');
+                    return;
+                }
+
+                let headerRowXml = headerRowMatch[0];
+                let lastHeaderCell = getCellXml(headerRowXml, `${endColLetters}${expectedHeaderRow}`);
+                let headerStyle = getCellStyle(lastHeaderCell);
+                let newHeaderCell = buildInlineStringCell(`${newColLetters}${expectedHeaderRow}`, headerStyle, newColumnName);
+
+                if (getCellXml(headerRowXml, `${newColLetters}${expectedHeaderRow}`)) {
+                    alert('⚠️ يوجد بالفعل عمود في مكان العمود الجديد، لذلك لم يتم حفظ الملف حتى لا يتم استبدال بيانات موجودة.');
+                    return;
+                }
+
+                headerRowXml = headerRowXml.replace('</row>', newHeaderCell + '</row>');
+                updatedSheetXml = updatedSheetXml.replace(headerRowMatch[0], headerRowXml);
+
+                for (let rowNumber = dataRowStart; rowNumber <= dataRowEnd; rowNumber++) {
+                    let rowRegex = new RegExp(`<row\\b[^>]*\\br="${rowNumber}"[^>]*>[\\s\\S]*?<\\/row>`, 'i');
+                    let rowMatch = updatedSheetXml.match(rowRegex);
+                    if (!rowMatch) continue;
+
+                    let rowXml = rowMatch[0];
+                    let sourceCell = getCellXml(rowXml, `${endColLetters}${rowNumber}`);
+                    let sourceStyle = getCellStyle(sourceCell);
+                    let valueIndex = rowNumber - dataRowStart;
+                    let newCell = buildNumberCell(`${newColLetters}${rowNumber}`, sourceStyle, values[valueIndex]);
+
+                    if (!getCellXml(rowXml, `${newColLetters}${rowNumber}`)) {
+                        rowXml = rowXml.replace('</row>', newCell + '</row>');
+                        updatedSheetXml = updatedSheetXml.replace(rowMatch[0], rowXml);
+                    }
+                }
+
+                if (totalsRowCount > 0) {
+                    let totalsRowNumber = endRow;
+                    let totalsRowRegex = new RegExp(`<row\\b[^>]*\\br="${totalsRowNumber}"[^>]*>[\\s\\S]*?<\\/row>`, 'i');
+                    let totalsRowMatch = updatedSheetXml.match(totalsRowRegex);
+                    if (totalsRowMatch) {
+                        let totalsRowXml = totalsRowMatch[0];
+                        if (!getCellXml(totalsRowXml, `${newColLetters}${totalsRowNumber}`)) {
+                            let sourceTotalCell = getCellXml(totalsRowXml, `${endColLetters}${totalsRowNumber}`);
+                            let totalStyle = getCellStyle(sourceTotalCell);
+                            let totalFormula = `SUBTOTAL(103,الجدول1[${newColumnName}])`;
+                            let newTotalCell = buildFormulaCell(`${newColLetters}${totalsRowNumber}`, totalStyle, totalFormula);
+                            totalsRowXml = totalsRowXml.replace('</row>', newTotalCell + '</row>');
+                            updatedSheetXml = updatedSheetXml.replace(totalsRowMatch[0], totalsRowXml);
+                        }
+                    }
+                }
+
+                updatedSheetXml = updatedSheetXml.replace(/spans="\d+:\d+"/g, `spans="${startCol}:${newCol}"`);
+                updatedSheetXml = updatedSheetXml.replace(
+                    /(<dimension\b[^>]*\bref=")[^"]+("[^>]*\/>)/i,
+                    `$1${startColLetters}${startRow}:${newColLetters}${endRow}$2`
                 );
 
-                let valToInsert = (matchingItem && matchingItem.qty > 0) ? matchingItem.qty : 0;
-                worksheet[XLSX.utils.encode_cell({r: R, c: newColIndex})] = { t: 'n', v: valToInsert };
+                let updatedTableXml = tableXml;
+                updatedTableXml = updatedTableXml.replace(
+                    /(<table\b[^>]*\bref=")[^"]+("[^>]*>)/i,
+                    `$1${startColLetters}${startRow}:${newColLetters}${endRow}$2`
+                );
+                updatedTableXml = updatedTableXml.replace(
+                    /(<autoFilter\b[^>]*\bref=")[^"]+("[^>]*\/>)/i,
+                    `$1${startColLetters}${startRow}:${newColLetters}${dataRowEnd}$2`
+                );
+
+                let countMatch = updatedTableXml.match(/(<tableColumns\b[^>]*\bcount=")([0-9]+)("[^>]*>)/i);
+                if (!countMatch) {
+                    alert('⚠️ تعريف أعمدة الجدول "الجدول1" غير مكتمل، لذلك لم يتم حفظ الملف.');
+                    return;
+                }
+
+                let currentColumnCount = parseInt(countMatch[2], 10);
+                updatedTableXml = updatedTableXml.replace(
+                    countMatch[0],
+                    `${countMatch[1]}${currentColumnCount + 1}${countMatch[3]}`
+                );
+
+                let maxColumnId = 0;
+                let idRegex = /<tableColumn\b[^>]*\bid="(\d+)"/gi;
+                let idMatch;
+                while ((idMatch = idRegex.exec(tableXml)) !== null) {
+                    maxColumnId = Math.max(maxColumnId, parseInt(idMatch[1], 10) || 0);
+                }
+
+                let newColumnId = maxColumnId + 1;
+                let newTableColumn = `<tableColumn id="${newColumnId}" name="${escapeXml(newColumnName)}" totalsRowFunction="count"/>`;
+                updatedTableXml = updatedTableXml.replace('</tableColumns>', newTableColumn + '</tableColumns>');
+
+                zip.file(sheetPath, updatedSheetXml);
+                zip.file(tablePath, updatedTableXml);
+
+                let outputBuffer = await zip.generateAsync({
+                    type: 'blob',
+                    compression: 'STORE'
+                });
+
+                let downloadUrl = URL.createObjectURL(outputBuffer);
+                let link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = excelFileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+
+                originalExcelData = new Uint8Array(await outputBuffer.arrayBuffer());
+
+                alert(`تم إضافة العمود "${newColumnName}" بنجاح، وتم نقل كميات الأصناف المختارة إلى صفوفها الصحيحة مع الحفاظ على تعريف الجدول والتنسيق والمعادلات الموجودة.`);
+            } catch (error) {
+                console.error('خطأ حفظ Excel:', error);
+                alert("⚠️ حدث خطأ أثناء حفظ ملف Excel، لذلك لم يتم حفظ الملف.");
             }
-
-            range.e.c = newColIndex;
-            worksheet['!ref'] = XLSX.utils.encode_range(range);
-
-            XLSX.writeFile(workbookData, excelFileName);
-            alert(`تم إضافة العمود "${newColumnName}" بنجاح وتحديث ملف الأكسيل!`);
         }
 
         function sendLibraryWhatsApp() {
