@@ -265,7 +265,63 @@
         .status-unreleased { color: #dc2626; background: #fff7ed; border: 1px solid #fca5a5; }
         .status-soldout { color: #dc2626; background: #fee2e2; border: 1px solid #fca5a5; }
         .status-nodiscount { color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; }
-        
+        /* --- تعديلات الهيدر الجديد والأيقونات --- */
+        .top-header {
+            transition: all 0.3s ease;
+        }
+        .top-header.pinned {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .top-header.vertical-mode {
+            position: fixed !important;
+            top: 0 !important;
+            right: auto !important;
+            left: 0 !important;
+            height: 100vh !important;
+            width: 280px !important; /* نفس عرض العمود تقريباً */
+            max-width: 290px !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+            align-items: stretch !important;
+            padding: 15px 10px !important;
+            overflow-y: auto !important;
+            z-index: 2000 !important;
+        }
+        .top-header.vertical-mode .controls-group {
+            width: 100% !important;
+        }
+        .top-header.vertical-mode .mini-invoice-preview {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        .header-action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .header-action-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        /* تعديل المسافة للجسم عند التحويل للوضع الرأسي */
+        body.has-vertical-header {
+            margin-left: 290px !important;
+        }
+        @media print {
+            .top-header.vertical-mode { display: none !important; }
+            body.has-vertical-header { margin-left: 0 !important; }
+        }
         #loginModalOverlay {
             display: none;
             position: fixed;
@@ -315,8 +371,11 @@
     </style>
 </head>
 <body>
-    <div class="top-header">
-        <div class="controls-group">
+    <div class="top-header pinned" id="topHeaderElement">
+        <!-- زر التثبيت (اليمين) -->
+        <button class="header-action-btn" id="pinHeaderBtn" title="تثبيت أو إلغاء تثبيت الهيدر" onclick="toggleHeaderPin()">☌</button>
+        
+        <div class="controls-group" style="flex: 1; display: flex; justify-content: center;">
             <div class="mini-invoice-preview">
                 <div id="mini-invoice-items" class="mini-invoice-items">خصم 15%</div>
                 <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
@@ -325,6 +384,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- زر التبديل بين أفقي ورأسي (اليسار) -->
+        <button class="header-action-btn" id="toggleLayoutBtn" title="تبديل الهيدر من أفقي لرأسي" onclick="toggleHeaderLayout()">↰</button>
     </div>
 
     <div class="sub-bar">
@@ -1317,6 +1379,44 @@
 
             updateTopScrollbarWidth();
             calculateTotals();
+        }
+
+        let isHeaderPinned = true;
+        let isHeaderVertical = false;
+
+        function toggleHeaderPin() {
+            isHeaderPinned = !isHeaderPinned;
+            let header = document.getElementById('topHeaderElement');
+            let pinBtn = document.getElementById('pinHeaderBtn');
+            
+            if (isHeaderPinned) {
+                header.classList.add('pinned');
+                pinBtn.style.opacity = '1';
+                pinBtn.title = "الهيدر مثبت (اضغط لإلغاء التثبيت)";
+            } else {
+                header.classList.remove('pinned');
+                pinBtn.style.opacity = '0.5';
+                pinBtn.title = "الهيدر غير مثبت (اضغط للتثبيت)";
+            }
+        }
+
+        function toggleHeaderLayout() {
+            isHeaderVertical = !isHeaderVertical;
+            let header = document.getElementById('topHeaderElement');
+            let layoutBtn = document.getElementById('toggleLayoutBtn');
+            let body = document.body;
+
+            if (isHeaderVertical) {
+                header.classList.add('vertical-mode');
+                body.classList.add('has-vertical-header');
+                layoutBtn.style.transform = 'rotate(90deg)';
+                layoutBtn.title = "العودة للوضع الأفقي";
+            } else {
+                header.classList.remove('vertical-mode');
+                body.classList.remove('has-vertical-header');
+                layoutBtn.style.transform = 'rotate(0deg)';
+                layoutBtn.title = "التحويل للوضع الرأسي";
+            }
         }
     </script>
 </body>
