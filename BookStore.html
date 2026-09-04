@@ -1211,9 +1211,9 @@
                         if (!getCellXml(totalsRowXml, `${newColLetters}${totalsRowNumber}`)) {
                             let sourceTotalCell = getCellXml(totalsRowXml, `${endColLetters}${totalsRowNumber}`);
                             let totalStyle = getCellStyle(sourceTotalCell);
-                            let currentStockFormula = `SUM(Table1[@[فاتورة شراء 1]:[${newColumnName}]])`;
+                            
                             let totalFormula = `SUMPRODUCT(الجدول1[${newColumnName}],الجدول1[سعر الشراء])`;
-
+                            let currentStockFormula = `SUM(الجدول1[@[فاتورة شراء 1]:[${newColumnName}]])`;
                             let newTotalCell = buildFormulaCell(`${newColLetters}${totalsRowNumber}`, totalStyle, totalFormula);
                             totalsRowXml = totalsRowXml.replace('</row>', newTotalCell + '</row>');
                             updatedSheetXml = updatedSheetXml.replace(totalsRowMatch[0], totalsRowXml);
@@ -1260,7 +1260,7 @@
                 let newTableColumn = `<tableColumn id="${newColumnId}" name="${escapeXml(newColumnName)}" totalsRowFunction="count"/>`;
 
 
-                
+
                 updatedTableXml = updatedTableXml.replace('</tableColumns>', newTableColumn + '</tableColumns>');
 
                 zip.file(sheetPath, updatedSheetXml);
