@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -12,7 +11,66 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif;}
         body{background-color:#dde3eb;color:#333;direction:rtl;padding-bottom:50px;}
-        .top-header{background-color:#16a34a;color:white;padding:8px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1);position:sticky;top:0;z-index:1000;flex-wrap:wrap;gap:10px;}
+        
+        .top-header{background-color:#16a34a;color:white;padding:8px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1);position:sticky;top:0;z-index:1000;flex-wrap:wrap;gap:10px;transition:all 0.3s ease;}
+        .top-header.unsticky{position:relative !important;}
+        
+        /* نمط الهيدر الرأسي على اليسار */
+        body.vertical-header-mode {
+            padding-left: 290px;
+        }
+        body.vertical-header-mode .top-header {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            overflow-y: auto;
+            z-index: 2000;
+            padding: 15px 10px;
+        }
+        body.vertical-header-mode .main-container,
+        body.vertical-header-mode .top-scrollbar-container,
+        body.vertical-header-mode .sub-bar,
+        body.vertical-header-mode .bottom-actions,
+        body.vertical-header-mode .whatsapp-preview-box {
+            margin-right: auto;
+        }
+        body.vertical-header-mode .main-container,
+        body.vertical-header-mode .top-scrollbar-container,
+        body.vertical-header-mode .sub-bar,
+        body.vertical-header-mode .bottom-actions,
+        body.vertical-header-mode .whatsapp-preview-box {
+            margin-right: auto;
+        }
+        body.vertical-header-mode .mini-invoice-preview {
+            width: 100% !important;
+            min-width: 0 !important;
+            max-height: none !important;
+        }
+        body.vertical-header-mode .mini-invoice-items {
+            max-height: 160px !important;
+            min-width: 120px !important;
+        }
+
+        .header-tools-side {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .header-tools-side:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
         .top-header div{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
         
         .sub-bar{background:#ccf0d8;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-bottom:15px;flex-wrap:wrap;gap:15px;}
@@ -34,7 +92,7 @@
         .delivery-label{display:flex;align-items:center;gap:8px;font-weight:bold;color:#dc2626;background:#fff7ed;padding:6px 12px;border-radius:8px;border:1px solid #fca5a5;}
         .delivery-label input{width:18px;height:18px;cursor:pointer;}
         
-        .mini-invoice-preview{background:#fdf2f8;border:2px dashed #10b981;border-radius:8px;padding:8px 12px;min-width:280px;max-height:115px;overflow-y:auto;font-size:12px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center;gap:15px;}
+        .mini-invoice-preview{background:#fdf2f8;border:2px dashed #10b981;border-radius:8px;padding:8px 12px;min-width:260px;max-height:115px;overflow-y:auto;font-size:12px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center;gap:15px;flex:1;}
         .mini-invoice-items{color:#1f2937;font-size:14px;font-weight:700;line-height:1.3;flex:1;overflow-y:auto;max-height:95px;}
         .mini-invoice-items .last-added-item{background-color:#bae6fd;padding:2px 4px;border-radius:4px;}       
         .mini-total-badge{font-weight:bold;color:#047857;background:#d1fae5;padding:4px 8px;border-radius:6px;white-space:nowrap;font-size:13px;}
@@ -265,63 +323,7 @@
         .status-unreleased { color: #dc2626; background: #fff7ed; border: 1px solid #fca5a5; }
         .status-soldout { color: #dc2626; background: #fee2e2; border: 1px solid #fca5a5; }
         .status-nodiscount { color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; }
-        /* --- تعديلات الهيدر الجديد والأيقونات --- */
-        .top-header {
-            transition: all 0.3s ease;
-        }
-        .top-header.pinned {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-        }
-        .top-header.vertical-mode {
-            position: fixed !important;
-            top: 0 !important;
-            right: auto !important;
-            left: 0 !important;
-            height: 100vh !important;
-            width: 280px !important; /* نفس عرض العمود تقريباً */
-            max-width: 290px !important;
-            flex-direction: column !important;
-            justify-content: flex-start !important;
-            align-items: stretch !important;
-            padding: 15px 10px !important;
-            overflow-y: auto !important;
-            z-index: 2000 !important;
-        }
-        .top-header.vertical-mode .controls-group {
-            width: 100% !important;
-        }
-        .top-header.vertical-mode .mini-invoice-preview {
-            width: 100% !important;
-            max-width: 100% !important;
-        }
-        .header-action-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        .header-action-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-        /* تعديل المسافة للجسم عند التحويل للوضع الرأسي */
-        body.has-vertical-header {
-            margin-left: 290px !important;
-        }
-        @media print {
-            .top-header.vertical-mode { display: none !important; }
-            body.has-vertical-header { margin-left: 0 !important; }
-        }
+        
         #loginModalOverlay {
             display: none;
             position: fixed;
@@ -371,11 +373,12 @@
     </style>
 </head>
 <body>
-    <div class="top-header pinned" id="topHeaderElement">
-        <!-- زر التثبيت (اليمين) -->
-        <button class="header-action-btn" id="pinHeaderBtn" title="تثبيت أو إلغاء تثبيت الهيدر" onclick="toggleHeaderPin()">☌</button>
+    <div id="topHeader" class="top-header">
+        <div class="header-tools-side" title="تثبيت أو فك تثبيت الهيدر" onclick="toggleHeaderStickiness()">
+            <span style="font-size: 18px;">☌</span> <span id="pinStatusText">مبتث</span>
+        </div>
         
-        <div class="controls-group" style="flex: 1; display: flex; justify-content: center;">
+        <div class="controls-group" style="flex:1; justify-content: center;">
             <div class="mini-invoice-preview">
                 <div id="mini-invoice-items" class="mini-invoice-items">خصم 15%</div>
                 <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
@@ -385,8 +388,9 @@
             </div>
         </div>
 
-        <!-- زر التبديل بين أفقي ورأسي (اليسار) -->
-        <button class="header-action-btn" id="toggleLayoutBtn" title="تبديل الهيدر من أفقي لرأسي" onclick="toggleHeaderLayout()">↰</button>
+        <div class="header-tools-side" title="تبديل الهيدر من أفقي إلى رأسي" onclick="toggleHeaderLayout()">
+            <span style="font-size: 18px;">↰</span> <span>تبديل</span>
+        </div>
     </div>
 
     <div class="sub-bar">
@@ -522,6 +526,21 @@
                 `;
             }
         });
+
+        function toggleHeaderStickiness() {
+            let header = document.getElementById('topHeader');
+            let pinText = document.getElementById('pinStatusText');
+            header.classList.toggle('unsticky');
+            if (header.classList.contains('unsticky')) {
+                pinText.textContent = 'غير مثبت';
+            } else {
+                pinText.textContent = 'مبتث';
+            }
+        }
+
+        function toggleHeaderLayout() {
+            document.body.classList.toggle('vertical-header-mode');
+        }
 
         function handlePriceTypeChange(checkbox) {
             if (checkbox.checked && !isAuthorizedForPurchase) {
@@ -1077,8 +1096,6 @@
                 let totalsRowCount = totalsRowCountMatch ? parseInt(totalsRowCountMatch[1], 10) : 0;
                 if (totalsRowCount > 0) dataRowEnd = endRow - totalsRowCount;
 
-                // نقرأ أعمدة الجدول من تعريفه الحقيقي، وندعم الشكلين
-                // self-closing و opening tag.
                 let tableColumnNames = [];
                 let tableColumnRegex = /<tableColumn\b([^>]*?)(?:\/>|>)/gi;
                 let columnMatch;
@@ -1105,9 +1122,6 @@
                 let newCol = endCol + 1;
                 let newColLetters = excelColumnLetters(newCol);
 
-                // أهم نقطة: لا نبحث بالاسم أو دار النشر.
-                // globalExcelData بنفس ترتيب صفوف البيانات في Excel، لذلك
-                // row 2 يقابل العنصر 0، row 3 يقابل العنصر 1 ... وهكذا.
                 let values = [];
                 for (let rowNumber = dataRowStart; rowNumber <= dataRowEnd; rowNumber++) {
                     let itemIndex = rowNumber - dataRowStart;
@@ -1197,7 +1211,9 @@
                         if (!getCellXml(totalsRowXml, `${newColLetters}${totalsRowNumber}`)) {
                             let sourceTotalCell = getCellXml(totalsRowXml, `${endColLetters}${totalsRowNumber}`);
                             let totalStyle = getCellStyle(sourceTotalCell);
-                            let totalFormula = `SUBTOTAL(103,الجدول1[${newColumnName}])`;
+                            let currentStockFormula = `SUM(Table1[@[فاتورة شراء 1]:[${newColumnName}]])`;
+                            let totalFormula = `SUMPRODUCT(الجدول1[${newColumnName}],الجدول1[سعر الشراء])`;
+
                             let newTotalCell = buildFormulaCell(`${newColLetters}${totalsRowNumber}`, totalStyle, totalFormula);
                             totalsRowXml = totalsRowXml.replace('</row>', newTotalCell + '</row>');
                             updatedSheetXml = updatedSheetXml.replace(totalsRowMatch[0], totalsRowXml);
@@ -1242,6 +1258,9 @@
 
                 let newColumnId = maxColumnId + 1;
                 let newTableColumn = `<tableColumn id="${newColumnId}" name="${escapeXml(newColumnName)}" totalsRowFunction="count"/>`;
+
+
+                
                 updatedTableXml = updatedTableXml.replace('</tableColumns>', newTableColumn + '</tableColumns>');
 
                 zip.file(sheetPath, updatedSheetXml);
@@ -1379,44 +1398,6 @@
 
             updateTopScrollbarWidth();
             calculateTotals();
-        }
-
-        let isHeaderPinned = true;
-        let isHeaderVertical = false;
-
-        function toggleHeaderPin() {
-            isHeaderPinned = !isHeaderPinned;
-            let header = document.getElementById('topHeaderElement');
-            let pinBtn = document.getElementById('pinHeaderBtn');
-            
-            if (isHeaderPinned) {
-                header.classList.add('pinned');
-                pinBtn.style.opacity = '1';
-                pinBtn.title = "الهيدر مثبت (اضغط لإلغاء التثبيت)";
-            } else {
-                header.classList.remove('pinned');
-                pinBtn.style.opacity = '0.5';
-                pinBtn.title = "الهيدر غير مثبت (اضغط للتثبيت)";
-            }
-        }
-
-        function toggleHeaderLayout() {
-            isHeaderVertical = !isHeaderVertical;
-            let header = document.getElementById('topHeaderElement');
-            let layoutBtn = document.getElementById('toggleLayoutBtn');
-            let body = document.body;
-
-            if (isHeaderVertical) {
-                header.classList.add('vertical-mode');
-                body.classList.add('has-vertical-header');
-                layoutBtn.style.transform = 'rotate(90deg)';
-                layoutBtn.title = "العودة للوضع الأفقي";
-            } else {
-                header.classList.remove('vertical-mode');
-                body.classList.remove('has-vertical-header');
-                layoutBtn.style.transform = 'rotate(0deg)';
-                layoutBtn.title = "التحويل للوضع الرأسي";
-            }
         }
     </script>
 </body>
