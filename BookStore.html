@@ -39,13 +39,6 @@
         body.vertical-header-mode .whatsapp-preview-box {
             margin-right: auto;
         }
-        body.vertical-header-mode .main-container,
-        body.vertical-header-mode .top-scrollbar-container,
-        body.vertical-header-mode .sub-bar,
-        body.vertical-header-mode .bottom-actions,
-        body.vertical-header-mode .whatsapp-preview-box {
-            margin-right: auto;
-        }
         body.vertical-header-mode .mini-invoice-preview {
             width: 100% !important;
             min-width: 0 !important;
@@ -128,25 +121,21 @@
         .category-body{padding:12px;display:flex;flex-direction:column;gap:10px;max-height:600px;overflow-y:auto;}
         
         .book-card{background:#f8fcf7;border:2px solid #c5b8c3;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;transition:all 0.25s ease;cursor:pointer;}
-        .book-card.selected-book {
-            background: #c9f5d5;
-            border: 2px solid #10b981;
-            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.15);
-            transform: none;
-        }
+        .book-card.selected-book { background: #c9f5d5; border: 2px solid #10b981; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.15); transform: none;}
         .book-card:hover{border-color:#10b981;box-shadow:0 2px 4px rgba(16, 185, 129, 0.1);}
 
+        .book-checkbox{width:20px;height:20px;cursor:pointer;accent-color:#10b981;flex-shrink:0;}
         .book-row-top{display:flex;justify-content:space-between;align-items:center;gap:5px;}
         .book-title{font-weight:800;font-size:15px;color:#1f2937;line-height:1.4;}
-        .book-checkbox{width:20px;height:20px;cursor:pointer;accent-color:#10b981;flex-shrink:0;}
-        .book-row-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
         
-        .book-price-info{font-size:13px;color:#6b7280;}
+        /* تعديل التصميم لضمان ظهور السعر وكلمة بالحجز في نفس السطر ومجموعة الأزرار على اليسار */
+        .book-row-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:4px;gap:5px;}
+        .book-price-info{font-size:13px;color:#6b7280;display:flex;align-items:center;flex-wrap:nowrap;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
         .old-price{text-decoration: line-through;color:#9ca3af;font-weight:600;}
         .separator-symbol{margin:0 4px;color:#9ca3af;font-weight:bold;}
-        .discount-price{color:#059669;font-weight:800;font-size:15px;}
+        .discount-price{color:#059669;font-weight:800;font-size:15px;flex-shrink:0;}
 
-        .qty-controls{display:flex;align-items:center;gap:4px;}
+        .qty-controls{display:flex;align-items:center;gap:4px;flex-shrink:0;}
         .qty-btn{background:#10b981;color:white;border:none;width:28px;height:28px;border-radius:6px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;}
         .qty-btn:hover{background:#059669;}
         .qty-btn.minus{background:#10b981;}
@@ -1371,15 +1360,21 @@
                     card.innerHTML = `
                         <div class="book-row-top">
                             <span class="book-title">${item.title}</span>
+                            
+                            ${statusBadgeHtml ? `<div style="margin-top:2px;">${statusBadgeHtml}</div>` : ''}
+
                             <input type="checkbox" class="book-checkbox" ${item.selected ? 'checked' : ''} onchange="toggleSelect(${item.id}, this.checked)">
+
                         </div>
-                        ${statusBadgeHtml ? `<div style="margin-top:2px;">${statusBadgeHtml}</div>` : ''}
+                        
                         <div class="book-row-bottom">
                             <div class="book-price-info">
                                 ${isUnreleased ? 
                                       `<span class="discount-price" style="color:#dc2626;">قريبا</span>` : 
                                   isSoldOut ? 
-                                      `<span class="discount-price">${item.originalPrice}ج</span><span class="separator-symbol">|</span><span class="discount-price" style="color:#dc2626;">بالحجز</span>` :  
+                                      `<span class="discount-price">${item.originalPrice}ج</span>
+                                      <span class="separator-symbol">|</span>
+                                      <span class="discount-price" style="color:#dc2626;">بالحجز</span>` :  
                                       `<span class="old-price">${item.originalPrice}ج</span><span class="separator-symbol">|</span><span class="discount-price">${item.discountPrice}ج</span>`
                                 }
                             </div>
