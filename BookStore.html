@@ -120,29 +120,29 @@
         .category-header{padding:12px;background:#e6f7ec;color:#047857;font-size:16px;font-weight:800;text-align:center;border-bottom:1px solid #fce7f3;border-radius:12px 12px 0 0;}
         .category-body{padding:12px;display:flex;flex-direction:column;gap:10px;max-height:600px;overflow-y:auto;}
         
-        .book-card{background:#f8fcf7;border:2px solid #c5b8c3;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;transition:all 0.25s ease;cursor:pointer;}
+        .book-card{background:#f8fcf7;border:2px solid #c5b8c3;border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;transition:all 0.25s ease;cursor:pointer;}
         .book-card.selected-book { background: #c9f5d5; border: 2px solid #10b981; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.15); transform: none;}
         .book-card:hover{border-color:#10b981;box-shadow:0 2px 4px rgba(16, 185, 129, 0.1);}
 
-        .book-checkbox{width:20px;height:20px;cursor:pointer;accent-color:#10b981;flex-shrink:0;}
+        .book-checkbox{width:17px;height:17px;cursor:pointer;accent-color:#10b981;flex-shrink:0;}
         
-        /* تعديل صف العنوان العلوي ليجمع اسم الكتاب والحالة في نفس السطر مع أولوية لاسم الكتاب */
-        .book-row-top{display:flex;justify-content:space-between;align-items:center;gap:8px;}
-        .book-title-wrapper {display: flex; align-items: baseline; gap: 6px; flex: 1; min-width: 0; overflow: hidden;}
-        .book-title{font-weight:800;font-size:15px;color:#1f2937;line-height:1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1;}
+        /* تعديل صف العنوان العلوي لضمان ظهور اسم الكتاب بالكامل في نفس السطر مع تصغير العناصر المجاورة (الحالة والتشيك بوكس) */
+        .book-row-top{display:flex;justify-content:space-between;align-items:center;gap:4px;}
+        .book-title-wrapper {display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; overflow: hidden;}
+        .book-title{font-weight:800;font-size:13.5px;color:#1f2937;line-height:1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0;}
         
-        .book-row-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:4px;gap:5px;}
-        .book-price-info{font-size:13px;color:#6b7280;display:flex;align-items:center;flex-wrap:nowrap;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+        .book-row-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:2px;gap:5px;}
+        .book-price-info{font-size:12px;color:#6b7280;display:flex;align-items:center;flex-wrap:nowrap;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
         .old-price{text-decoration: line-through;color:#9ca3af;font-weight:600;}
-        .separator-symbol{margin:0 4px;color:#9ca3af;font-weight:bold;}
-        .discount-price{color:#059669;font-weight:800;font-size:15px;flex-shrink:0;}
+        .separator-symbol{margin:0 3px;color:#9ca3af;font-weight:bold;}
+        .discount-price{color:#059669;font-weight:800;font-size:13.5px;flex-shrink:0;}
 
-        .qty-controls{display:flex;align-items:center;gap:4px;flex-shrink:0;}
-        .qty-btn{background:#10b981;color:white;border:none;width:28px;height:28px;border-radius:6px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;}
+        .qty-controls{display:flex;align-items:center;gap:3px;flex-shrink:0;}
+        .qty-btn{background:#10b981;color:white;border:none;width:24px;height:24px;border-radius:5px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;font-size:13px;}
         .qty-btn:hover{background:#059669;}
         .qty-btn.minus{background:#10b981;}
         .qty-btn.minus:hover{background:#dc2626;}
-        .qty-input{width:40px;text-align:center;border:1px solid #d1d5db;border-radius:6px;padding:3px;font-weight:bold;font-size:14px;outline:none;}
+        .qty-input{width:34px;text-align:center;border:1px solid #d1d5db;border-radius:5px;padding:2px;font-weight:bold;font-size:13px;outline:none;}
         
         .bottom-actions{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:30px;flex-wrap:wrap;}
         .btn-action{padding:10px 18px;border-radius:10px;font-weight:bold;font-size:15px;border:none;cursor:pointer;color:white;display:flex;align-items:center;gap:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.2s;}
@@ -305,9 +305,9 @@
         #deliveryDetailsContainer input{padding:6px 10px;border:1px solid #f59e0b;border-radius:6px;outline:none;font-size:13px;width:160px;}
         
         .status-badge {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 800;
-            padding: 2px 6px;
+            padding: 1px 5px;
             border-radius: 4px;
             white-space: nowrap;
             flex-shrink: 0;
@@ -1353,11 +1353,11 @@
                     let isSoldOut = item.priceAfter === 0 || rawAfterStr === '0' || rawAfterStr === '0.0' || rawAfterStr === '0.00' || rawAfterStr === 'خلصان';
                     
                     if (isUnreleased) {
-                        statusBadgeHtml = `<span class="status-badge status-unreleased">⬅️ ما نزلش</span>`;
+                        statusBadgeHtml = `<span class="status-badge status-unreleased">ما نزلش</span>`;
                     } else if (isNoDiscount) {
-                        statusBadgeHtml = `<span class="status-badge status-nodiscount">⬅️ بدون خصم</span>`;
+                        statusBadgeHtml = `<span class="status-badge status-nodiscount">بدون خصم</span>`;
                     } else if (isSoldOut) {
-                        statusBadgeHtml = `<span class="status-badge status-soldout">⬅️ خلصان</span>`;
+                        statusBadgeHtml = `<span class="status-badge status-soldout">خلصان</span>`;
                     }
                     
                     card.innerHTML = `
@@ -1372,12 +1372,12 @@
                         <div class="book-row-bottom">
                             <div class="book-price-info">
                                 ${isUnreleased ? 
-                                      `<span class="discount-price" style="color:#dc2626;">قريبا</span>` : 
+                                      `<span class="discount-price" style="color:#dc2626; font-size:12.5px;">قريبا</span>` : 
                                   isSoldOut ? 
-                                      `<span class="discount-price">${item.originalPrice}ج</span>
+                                      `<span class="discount-price" style="font-size:12.5px;">${item.originalPrice}ج</span>
                                       <span class="separator-symbol">|</span>
-                                      <span class="discount-price" style="color:#dc2626;">بالحجز</span>` :  
-                                      `<span class="old-price">${item.originalPrice}ج</span><span class="separator-symbol">|</span><span class="discount-price">${item.discountPrice}ج</span>`
+                                      <span class="discount-price" style="color:#dc2626; font-size:12.5px;">بالحجز</span>` :  
+                                      `<span class="old-price" style="font-size:11.5px;">${item.originalPrice}ج</span><span class="separator-symbol">|</span><span class="discount-price" style="font-size:12.5px;">${item.discountPrice}ج</span>`
                                 }
                             </div>
                             <div class="qty-controls">
