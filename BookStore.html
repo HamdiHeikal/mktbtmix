@@ -1353,11 +1353,11 @@
                     let isSoldOut = item.priceAfter === 0 || rawAfterStr === '0' || rawAfterStr === '0.0' || rawAfterStr === '0.00' || rawAfterStr === 'خلصان';
                     
                     if (isUnreleased) {
-                        statusBadgeHtml = `<span class="status-badge status-unreleased">ما نزلش</span>`;
+                        statusBadgeHtml = `<span class="status-badge status-unreleased">⬅️ ما نزلش</span>`;
                     } else if (isNoDiscount) {
-                        statusBadgeHtml = `<span class="status-badge status-nodiscount">بدون خصم</span>`;
+                        statusBadgeHtml = `<span class="status-badge status-nodiscount">⬅️ بدون خصم</span>`;
                     } else if (isSoldOut) {
-                        statusBadgeHtml = `<span class="status-badge status-soldout">خلصان</span>`;
+                        statusBadgeHtml = `<span class="status-badge status-soldout">⬅️ خلصان</span>`;
                     }
                     
                     card.innerHTML = `
