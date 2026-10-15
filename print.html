@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدير طباعة ملفات PDF المجمع (نسخة الصور الآمنة)</title>
+    <title>أداة طباعة بوكليت PDF الاحترافية</title>
     <!-- مكتبة قراءة وعرض ملفات PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script>
@@ -96,12 +96,17 @@
             border-radius: 4px;
             font-size: 13px;
         }
+        .note {
+            font-size: 12px;
+            color: #e67e22;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>أداة طباعة ملفات PDF (تحويل إلى صور لمنع المربعات)</h2>
+    <h2>أداة طباعة بوكليت PDF (صفحتين بالورقة - وجه وظهر)</h2>
     
     <div class="form-group">
         <label for="pdfFiles">1. اختر ملفات PDF:</label>
@@ -114,38 +119,39 @@
     <h3>خيارات الطباعة:</h3>
     
     <div class="form-group">
-        <label for="orientation">اتجاه الصفحة:</label>
+        <label for="orientation">اتجاه الورقة (مُفضل أفقي للبوكليت):</label>
         <select id="orientation">
-            <option value="portrait">رأسي (Portrait)</option>
             <option value="landscape">أفقي (Landscape)</option>
+            <option value="portrait">رأسي (Portrait)</option>
         </select>
     </div>
 
     <div class="form-group">
         <label for="duplex">الطباعة على الوجهين:</label>
         <select id="duplex">
-            <option value="simplex">وجه واحد (Single Sided)</option>
-            <option value="long-edge">وجه وظهر - القلب عند الحافة الطويلة (Duplex Long Edge)</option>
-            <option value="short-edge">وجه وظهر - القلب عند الحافة القصيرة (Duplex Short Edge)</option>
+            <option value="long-edge">وجه وظهر - القلب عند الحافة الطويلة (موصى به)</option>
+            <option value="short-edge">وجه وظهر - القلب عند الحافة القصيرة</option>
+            <option value="simplex" id="simplexOpt">وجه واحد (سيتم إلغاؤه تلقائياً عند تفعيل البوكليت)</option>
         </select>
     </div>
 
     <div class="form-group">
         <div class="checkbox-group">
-            <input type="checkbox" id="bookletMode">
-            <label for="bookletMode" style="margin-bottom:0; cursor:pointer;">طباعة بوكليت (كتيب - الصفحة الأولى تقابل الأخيرة وهكذا)</label>
+            <input type="checkbox" id="bookletMode" checked>
+            <label for="bookletMode" style="margin-bottom:0; cursor:pointer;">تفعيل طباعة نظام البوكليت (الكراسة)</label>
         </div>
+        <div class="note">عند تفعيل البوكليت، يتم دمج صفحتين معاً في الورقة وتنسيق الوجوه والظهر تلقائياً.</div>
     </div>
 
-    <div class="form-group" id="bookletDirGroup" style="display:none;">
-        <label for="bookletDirection">اتجاه فتح البوكليت:</label>
+    <div class="form-group" id="bookletDirGroup">
+        <label for="bookletDirection">اتاه التجميع (اللغة / طريقة القراءة):</label>
         <select id="bookletDirection">
-            <option value="rtl">يفتح من اليمين (للغة العربية)</option>
-            <option value="ltr">يفتح من اليسار (للغة الإنجليزية)</option>
+            <option value="rtl">من اليمين لليسار (للغة العربية - مثل مثالك)</option>
+            <option value="ltr">من اليسار لليمين (للغة الإنجليزية)</option>
         </select>
     </div>
 
-    <button id="printBtn" onclick="startBatchPrint()">بدء المعالجة والطباعة الآمنة</button>
+    <button id="printBtn" onclick="startBatchPrint()">بدء طباعة البوكليت دفعة واحدة</button>
     
     <div id="status">جاري المعالجة...</div>
 </div>
@@ -155,14 +161,26 @@
     const fileListDiv = document.getElementById('fileList');
     const bookletCheckbox = document.getElementById('bookletMode');
     const bookletDirGroup = document.getElementById('bookletDirGroup');
+    const duplexSelect = document.getElementById('duplex');
     const printBtn = document.getElementById('printBtn');
     const statusDiv = document.getElementById('status');
 
     let selectedFiles = [];
 
-    bookletCheckbox.addEventListener('change', function() {
-        bookletDirGroup.style.display = this.checked ? 'block' : 'none';
-    });
+    // إجبار الوجهين عند تفعيل البوكليت
+    function updateBookletUI() {
+        if (bookletCheckbox.checked) {
+            bookletDirGroup.style.display = 'block';
+            duplexSelect.value = 'long-edge';
+            duplexSelect.disabled = true; // إجبار واختيار تلقائي
+        } else {
+            bookletDirGroup.style.display = 'none';
+            duplexSelect.disabled = false;
+        }
+    }
+
+    bookletCheckbox.addEventListener('change', updateBookletUI);
+    window.addEventListener('DOMContentLoaded', updateBookletUI);
 
     fileInput.addEventListener('change', function(e) {
         selectedFiles = Array.from(e.target.files);
@@ -178,34 +196,55 @@
         }
     });
 
-    function generateBookletOrder(numPages, direction) {
+    // توليد أزواج صفحات البوكليت (كل عنصر عبارة عن ورقة تحتوي على [صفحة يسرى، صفحة يمنى])
+    // لكي تطابق تماماً مثالك المكون من 8 صفحات
+    function generateBookletSheets(numPages, direction) {
         let remainder = numPages % 4;
         let totalPages = numPages;
         if (remainder !== 0) {
-            totalPages += (4 - remainder);
+            totalPages += (4 - remainder); // إكمال الملف لمضاعفات العدد 4 بصفحات فارغة (null)
         }
 
         let pages = [];
         for (let i = 1; i <= totalPages; i++) {
-            pages.push(i <= numPages ? i : null);
+            pages.push(i <= numPages ? i : null); 
         }
 
-        let bookletPages = [];
+        let sheets = [];
         let left = 0;
         let right = totalPages - 1;
 
         while (left < right) {
-            if (direction === 'rtl') {
-                bookletPages.push(pages[left]);
-                bookletPages.push(pages[right]);
-            } else {
-                bookletPages.push(pages[right]);
-                bookletPages.push(pages[left]);
-            }
+            // كل ورقة لها وجهان: (وجه أمامي ووجه خلفي) أو نتحكم في الترتيب المظبوط للملزمة
+            sheets.push({
+                leftPage: pages[left],   // الصفحة الخارجية يسار
+                rightPage: pages[right]  // الصفحة الخارجية يمين
+            });
             left++;
             right--;
         }
-        return bookletPages.filter(p => p !== null);
+
+        // إعادة ترتيب الأوراق لتناسب الطباعة المزدوجة (Duplex Printing Sheets Pairs)
+        // الطريقة الصحيحة لملزمة كراسة متسلسلة:
+        let bookletSheetsFinal = [];
+        let numSheets = sheets.length;
+        
+        for (let i = 0; i < numSheets / 2; i++) {
+            let outerFront, outerBack;
+            if (direction === 'rtl') {
+                // للغة العربية: الوجوه الخارجية والداخلية
+                // الورقة الأولى: الوش (قبل الأخير والأول عكساً) حسب معمارية ملازم الطباعة
+                outerFront = { left: sheets[numSheets - 1 - i].rightPage, right: sheets[i].leftPage }; // مثال: صفحة 2 و 7
+                outerBack  = { left: sheets[i].rightPage, right: sheets[numSheets - 1 - i].leftPage };  // مثال: صفحة 1 و 8
+            } else {
+                outerFront = { left: sheets[i].leftPage, right: sheets[numSheets - 1 - i].rightPage };
+                outerBack  = { left: sheets[numSheets - 1 - i].leftPage, right: sheets[i].rightPage };
+            }
+            bookletSheetsFinal.push(outerFront); // الوش
+            bookletSheetsFinal.push(outerBack);  // الظهر
+        }
+
+        return bookletSheetsFinal;
     }
 
     async function printPdfFile(file, options) {
@@ -229,40 +268,85 @@
 
                     const doc = iframe.contentWindow.document;
                     doc.open();
-                    doc.write('<html><head><title>طباعة</title><style>');
-                    doc.write(`@page { size: ${options.orientation}; margin: 5mm; }`);
+                    doc.write('<html><head><title>طباعة بوكليت</title><style>');
+                    doc.write(`@page { size: ${options.orientation}; margin: 2mm; }`);
                     doc.write('body { margin: 0; background: #fff; text-align: center; }');
-                    doc.write('.page { page-break-after: always; display: flex; justify-content: center; align-items: center; height: 100vh; }');
+                    doc.write('.sheet { page-break-after: always; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; box-sizing: border-box; }');
+                    doc.write('.page-box { display: flex; width: 100%; height: 100%; justify-content: center; align-items: center; }');
+                    doc.write('.half { width: 50%; height: 100%; display: flex; justify-content: center; align-items: center; }');
                     doc.write('img { max-width: 100%; max-height: 100%; object-fit: contain; }');
                     doc.write('</style></head><body>');
 
-                    let pagesToPrint = [];
+                    let printUnits = [];
                     if (options.booklet) {
-                        pagesToPrint = generateBookletOrder(numPages, options.bookletDir);
+                        printUnits = generateBookletSheets(numPages, options.bookletDir);
                     } else {
-                        for (let i = 1; i <= numPages; i++) pagesToPrint.push(i);
+                        // طباعة عادية صفحة صفحة
+                        for (let i = 1; i <= numPages; i++) {
+                            printUnits.push({ leftPage: null, rightPage: i });
+                        }
                     }
 
-                    for (let pageNum of pagesToPrint) {
-                        const page = await pdfDoc.getPage(pageNum);
-                        // ضبط الدقة على 2.0 لضمان وضوح الحروف والصور تماماً عند الطباعة
-                        const viewport = page.getViewport({ scale: 2.0 }); 
-                        const canvas = document.createElement('canvas');
-                        const context = canvas.getContext('2d');
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
+                    for (let unit of printUnits) {
+                        const sheetDiv = doc.createElement('div');
+                        sheetDiv.className = 'sheet';
+                        const boxDiv = doc.createElement('div');
+                        boxDiv.className = 'page-box';
 
-                        await page.render({ canvasContext: context, viewport: viewport }).promise;
-                        
-                        // تحويل الصفحة حصرياً إلى صورة بتنسيق PNG للحفاظ على الخطوط سليمة
-                        const imgDataUrl = canvas.toDataURL('image/png');
+                        // دالة مساعدة لتقديم ورسم الصفحة على الكانفاس وتحويلها لصورة
+                        async function renderPageToImage(pageNum) {
+                            if (pageNum === null) {
+                                const emptyCanvas = doc.createElement('canvas');
+                                emptyCanvas.width = 500; emptyCanvas.height = 700;
+                                return emptyCanvas.toDataURL('image/png');
+                            }
+                            const page = await pdfDoc.getPage(pageNum);
+                            const viewport = page.getViewport({ scale: 1.5 });
+                            const canvas = document.createElement('canvas');
+                            const context = canvas.getContext('2d');
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+                            await page.render({ canvasContext: context, viewport: viewport }).promise;
+                            return canvas.toDataURL('image/png');
+                        }
 
-                        const div = doc.createElement('div');
-                        div.className = 'page';
-                        const img = doc.createElement('img');
-                        img.src = imgDataUrl;
-                        div.appendChild(img);
-                        doc.body.appendChild(div);
+                        if (options.booklet) {
+                            // دمج صفحتين جنباً إلى جنب في نفس الورقة (نظام بوستر)
+                            const leftDataUrl = await renderPageToImage(unit.leftPage);
+                            const rightDataUrl = await renderPageToImage(unit.rightPage);
+
+                            const leftHalf = doc.createElement('div');
+                            leftHalf.className = 'half';
+                            if (unit.leftPage !== null) {
+                                const imgL = doc.createElement('img');
+                                imgL.src = leftDataUrl;
+                                leftHalf.appendChild(imgL);
+                            }
+
+                            const rightHalf = doc.createElement('div');
+                            rightHalf.className = 'half';
+                            if (unit.rightPage !== null) {
+                                const imgR = doc.createElement('img');
+                                imgR.src = rightDataUrl;
+                                rightHalf.appendChild(imgR);
+                            }
+
+                            boxDiv.appendChild(leftHalf);
+                            boxDiv.appendChild(rightHalf);
+                        } else {
+                            // طباعة عادية صفحة مفردة
+                            const pageDataUrl = await renderPageToImage(unit.rightPage);
+                            const singleHalf = doc.createElement('div');
+                            singleHalf.className = 'half';
+                            singleHalf.style.width = '100%';
+                            const imgS = doc.createElement('img');
+                            imgS.src = pageDataUrl;
+                            singleHalf.appendChild(imgS);
+                            boxDiv.appendChild(singleHalf);
+                        }
+
+                        sheetDiv.appendChild(boxDiv);
+                        doc.body.appendChild(sheetDiv);
                     }
 
                     doc.close();
@@ -274,8 +358,8 @@
                         setTimeout(() => {
                             document.body.removeChild(iframe);
                             resolve();
-                        }, 2500);
-                    }, 1000);
+                        }, 3000);
+                    }, 1500);
 
                 } catch (err) {
                     console.error(err);
@@ -303,7 +387,7 @@
         statusDiv.style.display = 'block';
 
         for (let i = 0; i < selectedFiles.length; i++) {
-            statusDiv.innerText = `جاري تحويل وطباعة الملف (${i + 1} من ${selectedFiles.length}): ${selectedFiles[i].name}`;
+            statusDiv.innerText = `جاري تجهيز وطباعة البوكليت (${i + 1} من ${selectedFiles.length}): ${selectedFiles[i].name}`;
             try {
                 await printPdfFile(selectedFiles[i], options);
             } catch (e) {
@@ -311,7 +395,7 @@
             }
         }
 
-        statusDiv.innerText = 'تم الانتهاء من طباعة جميع الملفات بنجاح!';
+        statusDiv.innerText = 'تم الانتهاء من طباعة جميع ملفات البوكليت بنجاح!';
         printBtn.disabled = false;
         setTimeout(() => {
             statusDiv.style.display = 'none';
