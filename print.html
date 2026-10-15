@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدير طباعة ملفات PDF المجمع (بدون مشاكل مربعات النصوص)</title>
+    <title>مدير طباعة ملفات PDF المجمع (نسخة الصور الآمنة)</title>
+    <!-- مكتبة قراءة وعرض ملفات PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    </script>
     <style>
         body {
             font-family: Tahoma, Arial, sans-serif;
@@ -96,10 +101,10 @@
 <body>
 
 <div class="container">
-    <h2>أداة طباعة ملفات PDF دفعة واحدة</h2>
+    <h2>أداة طباعة ملفات PDF (تحويل إلى صور لمنع المربعات)</h2>
     
     <div class="form-group">
-        <label for="pdfFiles">1. اختر ملفات الـ PDF:</label>
+        <label for="pdfFiles">1. اختر ملفات PDF:</label>
         <input type="file" id="pdfFiles" accept="application/pdf" multiple>
         <div id="fileList">لم يتم اختيار أي ملفات بعد.</div>
     </div>
@@ -128,7 +133,7 @@
     <div class="form-group">
         <div class="checkbox-group">
             <input type="checkbox" id="bookletMode">
-            <label for="bookletMode" style="margin-bottom:0; cursor:pointer;">طباعة بوكليت (كتيب)</label>
+            <label for="bookletMode" style="margin-bottom:0; cursor:pointer;">طباعة بوكليت (كتيب - الصفحة الأولى تقابل الأخيرة وهكذا)</label>
         </div>
     </div>
 
@@ -140,9 +145,9 @@
         </select>
     </div>
 
-    <button id="printBtn" onclick="startBatchPrint()">بدء طباعة الملفات دفعة واحدة</button>
+    <button id="printBtn" onclick="startBatchPrint()">بدء المعالجة والطباعة الآمنة</button>
     
-    <div id="status">جاري تجهيز وطباعة الملفات...</div>
+    <div id="status">جاري المعالجة...</div>
 </div>
 
 <script>
@@ -173,40 +178,111 @@
         }
     });
 
-    async function printPdfFile(file, options) {
-        return new Promise((resolve) => {
-            const fileURL = URL.createObjectURL(file);
-            
-            // إنشاء عنصر إدراج خفي للملف الأصلي بخصائصه السليمة
-            const iframe = document.createElement('iframe');
-            iframe.style.position = 'fixed';
-            iframe.style.right = '0';
-            iframe.style.bottom = '0';
-            iframe.style.width = '0';
-            iframe.style.height = '0';
-            iframe.style.border = '0';
-            
-            // استخدام تضمين ملف الـ PDF الأصلي لضمان قراءة الخطوط العربية والإنجليزية بدقة تامة بدون مربعات
-            iframe.src = fileURL;
-            document.body.appendChild(iframe);
+    function generateBookletOrder(numPages, direction) {
+        let remainder = numPages % 4;
+        let totalPages = numPages;
+        if (remainder !== 0) {
+            totalPages += (4 - remainder);
+        }
 
-            iframe.onload = function() {
-                setTimeout(() => {
-                    try {
+        let pages = [];
+        for (let i = 1; i <= totalPages; i++) {
+            pages.push(i <= numPages ? i : null);
+        }
+
+        let bookletPages = [];
+        let left = 0;
+        let right = totalPages - 1;
+
+        while (left < right) {
+            if (direction === 'rtl') {
+                bookletPages.push(pages[left]);
+                bookletPages.push(pages[right]);
+            } else {
+                bookletPages.push(pages[right]);
+                bookletPages.push(pages[left]);
+            }
+            left++;
+            right--;
+        }
+        return bookletPages.filter(p => p !== null);
+    }
+
+    async function printPdfFile(file, options) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const typedarray = new Uint8Array(e.target.result);
+                try {
+                    const loadingTask = pdfjsLib.getDocument(typedarray);
+                    const pdfDoc = await loadingTask.promise;
+                    const numPages = pdfDoc.numPages;
+
+                    const iframe = document.createElement('iframe');
+                    iframe.style.position = 'fixed';
+                    iframe.style.right = '0';
+                    iframe.style.bottom = '0';
+                    iframe.style.width = '0';
+                    iframe.style.height = '0';
+                    iframe.style.border = '0';
+                    document.body.appendChild(iframe);
+
+                    const doc = iframe.contentWindow.document;
+                    doc.open();
+                    doc.write('<html><head><title>طباعة</title><style>');
+                    doc.write(`@page { size: ${options.orientation}; margin: 5mm; }`);
+                    doc.write('body { margin: 0; background: #fff; text-align: center; }');
+                    doc.write('.page { page-break-after: always; display: flex; justify-content: center; align-items: center; height: 100vh; }');
+                    doc.write('img { max-width: 100%; max-height: 100%; object-fit: contain; }');
+                    doc.write('</style></head><body>');
+
+                    let pagesToPrint = [];
+                    if (options.booklet) {
+                        pagesToPrint = generateBookletOrder(numPages, options.bookletDir);
+                    } else {
+                        for (let i = 1; i <= numPages; i++) pagesToPrint.push(i);
+                    }
+
+                    for (let pageNum of pagesToPrint) {
+                        const page = await pdfDoc.getPage(pageNum);
+                        // ضبط الدقة على 2.0 لضمان وضوح الحروف والصور تماماً عند الطباعة
+                        const viewport = page.getViewport({ scale: 2.0 }); 
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        await page.render({ canvasContext: context, viewport: viewport }).promise;
+                        
+                        // تحويل الصفحة حصرياً إلى صورة بتنسيق PNG للحفاظ على الخطوط سليمة
+                        const imgDataUrl = canvas.toDataURL('image/png');
+
+                        const div = doc.createElement('div');
+                        div.className = 'page';
+                        const img = doc.createElement('img');
+                        img.src = imgDataUrl;
+                        div.appendChild(img);
+                        doc.body.appendChild(div);
+                    }
+
+                    doc.close();
+
+                    setTimeout(() => {
                         iframe.contentWindow.focus();
                         iframe.contentWindow.print();
-                    } catch (err) {
-                        console.error("خطأ في الطباعة المباشرة:", err);
-                    }
-                    
-                    // تنظيف الموارد بعد إرسال أمر الطباعة
-                    setTimeout(() => {
-                        document.body.removeChild(iframe);
-                        URL.revokeObjectURL(fileURL);
-                        resolve();
-                    }, 3000);
-                }, 1000);
+                        
+                        setTimeout(() => {
+                            document.body.removeChild(iframe);
+                            resolve();
+                        }, 2500);
+                    }, 1000);
+
+                } catch (err) {
+                    console.error(err);
+                    reject(err);
+                }
             };
+            reader.readAsArrayBuffer(file);
         });
     }
 
@@ -216,17 +292,26 @@
             return;
         }
 
+        const options = {
+            orientation: document.getElementById('orientation').value,
+            duplex: document.getElementById('duplex').value,
+            booklet: bookletCheckbox.checked,
+            bookletDir: document.getElementById('bookletDirection').value
+        };
+
         printBtn.disabled = true;
         statusDiv.style.display = 'block';
 
         for (let i = 0; i < selectedFiles.length; i++) {
-            statusDiv.innerText = `جاري طباعة الملف (${i + 1} من ${selectedFiles.length}): ${selectedFiles[i].name}`;
-            await printPdfFile(selectedFiles[i]);
-            // مهلة قصيرة بين الملف والاخر لضمان عدم تداخل نوافذ الطباعة في نظام التشغيل
-            await new Promise(r => setTimeout(r, 2000));
+            statusDiv.innerText = `جاري تحويل وطباعة الملف (${i + 1} من ${selectedFiles.length}): ${selectedFiles[i].name}`;
+            try {
+                await printPdfFile(selectedFiles[i], options);
+            } catch (e) {
+                console.error("خطأ في طباعة الملف:", selectedFiles[i].name);
+            }
         }
 
-        statusDiv.innerText = 'تم الانتهاء من إرسال جميع الملفات للطباعة بنجاح!';
+        statusDiv.innerText = 'تم الانتهاء من طباعة جميع الملفات بنجاح!';
         printBtn.disabled = false;
         setTimeout(() => {
             statusDiv.style.display = 'none';
